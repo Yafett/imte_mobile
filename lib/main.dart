@@ -15,8 +15,9 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: new ThemeData(scaffoldBackgroundColor: const Color(0xFFF0F0F0)),
       debugShowCheckedModeBanner: false,
-      home : LoginPage(),
+      home: LoginPage(),
     );
   }
 }
