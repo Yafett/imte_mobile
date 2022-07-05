@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 import '../shared/theme.dart';
 
@@ -11,6 +16,45 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  List unit = [];
+  List period = [];
+  String nama_periode = '';
+  String mulai = '';
+  String akhir = '';
+
+  @override
+  void initState() {
+    super.initState();
+    dataUnit();
+    dataPeriod();
+  }
+
+  dataUnit() async {
+    const API_URL = 'https://adm.imte.education/api/unit';
+
+    final response = await http.get(Uri.parse(API_URL));
+    final data = json.decode(response.body);
+
+    setState(() {
+      unit = data;
+    });
+  }
+
+  dataPeriod() async {
+    const API_URL = 'https://adm.imte.education/api/period';
+
+    final response = await http.get(Uri.parse(API_URL));
+    final data = json.decode(response.body);
+
+    setState(() {
+      period = data;
+      print(period[0]['period_name']);
+      nama_periode = period[0]['period_name'];
+      mulai = period[0]['start_date'];
+      akhir = period[0]['end_date'];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,7 +84,14 @@ class _LoginPageState extends State<LoginPage> {
                 Icons.door_back_door_outlined,
               ),
               Padding(
-                child: Text('Login', style: whiteTextStyle.copyWith()),
+                child: GestureDetector(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/sign-in');
+                    },
+                    child: Text(
+                      'Login',
+                      style: whiteTextStyle.copyWith(),
+                    )),
                 padding: const EdgeInsets.only(left: 5.0, right: 15.0),
               ),
             ],
@@ -326,32 +377,296 @@ class _LoginPageState extends State<LoginPage> {
                         )
                       ],
                     ),
+                  ),
+                  SizedBox(
+                    height: 30,
                   )
                 ],
               ),
             ),
-          )
-        
+          ),
+
           // ! scedhule
-          ,Container(
+          Container(
             padding: EdgeInsets.all(20),
             width: double.infinity,
-            height: 1000,
+            // height: 980,
             color: kMaroonColor,
             child: Column(
-
               children: [
                 Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('OPEN REGISTRATION', style: TextStyle(fontSize: 38, fontWeight: FontWeight.bold, color: kWhiteColor),),
+                    SizedBox(height: 30),
+                    Text(
+                      'OPEN REGISTRATION',
+                      style: TextStyle(
+                          fontSize: 38,
+                          fontWeight: FontWeight.bold,
+                          color: kWhiteColor),
+                    ),
                     Divider(
                       height: 50,
                       endIndent: 250,
                       thickness: 5,
                       color: kWhiteColor,
                     ),
-                    Text('2nd PERIOD 2022', style: TextStyle(fontSize: 38, fontWeight: FontWeight.bold, color: kWhiteColor),)
+
+                    Text(
+                      nama_periode,
+                      style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w400,
+                          color: kWhiteColor),
+                    ),
+                    Text(
+                      'REGISTRATION DATE:',
+                      style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.w400,
+                          color: kWhiteColor),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      mulai + ' - ' + akhir,
+                      style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w300,
+                          color: kWhiteColor),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(context, '/sign-in');
+                      },
+                      child: new Container(
+                        margin: EdgeInsets.symmetric(vertical: 20),
+                        width: 150.0,
+                        height: 40.0,
+                        decoration: new BoxDecoration(
+                          color: Color.fromRGBO(215, 37, 39, 1),
+                          borderRadius: new BorderRadius.circular(24.0),
+                        ),
+                        child: new Center(
+                          child: new Text(
+                            'ENROLL NOW',
+                            style: new TextStyle(
+                                fontSize: 16.0, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 80),
+                    Text(
+                      'EXAM \nDATES',
+                      style: TextStyle(
+                        fontSize: 38,
+                        fontWeight: FontWeight.bold,
+                        color: kWhiteColor,
+                      ),
+                    ),
+                    Divider(
+                      height: 50,
+                      endIndent: 250,
+                      thickness: 5,
+                      color: kWhiteColor,
+                    ),
+
+                    // ! unit
+                    ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.vertical,
+                      itemCount: unit.length,
+                      itemBuilder: (BuildContext ctx, index) {
+                        return Container(
+                          margin: EdgeInsets.symmetric(vertical: 15),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  unit[index]['unit_name'],
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                                Text(
+                                  unit[index]['city'],
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                                SizedBox(
+                                  height: 8,
+                                ),
+                                Text(
+                                  unit[index]['start_date'] +
+                                      '-' +
+                                      unit[index]['end_date'],
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white),
+                                ),
+                              ]),
+                        );
+                      },
+                    )
                   ],
+                )
+              ],
+            ),
+          ),
+
+          // ! update
+          Container(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: [
+                SizedBox(height: 50),
+                Text(
+                  'IMTE LAST UPDATE',
+                  style: blackTextStyle.copyWith(
+                      fontSize: 28, fontWeight: FontWeight.w300),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    launch(
+                        'https://www.instagram.com/p/CYbKBpjrpul/?utm_medium=copy_link');
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(top: 20),
+                    height: 350,
+                    width: 350,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/image/ban1.png'),
+                          fit: BoxFit.fill,
+                        ),
+                        borderRadius: BorderRadius.circular(20)),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    launch(
+                        'https://www.instagram.com/p/CYbKBpjrpul/?utm_medium=copy_link');
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(top: 20),
+                    height: 350,
+                    width: 350,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/image/ban2.png'),
+                          fit: BoxFit.fill,
+                        ),
+                        borderRadius: BorderRadius.circular(20)),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    launch(
+                        'https://www.instagram.com/p/CYbKBpjrpul/?utm_medium=copy_link');
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(top: 20),
+                    height: 350,
+                    width: 350,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('assets/image/ban3.jpg'),
+                          fit: BoxFit.fill,
+                        ),
+                        borderRadius: BorderRadius.circular(20)),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Container(
+            margin: EdgeInsets.symmetric(vertical: 50),
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: [
+                Text(
+                  'IMTE HEAD OFFICE',
+                  style: TextStyle(
+                    color: Color.fromRGBO(255, 1, 1, 1),
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  'address. Puri Anjasmoro Blok E1, No.21, Semarang - Jawa Tengah 50144',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color.fromARGB(253, 16, 79, 214),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                Text(
+                  'email. imte.exam@gmail.com',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Color.fromARGB(253, 16, 79, 214),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        Image.asset(
+                          'assets/image/yt.png',
+                          width: 15.0,
+                          height: 15.0,
+                          fit: BoxFit.cover,
+                        ),
+                        Container(
+                          child: Text(
+                            'IMTE Exam',
+                            style: TextStyle(color: Colors.blue, fontSize: 12),
+                          ),
+                          margin: EdgeInsets.symmetric(horizontal: 5),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Image.asset(
+                          'assets/image/ig.png',
+                          width: 15.0,
+                          height: 15.0,
+                          fit: BoxFit.cover,
+                        ),
+                        Container(
+                          child: Text(
+                            '@itme.education',
+                            style: TextStyle(color: Colors.blue, fontSize: 12),
+                          ),
+                          margin: EdgeInsets.symmetric(horizontal: 5),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'IMTE | International Music Technology Examination',
+                  style: TextStyle(fontSize: 10),
                 )
               ],
             ),

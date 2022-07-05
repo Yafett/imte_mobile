@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:imte_mobile/pages/sign-in.dart';
+import 'package:imte_mobile/pages/sign-up.dart';
+import 'package:imte_mobile/pages/test.dart';
 import 'widget/sticky_navbar.dart';
 import 'pages/login.dart';
 
@@ -17,7 +20,11 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       theme: new ThemeData(scaffoldBackgroundColor: const Color(0xFFF0F0F0)),
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      routes: {
+        '/': (context) => LoginPage(),
+        '/sign-in': (context) => SignInPage(),
+        '/sign-up': (context) => SignUpPage(),
+      },
     );
   }
 }
