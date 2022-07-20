@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +57,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
+
       // ! appbar
       appBar: AppBar(
         title: Image.asset(
@@ -635,12 +636,19 @@ class _LoginPageState extends State<LoginPage> {
                           height: 15.0,
                           fit: BoxFit.cover,
                         ),
-                        Container(
-                          child: Text(
-                            'IMTE Exam',
-                            style: TextStyle(color: Colors.blue, fontSize: 12),
+                        GestureDetector(
+                          child: Container(
+                            child: Text(
+                              'IMTE Exam',
+                              style:
+                                  TextStyle(color: Colors.blue, fontSize: 12),
+                            ),
+                            margin: EdgeInsets.symmetric(horizontal: 5),
                           ),
-                          margin: EdgeInsets.symmetric(horizontal: 5),
+                          onTap: () {
+                            launch(
+                                'https://www.youtube.com/channel/UCVvRP1j_GZQXkWEmrJ82KsQ');
+                          },
                         ),
                       ],
                     ),
@@ -652,12 +660,19 @@ class _LoginPageState extends State<LoginPage> {
                           height: 15.0,
                           fit: BoxFit.cover,
                         ),
-                        Container(
-                          child: Text(
-                            '@itme.education',
-                            style: TextStyle(color: Colors.blue, fontSize: 12),
+                        GestureDetector(
+                          onTap: () {
+                            launch(
+                                'https://www.instagram.com/p/CYbKBpjrpul/?utm_medium=copy_link');
+                          },
+                          child: Container(
+                            child: Text(
+                              '@itme.education',
+                              style:
+                                  TextStyle(color: Colors.blue, fontSize: 12),
+                            ),
+                            margin: EdgeInsets.symmetric(horizontal: 5),
                           ),
-                          margin: EdgeInsets.symmetric(horizontal: 5),
                         ),
                       ],
                     ),
@@ -667,7 +682,7 @@ class _LoginPageState extends State<LoginPage> {
                 Text(
                   'IMTE | International Music Technology Examination',
                   style: TextStyle(fontSize: 10),
-                )
+                ),
               ],
             ),
           )
