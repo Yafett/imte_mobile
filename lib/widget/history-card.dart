@@ -11,6 +11,8 @@ class HistoryCard extends StatelessWidget {
     required this.image,
     required this.textGrade,
     required this.textTeacher,
+    required this.color,
+    required this.textColor,
   });
 
   final String textScore;
@@ -20,6 +22,8 @@ class HistoryCard extends StatelessWidget {
   final String textDate;
   final ImageProvider image;
   final String textGrade;
+  final Color color;
+  final Color textColor;
 
   @override
   Widget build(BuildContext context) {
@@ -27,11 +31,11 @@ class HistoryCard extends StatelessWidget {
       margin: EdgeInsets.only(top: 10),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
         Container(
-          height: 100,
-          width: 100,
+          height: MediaQuery.of(context).size.width * 0.3,
+          width: MediaQuery.of(context).size.width * 0.3,
           decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.1), //color of shadow
@@ -47,29 +51,30 @@ class HistoryCard extends StatelessWidget {
                 textScore,
                 style: GoogleFonts.poppins(
                   fontSize: 30,
-                  color: Color(0xff4CAF50),
+                  color: color,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               Text(
                 textResult,
                 style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: Color(0xff4CAF50),
+                  fontSize: 14,
+                  color: textColor,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
         ),
+        // !
         Container(
           padding: EdgeInsets.all(10),
-          // height: 100,
-          width: MediaQuery.of(context).size.height * 0.32,
+          height: MediaQuery.of(context).size.width * 0.3,
+          width: MediaQuery.of(context).size.width * 0.6,
           margin: EdgeInsets.only(left: 5),
           decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.1), //color of shadow
@@ -78,68 +83,65 @@ class HistoryCard extends StatelessWidget {
                   offset: Offset(0, 2),
                 ),
               ]),
-          child: Column(children: [
-            Row(
+          child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      textPeriod,
-                      style: GoogleFonts.poppins(
-                        color: Color(0xff505050),
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          textPeriod,
+                          style: GoogleFonts.poppins(
+                            color: Color(0xff505050),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          child: Text(
+                            textTeacher,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12.0,
+                              color: new Color(0xFF212121),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(textTeacher),
+                    Container(
+                      margin: EdgeInsets.only(bottom: 5),
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: image,
+                            fit: BoxFit.fill,
+                          ),
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
                   ],
                 ),
-                Container(
-                  margin: EdgeInsets.only(bottom: 5),
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: image,
-                        fit: BoxFit.fill,
-                      ),
-                      borderRadius: BorderRadius.circular(20)),
-                ),
-                // ColorFiltered(
-                //   colorFilter: ColorFilter.mode(
-                //     Colors.grey,
-                //     BlendMode.saturation,
-                //   ),
-                //   child: Container(
-                //     margin: EdgeInsets.only(bottom: 5),
-                //     height: 50,
-                //     width: 50,
-                //     decoration: BoxDecoration(
-                //       border: Border.all(),
-                //         image: DecorationImage(
-                //           image: AssetImage(
-                //             'assets/image/1.png',
-                //           ),
-                //           fit: BoxFit.fill,
-                //         ),
-                //         borderRadius: BorderRadius.circular(20)),
-                //   ),
-                // )
-              ],
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(textDate),
-                Text(textGrade),
-              ],
-            )
-          ]),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      textDate,
+                      style: GoogleFonts.poppins(),
+                    ),
+                    Text(
+                      textGrade,
+                      style: GoogleFonts.poppins(),
+                    ),
+                  ],
+                )
+              ]),
         ),
       ]),
     );

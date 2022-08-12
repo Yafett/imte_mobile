@@ -68,13 +68,14 @@ class _HomePageState extends State<HomePage> {
         onTap: () {
           _controller.pause();
 
-          Navigator.pushNamed(context, '/sign-in');
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/sign-in', (route) => false);
         },
         child: Container(
           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 115),
           margin: EdgeInsets.only(bottom: 5),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(75),
+            borderRadius: BorderRadius.circular(12),
             color: Color(0xffAE2329),
           ),
           child: Text('Login',
@@ -111,7 +112,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           Container(
             margin: EdgeInsets.only(top: 50),
-            height: 154,
+            height: 120,
             width: 203,
             decoration: BoxDecoration(
                 image: DecorationImage(

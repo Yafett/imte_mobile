@@ -1,18 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:imte_mobile/pages/dashboard.dart';
 import 'package:imte_mobile/pages/enroll.dart';
 import 'package:imte_mobile/pages/history.dart';
 import 'package:imte_mobile/pages/home.dart';
 import 'package:imte_mobile/pages/news.dart';
 import 'package:imte_mobile/pages/news_detail.dart';
+import 'package:imte_mobile/pages/profile-edit.dart';
+import 'package:imte_mobile/pages/profile.dart';
 import 'package:imte_mobile/pages/sign-in.dart';
 import 'package:imte_mobile/pages/sign-up.dart';
 import 'package:imte_mobile/pages/test.dart';
 import 'package:imte_mobile/pages/video.dart';
+import 'package:imte_mobile/widget/enroll-card.dart';
+import 'package:imte_mobile/widget/news-card.dart';
 import 'widget/sticky_navbar.dart';
 import 'pages/login.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  // add these lines
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
+  // run app
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -28,13 +41,17 @@ class _MyAppState extends State<MyApp> {
       theme: new ThemeData(scaffoldBackgroundColor: const Color(0xFFF0F0F0)),
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => HomePage(),
+        '/': (context) => EnrollPage(),
         '/sign-in': (context) => SignInPage(),
         '/sign-up': (context) => SignUpPage(),
         '/news-detail': (context) => NewsDeatilPage(),
-        '/dashboard': (context) => DashboardPage(
-              token: '',
+        '/dashboard': (context) => DashboardPage(token: ''),
+        '/enroll': (context) => EnrollPage(),
+        '/profile': (context) => ProfilePage(
+              enableBack: 'true',
             ),
+        '/news': (context) => NewsPage(),
+        '/history': (context) => HistoryPage(),
       },
     );
   }

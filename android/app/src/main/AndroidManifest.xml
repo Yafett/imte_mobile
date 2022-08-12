@@ -9,7 +9,7 @@ xmlns:tools="http://schemas.android.com/tools"
     <uses-permission android:name="android.permission.STORAGE" />
    <application
         android:usesCleartextTraffic="true"
-        android:label="imte_mobile"
+        android:label="IMTE Mobile"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

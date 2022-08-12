@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:imte_mobile/widget/gradient-text.dart';
 
-class enrollCard extends StatelessWidget {
+class enrollCard extends StatefulWidget {
   const enrollCard({
     required this.textPeriod,
     required this.textGrade,
@@ -16,15 +18,42 @@ class enrollCard extends StatelessWidget {
   final Color color;
 
   @override
+  State<enrollCard> createState() => _enrollCardState();
+}
+
+class _enrollCardState extends State<enrollCard> {
+  String? scanResult;
+
+  Future scanBarcode() async {
+    String scanResult;
+
+    try {
+      scanResult = await FlutterBarcodeScanner.scanBarcode(
+        '#ff6666',
+        'Cancel',
+        true,
+        ScanMode.BARCODE,
+      );
+    } on PlatformException {
+      scanResult = 'Failed to scan';
+    }
+
+    if (!mounted) return;
+
+    setState(() => this.scanResult = scanResult);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-            width: MediaQuery.of(context).size.height * 0.46,
+    return GestureDetector(
+        onTap: () {
+          // pickImage();
+          scanBarcode();
+        },
+        child: Container(
+            width: MediaQuery.of(context).size.width,
             padding: EdgeInsets.all(10),
             margin: EdgeInsets.only(top: 10, left: 0),
-            height: 135,
             decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(10),
@@ -42,13 +71,13 @@ class enrollCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(textPeriod,
+                      Text(widget.textPeriod,
                           style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
                           )),
                       Text(
-                        textGrade,
+                        widget.textGrade,
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -67,7 +96,7 @@ class enrollCard extends StatelessWidget {
                         Container(
                           child: Column(
                             children: [
-                              Text(textCourse,
+                              Text(widget.textCourse,
                                   style: GoogleFonts.poppins(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w400,
@@ -75,7 +104,7 @@ class enrollCard extends StatelessWidget {
                                   )),
                               Icon(
                                 Icons.check,
-                                color: color,
+                                color: widget.color,
                                 size: 30.0,
                               ),
                             ],
@@ -192,7 +221,7 @@ class enrollCard extends StatelessWidget {
                         Container(
                             child: Column(
                           children: [
-                            Text('Prsnt',
+                            Text('Live',
                                 style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
@@ -208,8 +237,6 @@ class enrollCard extends StatelessWidget {
                       ],
                     ),
                   )
-                ])),
-      ],
-    );
+                ])));
   }
 }

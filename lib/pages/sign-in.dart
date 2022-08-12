@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:imte_mobile/main.dart';
 import 'package:imte_mobile/pages/dashboard.dart';
 import 'package:imte_mobile/pages/enroll.dart';
@@ -22,6 +24,8 @@ class SignInPageState extends State<SignInPage> {
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
 
+  bool isLoading = false;
+
   encrypting() {
     final key = encrypt.Key.fromLength(32);
     final iv = encrypt.IV.fromLength(16);
@@ -33,12 +37,17 @@ class SignInPageState extends State<SignInPage> {
       'email': email,
       'password': password,
     };
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     var token = '';
     int user = 0;
+
     var response = await http.post(
         Uri.parse('https://adm.imte.education/api/user/loginv2'),
+        headers: {
+          "Accept": "application/json",
+        },
         body: data);
     var result = response.body;
 
@@ -53,19 +62,203 @@ class SignInPageState extends State<SignInPage> {
 
         prefs.setInt('user', user);
 
+        prefs.setString('emails', email);
+
         print('your token : ' + token);
 
-        Navigator.push(
+        print('your emails : ' + email);
+
+        Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
                 builder: (context) => DashboardPage(
                       token: token,
-                    )));
-
-        // Navigator.push(context, '/sign-in');
+                    )),
+            (route) => false);
       } else {
+        isLoading = false;
         print(response.body);
       }
+    }
+  }
+
+  Widget imteLogo() {
+    return Container(
+      margin: EdgeInsets.only(top: 0),
+      height: 200,
+      width: 200,
+      decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/image/logo.png'),
+            fit: BoxFit.fill,
+          ),
+          borderRadius: BorderRadius.circular(20)),
+    );
+  }
+
+  Widget signInText() {
+    return Text(
+      'Sign In',
+      style: GoogleFonts.poppins(fontSize: 30, fontWeight: FontWeight.w600),
+    );
+  }
+
+  Widget email() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Email',
+              style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Color(0xff535353),
+                  fontWeight: FontWeight.w500),
+            ),
+            SizedBox(height: 5),
+            TextFormField(
+              controller: emailController,
+              decoration: InputDecoration(
+                hintStyle: GoogleFonts.poppins(
+                    color: Color(0xff979797), fontWeight: FontWeight.w500),
+                hintText: 'Email Address',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              validator: (text) {
+                if (text == null || text.isEmpty) {
+                  return 'Can\'t be empty';
+                }
+                if (text.length < 4) {
+                  return 'Too short';
+                }
+                return null;
+              },
+            )
+          ]),
+    );
+  }
+
+  Widget password() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Password',
+              style: GoogleFonts.poppins(
+                  fontSize: 16,
+                  color: Color(0xff535353),
+                  fontWeight: FontWeight.w500),
+            ),
+            SizedBox(height: 5),
+            TextFormField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                hintStyle: GoogleFonts.poppins(
+                    color: Color(0xff979797), fontWeight: FontWeight.w500),
+                hintText: 'Password',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              validator: (text) {
+                if (text == null || text.isEmpty) {
+                  return 'Can\'t be empty';
+                }
+                if (text.length < 4) {
+                  return 'Too short';
+                }
+                return null;
+              },
+            )
+          ]),
+    );
+  }
+
+  Widget signInButton() {
+    return Container(
+        padding: EdgeInsets.symmetric(horizontal: 10),
+        margin: EdgeInsets.only(top: 20),
+        width: MediaQuery.of(context).size.width * 1,
+        height: MediaQuery.of(context).size.height * 0.065,
+        child: TextButton(
+          onPressed: () {
+            checkingField();
+          },
+          style: TextButton.styleFrom(
+              backgroundColor: Color(0xff1F98A8),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12))),
+          child: Text(
+            'Sign In ',
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              color: Colors.white,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ));
+  }
+
+  Widget loadingButton() {
+    return Container(
+        margin: EdgeInsets.only(top: 20),
+        width: MediaQuery.of(context).size.width * 0.8,
+        height: MediaQuery.of(context).size.height * 0.065,
+        child: TextButton(
+          onPressed: () {
+            checkingField();
+          },
+          style: TextButton.styleFrom(
+              backgroundColor: Colors.grey,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12))),
+          child: CircularProgressIndicator(
+            color: Colors.white,
+          ),
+        ));
+  }
+
+  Widget signUpNavigation() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Didn't have any Account yet? ",
+            style: GoogleFonts.poppins(fontSize: 12)),
+        GestureDetector(
+          child: Text('Sign Up',
+              style:
+                  GoogleFonts.poppins(fontSize: 12, color: Color(0xff1F98A8))),
+          onTap: () {
+            Navigator.pushNamed(context, '/sign-up');
+          },
+        )
+      ],
+    );
+  }
+
+  checkingField() {
+    if (emailController.text == "" || passwordController.text == "") {
+      var snackBar = SnackBar(content: Text("There's still empty"));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      isLoading = true;
+      Timer(Duration(seconds: 3), () {
+        signIn(emailController.text, passwordController.text);
+      });
     }
   }
 
@@ -82,139 +275,35 @@ class SignInPageState extends State<SignInPage> {
             children: [
               Column(
                 children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 0),
-                    height: 200,
-                    width: 200,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: AssetImage('assets/image/logo.png'),
-                          fit: BoxFit.fill,
-                        ),
-                        borderRadius: BorderRadius.circular(20)),
-                  ),
+                  imteLogo(),
                   SizedBox(height: 2),
-                  Text(
-                    'Sign In',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                  ),
-                  SizedBox(height: 32),
-
-                  // ! email
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                            color: Color.fromARGB(174, 143, 143, 143))),
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
                     child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Email',
-                            style: TextStyle(fontSize: 14),
+                      children: [
+                        signInText(),
+                        SizedBox(height: 32),
+                        Container(
+                          child: Column(
+                            children: [
+                              email(),
+                              SizedBox(height: 20),
+                              password(),
+                              (isLoading == false)
+                                  ? signInButton()
+                                  : loadingButton(),
+                              SizedBox(height: 10),
+                              signUpNavigation(),
+                            ],
                           ),
-                          SizedBox(height: 6),
-                          TextFormField(
-                            controller: emailController,
-                            decoration: InputDecoration(
-                              hintText: 'Email Address',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                            ),
-                            validator: (text) {
-                              if (text == null || text.isEmpty) {
-                                return 'Can\'t be empty';
-                              }
-                              if (text.length < 4) {
-                                return 'Too short';
-                              }
-                              return null;
-                            },
-                          )
-                        ]),
+                        )
+                      ],
+                    ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
-
-                  // ! password
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Password',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          SizedBox(height: 6),
-                          TextFormField(
-                            controller: passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              hintText: 'Password',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(18),
-                              ),
-                            ),
-                            validator: (text) {
-                              if (text == null || text.isEmpty) {
-                                return 'Can\'t be empty';
-                              }
-                              if (text.length < 4) {
-                                return 'Too short';
-                              }
-                              return null;
-                            },
-                          )
-                        ]),
-                  ),
-
-                  // ! button
-                  Container(
-                      margin: EdgeInsets.only(top: 20),
-                      width: 310,
-                      height: 55,
-                      child: TextButton(
-                        onPressed: () {
-                          signIn(emailController.text, passwordController.text);
-                        },
-                        style: TextButton.styleFrom(
-                            backgroundColor: kBlueColor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(17))),
-                        child: Text(
-                          'Sign In ',
-                          style: TextStyle(
-                              fontSize: 18,
-                              color: Color.fromARGB(249, 255, 255, 255)),
-                        ),
-                      )),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('Tidak punya akun? '),
-                      GestureDetector(
-                        child: Text(
-                          'Sign Up',
-                          style: TextStyle(
-                              color: Color.fromARGB(248, 63, 172, 223)),
-                        ),
-                        onTap: () {
-                          Navigator.pushNamed(context, '/sign-up');
-                        },
-                      )
-                    ],
-                  )
                 ],
               )
             ],

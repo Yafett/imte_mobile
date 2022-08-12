@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:imte_mobile/models/History.dart';
 import 'package:imte_mobile/widget/history-card.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../widget/gradient-text.dart';
 
@@ -11,253 +16,350 @@ class HistoryPage extends StatefulWidget {
   State<HistoryPage> createState() => _HistoryPageState();
 }
 
-Widget listBox() {
-  return Container(
-    child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-      Container(
-        margin: EdgeInsets.only(top: 10),
-        height: 100,
-        width: 100,
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1), //color of shadow
-                spreadRadius: 5, //spread radius
-                blurRadius: 10, // blur radius
-                offset: Offset(0, 2),
-              ),
-            ]),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '3.52',
-              style: GoogleFonts.poppins(
-                fontSize: 30,
-                color: Color(0xff4CAF50),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            Text(
-              'Great!',
-              style: GoogleFonts.poppins(
-                fontSize: 16,
-                color: Color(0xff4CAF50),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-      Container(
-        padding: EdgeInsets.all(10),
-        height: 100,
-        width: 230,
-        margin: EdgeInsets.only(left: 5),
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1), //color of shadow
-                spreadRadius: 5, //spread radius
-                blurRadius: 10, // blur radius
-                offset: Offset(0, 2),
-              ),
-            ]),
-        child: Row(children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 5),
-                    child: Icon(
-                      Icons.watch_later_outlined,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      size: 18,
-                    ),
-                  ),
-                  Text(
-                    'Period 1 | 2022',
-                    style: GoogleFonts.poppins(fontSize: 14),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 5),
-                    child: Icon(
-                      Icons.person_outline,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      size: 18,
-                    ),
-                  ),
-                  Text(
-                    'Teacher One',
-                    style: GoogleFonts.poppins(fontSize: 14),
-                  ),
-                ],
-              ),
-              Row(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(right: 5),
-                    child: Icon(
-                      Icons.calendar_month_outlined,
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      size: 18,
-                    ),
-                  ),
-                  Text(
-                    '12 June 2022',
-                    style: GoogleFonts.poppins(fontSize: 14),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          VerticalDivider(
-            color: Colors.grey,
-            thickness: 1,
-            indent: 0,
-            endIndent: 0,
-            width: 25,
-          ),
-          Column(
-            children: [
-              Container(
-                margin: EdgeInsets.only(bottom: 5),
-                height: 50,
-                width: 50,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/image/1.png'),
-                      fit: BoxFit.fill,
-                    ),
-                    borderRadius: BorderRadius.circular(20)),
-              ),
-              GradientText(
-                'JC - Classical',
-                style: const TextStyle(
-                    fontSize: 14, overflow: TextOverflow.ellipsis),
-                gradient: LinearGradient(colors: [
-                  Color(0xff44C0CB),
-                  Color(0xff3F6BB2),
-                ]),
-              ),
-            ],
-          ),
-        ]),
-      ),
-    ]),
-  );
-}
-
 class _HistoryPageState extends State<HistoryPage> {
+  var listHistory = [];
+  var listPeriod = [];
+  var listTeacher = [];
+  var listGrade = [];
+  var listMajor = [];
+
+  bool isLoading = true;
+
+  // ! mendapatkan data history
+  getHistory() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    int? user = prefs.getInt('user');
+    String API_URL = 'https://adm.imte.education/api/enroll/show';
+
+    final response = await http.post(Uri.parse(API_URL), headers: {
+      'Accept': 'application/json',
+    }, body: {
+      // 'tab_user_id': user.toString(),
+      'tab_user_id': '1482',
+    });
+
+    final data = await json.decode(response.body);
+
+    if (data.length > 0) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+
+    for (var i = 0; i < data.length; i++) {
+      listHistory.add(History.fromJson(data[i]));
+      listPeriod.add(Period.fromJson(data[i]['period']));
+      listTeacher.add(Teacher.fromJson(data[i]['teacher']));
+      listGrade.add(Grade.fromJson(data[i]['grade']));
+      listMajor.add(Major.fromJson(data[i]['major']));
+      var itemHistory = listHistory[i];
+      var testNumber = 1;
+      if (testNumber < 4 && testNumber >= 3.51) {
+        print('Exemplary');
+      } else if (testNumber <= 3.5 && testNumber >= 3.01) {
+        print('Advancing');
+      } else if (testNumber <= 3 && testNumber >= 2.01) {
+        print('Developing');
+      } else if (testNumber <= 2 && testNumber >= 1) {
+        print('Beginning');
+      } else {
+        print('Not Yet');
+      }
+      print(testNumber);
+    }
+  }
+
+  cekResult(var result) async {
+    if (result == 'Exemplary') {
+      Color.fromARGB(255, 218, 201, 43);
+    } else if (result == 'Advancing') {
+      Color.fromARGB(255, 218, 201, 43);
+    } else if (result == 'Developing') {
+      Color.fromARGB(255, 218, 201, 43);
+    } else if (result == 'Beginning') {
+      Color.fromARGB(255, 218, 201, 43);
+    } else {
+      Color.fromARGB(255, 218, 201, 43);
+    }
+  }
+
+  // ! membuat widget listview
+  Widget buildListview(index) {
+    var itemHistory = listHistory[index];
+    var itemPeriod = listPeriod[index];
+    var itemTeacher = listTeacher[index];
+    var itemGrade = listGrade[index];
+    var itemMajor = listMajor[index];
+    return Container(
+      margin: EdgeInsets.only(top: 10),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        Container(
+          height: MediaQuery.of(context).size.width * 0.3,
+          width: MediaQuery.of(context).size.width * 0.3,
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1), //color of shadow
+                  spreadRadius: 5, //spread radius
+                  blurRadius: 10, // blur radius
+                  offset: Offset(0, 2),
+                ),
+              ]),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (itemHistory.result.toString() == 'null')
+                Text(
+                  '0',
+                  style: GoogleFonts.poppins(
+                    fontSize: 30,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              Text(
+                'Not Yet',
+                style: GoogleFonts.poppins(
+                  fontSize: 20,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: EdgeInsets.all(10),
+          height: MediaQuery.of(context).size.width * 0.3,
+          width: MediaQuery.of(context).size.width * 0.6,
+          margin: EdgeInsets.only(left: 5),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1), //color of shadow
+                  spreadRadius: 5, //spread radius
+                  blurRadius: 10, // blur radius
+                  offset: Offset(0, 2),
+                ),
+              ]),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          itemPeriod.periodName,
+                          style: GoogleFonts.poppins(
+                            color: Color(0xff505050),
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width * 0.3,
+                          child: Text(
+                            itemTeacher.firstName + itemTeacher.lastName,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12.0,
+                              color: new Color(0xFF212121),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (itemMajor.major.toString() == 'Piano')
+                      Container(
+                        margin: EdgeInsets.only(bottom: 5),
+                        height: 50,
+                        width: 50,
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage('assets/image/1.png'),
+                              fit: BoxFit.fill,
+                            ),
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '21 Juni 2022',
+                      style: GoogleFonts.poppins(),
+                    ),
+                    Text(
+                      itemGrade.grade,
+                      style: GoogleFonts.poppins(),
+                    ),
+                  ],
+                )
+              ]),
+        ),
+      ]),
+    );
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getHistory();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Container(
-            padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.005),
-            child: Column(
+        body: SafeArea(child: LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth > 350) {
+        return Container(
+          padding: EdgeInsets.all(15),
+          child: Column(children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.all(10),
-                      child: Text(
-                        'History',
-                        style: GoogleFonts.poppins(
-                          color: Color.fromARGB(255, 2, 1, 1),
-                          fontSize: 30,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: EdgeInsets.all(0),
-                  height: MediaQuery.of(context).size.height * 0.76,
-                  child: ListView(
-                    padding: EdgeInsets.all(0),
-                    children: [
-                      HistoryCard(
-                        textScore: 3.52.toString(),
-                        textResult: 'Great!',
-                        textPeriod: 'Period1 1 | 2021',
-                        textDate: '12 June 2021',
-                        image: AssetImage('assets/image/1.png'),
-                        textGrade: 'JC - Classical',
-                        textTeacher: 'Mr. Benny',
-                      ),
-                      HistoryCard(
-                        textScore: 2.11.toString(),
-                        textResult: 'Try Again!',
-                        textPeriod: 'Period1 1 | 2021',
-                        textDate: '31 June 2021',
-                        image: AssetImage('assets/image/3.png'),
-                        textGrade: 'CFK 2',
-                        textTeacher: 'Mr. Roulette',
-                      ),
-                      HistoryCard(
-                        textScore: 4.toString(),
-                        textResult: 'Impossible',
-                        textPeriod: 'Period1 2 | 2022',
-                        textDate: '14 July 2022',
-                        image: AssetImage('assets/image/2.png'),
-                        textGrade: 'CFK 1',
-                        textTeacher: 'Mrs. Lina',
-                      ),
-                      HistoryCard(
-                        textScore: 3.52.toString(),
-                        textResult: 'Great!',
-                        textPeriod: 'Period1 1 | 2021',
-                        textDate: '12 June 2021',
-                        image: AssetImage('assets/image/4.png'),
-                        textGrade: 'JC - Classical',
-                        textTeacher: 'Mr. Benny',
-                      ),
-                      HistoryCard(
-                        textScore: 2.11.toString(),
-                        textResult: 'Try Again!',
-                        textPeriod: 'Period1 1 | 2021',
-                        textDate: '31 June 2021',
-                        image: AssetImage('assets/image/5.png'),
-                        textGrade: 'CFK 2',
-                        textTeacher: 'Mr. Roulette',
-                      ),
-                      HistoryCard(
-                        textScore: 4.toString(),
-                        textResult: 'Impossible',
-                        textPeriod: 'Period1 2 | 2022',
-                        textDate: '14 July 2022',
-                        image: AssetImage('assets/image/6.png'),
-                        textGrade: 'CFK 1',
-                        textTeacher: 'Mrs. Lina',
-                      ),
-                      HistoryCard(
-                        textScore: 4.toString(),
-                        textResult: 'Impossible',
-                        textPeriod: 'Period1 2 | 2022',
-                        textDate: '14 July 2022',
-                        image: AssetImage('assets/image/7.png'),
-                        textGrade: 'CFK 1',
-                        textTeacher: 'Mrs. Lina',
-                      ),
-                    ],
+                Text(
+                  'History',
+                  style: GoogleFonts.poppins(
+                    color: Color.fromARGB(255, 19, 19, 19),
+                    fontSize: 34,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
-            )),
-      ),
-    );
+            ),
+            Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  // border: Border.all(color: Colors.grey),
+                ),
+                height: MediaQuery.of(context).size.height - 200,
+                child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                            color: Color.fromARGB(255, 200, 200, 200))),
+                    width: MediaQuery.of(context).size.width,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [Image.asset('assets/image/404.png')],
+                    )))
+
+            //  (isLoading == true)
+            //     ? Container(
+            //         padding: EdgeInsets.all(100),
+            //         width: MediaQuery.of(context).size.width,
+            //         child: Text('No Data'))
+            //     : ListView.builder(
+            //         itemCount: listHistory.length,
+            //         itemBuilder: (BuildContext context, int index) {
+            //           return buildListview(index);
+            //         })),
+          ]),
+        );
+      }
+
+      // ! Small screens
+      return Container(
+        padding: EdgeInsets.all(15),
+        child: Column(children: [
+          Text(
+            'History',
+            style: GoogleFonts.poppins(
+              color: Color.fromARGB(255, 2, 1, 1),
+              fontSize: 30,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Container(
+            height: MediaQuery.of(context).size.height - 200,
+            child: ListView(
+              // reverse: true,
+              padding: EdgeInsets.all(0),
+              children: [
+                HistoryCard(
+                  textColor: Colors.green,
+                  color: Colors.green,
+                  textScore: 3.52.toString(),
+                  textResult: 'Examplary!',
+                  textPeriod: 'Period 1 | 2021',
+                  textDate: '12 June 2021',
+                  image: AssetImage('assets/image/1.png'),
+                  textGrade: 'JC - Classical',
+                  textTeacher: 'Mr. Benny',
+                ),
+                HistoryCard(
+                  textColor: Colors.orange,
+                  color: Colors.orange,
+                  textScore: 2.11.toString(),
+                  textResult: 'Developing',
+                  textPeriod: 'Period 1 | 2021',
+                  textDate: '31 June 2021',
+                  image: AssetImage('assets/image/3.png'),
+                  textGrade: 'CFK 2',
+                  textTeacher: 'Mr. Roulette',
+                ),
+                HistoryCard(
+                  textColor: Colors.green,
+                  color: Colors.green,
+                  textScore: 4.toString(),
+                  textResult: 'Examplary',
+                  textPeriod: 'Period 2 | 2022',
+                  textDate: '14 July 2022',
+                  image: AssetImage('assets/image/2.png'),
+                  textGrade: 'CFK 1',
+                  textTeacher: 'Mrs. Lina',
+                ),
+                HistoryCard(
+                  textColor: Colors.red,
+                  color: Colors.red,
+                  textScore: 1.toString(),
+                  textResult: 'Beginning',
+                  textPeriod: 'Period 1 | 2021',
+                  textDate: '12 June 2021',
+                  image: AssetImage('assets/image/4.png'),
+                  textGrade: 'JC - Classical',
+                  textTeacher: 'Mr. Benny',
+                ),
+                HistoryCard(
+                  textColor: Color.fromARGB(255, 218, 201, 43),
+                  color: Color.fromARGB(255, 218, 201, 43),
+                  textScore: 3.11.toString(),
+                  textResult: 'Advancing!',
+                  textPeriod: 'Period 1 | 2021',
+                  textDate: '31 June 2021',
+                  image: AssetImage('assets/image/5.png'),
+                  textGrade: 'CFK 2',
+                  textTeacher: 'Mr. Roulette',
+                ),
+                HistoryCard(
+                  textColor: Colors.grey,
+                  color: Colors.grey,
+                  textScore: 0.toString(),
+                  textResult: 'Not Yet',
+                  textPeriod: 'Period 2 | 2022',
+                  textDate: '14 July 2022',
+                  image: AssetImage('assets/image/6.png'),
+                  textGrade: 'CFK 1',
+                  textTeacher: 'Mrs. Lina',
+                ),
+              ],
+            ),
+          ),
+        ]),
+      );
+    })));
   }
 }

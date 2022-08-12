@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:imte_mobile/pages/course.dart';
+import 'package:imte_mobile/pages/exit.dart';
 import 'package:imte_mobile/pages/history.dart';
 import 'package:imte_mobile/pages/profile.dart';
+import 'package:imte_mobile/pages/test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'enroll.dart';
@@ -15,14 +17,12 @@ class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key, required this.token}) : super(key: key);
 
   @override
-  // _DashboardPageStat  e createState() => _DashboardPageState();
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
 class _DashboardPageState extends State<DashboardPage> {
   int selectedPage = 0;
   String emailController = '';
-  // String token = widget.token;
 
   @override
   void initState() {
@@ -30,9 +30,10 @@ class _DashboardPageState extends State<DashboardPage> {
     getToken();
   }
 
+  // ! mendapatkan token dari sharedPreferences
   getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    
+
     prefs.setString('tokenz', widget.token);
 
     String tokenz = prefs.getString('tokenz').toString();
@@ -40,11 +41,15 @@ class _DashboardPageState extends State<DashboardPage> {
     print('token preferences : ' + tokenz);
   }
 
+  // ! mengatur navigasi pada appbar
   final _pageOptions = [
     EnrollPage(),
     NewsPage(),
-    ProfilePage(),
+    ProfilePage(
+      enableBack: 'false',
+    ),
     HistoryPage(),
+    ExitPage(),
   ];
 
   @override
@@ -63,6 +68,10 @@ class _DashboardPageState extends State<DashboardPage> {
               BottomNavigationBarItem(
                 label: '',
                 icon: Icon(Icons.history_outlined, size: 30),
+              ),
+              BottomNavigationBarItem(
+                label: '',
+                icon: Icon(Icons.exit_to_app_outlined, size: 30),
               ),
             ],
             selectedItemColor: Color.fromARGB(255, 228, 65, 65),

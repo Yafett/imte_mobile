@@ -24,10 +24,11 @@ class enrollNewsCard extends StatelessWidget {
           Row(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(10), // Image border
+                borderRadius: BorderRadius.circular(12), // Image border
                 child: SizedBox.fromSize(
-                  size: Size.fromRadius(MediaQuery.of(context).size.height *
-                      0.075), // Image radius
+                  size: Size.fromRadius(
+                    MediaQuery.of(context).size.width * 0.15,
+                  ), // Image radius
                   child: image,
                 ),
               ),
@@ -42,7 +43,7 @@ class enrollNewsCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         style: new TextStyle(
-                          fontSize: 18.0,
+                          fontSize: 16.0,
                           fontFamily: 'Roboto',
                           color: new Color(0xFF212121),
                           fontWeight: FontWeight.bold,
@@ -60,7 +61,7 @@ class enrollNewsCard extends StatelessWidget {
                               Icon(
                                 Icons.perm_identity,
                                 color: Color(0xff9D9D9D),
-                                size: 18.0,
+                                size: 16.0,
                               ),
                               SizedBox(
                                 width: 3,
@@ -79,7 +80,7 @@ class enrollNewsCard extends StatelessWidget {
                               Icon(
                                 Icons.watch_later_outlined,
                                 color: Color(0xff9D9D9D),
-                                size: 18.0,
+                                size: 16.0,
                               ),
                               SizedBox(
                                 width: 3,
