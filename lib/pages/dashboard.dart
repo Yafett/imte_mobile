@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:imte_mobile/pages/course.dart';
-import 'package:imte_mobile/pages/exit.dart';
+import 'package:flutter/services.dart';
 import 'package:imte_mobile/pages/history.dart';
 import 'package:imte_mobile/pages/profile.dart';
-import 'package:imte_mobile/pages/test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'enroll.dart';
@@ -30,7 +26,7 @@ class _DashboardPageState extends State<DashboardPage> {
     getToken();
   }
 
-  // ! mendapatkan token dari sharedPreferences
+  // ! get token from sharedPreferences
   getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -41,7 +37,42 @@ class _DashboardPageState extends State<DashboardPage> {
     print('token preferences : ' + tokenz);
   }
 
-  // ! mengatur navigasi pada appbar
+  // ! modal exit
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Nope"),
+      onPressed: () {
+        Navigator.pop(context);
+      },
+    );
+    Widget continueButton = TextButton(
+      child: Text("Sure"),
+      onPressed: () {
+        SystemNavigator.pop();
+      },
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Alert"),
+      content: Text("Are you sure want to leave this Page?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  // ! appbar navigation
   final _pageOptions = [
     EnrollPage(),
     NewsPage(),
@@ -49,7 +80,6 @@ class _DashboardPageState extends State<DashboardPage> {
       enableBack: 'false',
     ),
     HistoryPage(),
-    ExitPage(),
   ];
 
   @override
@@ -71,7 +101,11 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               BottomNavigationBarItem(
                 label: '',
-                icon: Icon(Icons.exit_to_app_outlined, size: 30),
+                icon: GestureDetector(
+                    onTap: () {
+                      showAlertDialog(context);
+                    },
+                    child: Icon(Icons.exit_to_app_outlined, size: 30)),
               ),
             ],
             selectedItemColor: Color.fromARGB(255, 228, 65, 65),

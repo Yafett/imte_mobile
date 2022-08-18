@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:imte_mobile/pages/news_detail.dart';
+import 'package:imte_mobile/models/News.dart';
+import 'package:imte_mobile/pages/news-detail.dart';
 import 'package:imte_mobile/widget/history-card.dart';
 import 'package:imte_mobile/widget/news-card.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../widget/gradient-text.dart';
 
@@ -14,92 +19,50 @@ class NewsPage extends StatefulWidget {
 }
 
 class _NewsPageState extends State<NewsPage> {
-  newsPart() {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => NewsDeatilPage()));
-          },
-          child: Container(
-              padding: EdgeInsets.all(20),
-              height: MediaQuery.of(context).size.height * 0.5,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/image/image.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                  borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(12),
-                      bottomRight: Radius.circular(12))),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    "'V.I.P Imunization' fot the powerful and Their Cronies Ratles South America",
-                    style: GoogleFonts.poppins(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      Text('see more',
-                          style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white)),
-                      Icon(
-                        Icons.arrow_right,
-                        color: Colors.white,
-                      )
-                    ],
-                  ),
-                ],
-              )),
-        ),
-        Container(
-          height: MediaQuery.of(context).size.height,
-          padding: EdgeInsets.all(15),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              newsCard(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/news-detail');
-                  },
-                  title:
-                      "PASS OVER, SOMETHING ROTTEN & More - Check Out This Week's Top Stage Mags",
-                  user: 'Mr. John',
-                  date: '21 - 02 - 2021',
-                  image: Image.network(
-                    'https://static-cse.canva.com/blob/688642/TealandYellowChurchIconDotsCharityEventFundraisingPoster.jpg',
-                    fit: BoxFit.fill,
-                  )),
-              newsCard(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/news-detail');
-                  },
-                  title:
-                      "PASS OVER, SOMETHING ROTTEN & More - Check Out This Week's Top Stage Mags",
-                  user: 'Mr. John',
-                  date: '21 - 02 - 2021',
-                  image: Image.network(
-                    'https://static-cse.canva.com/blob/688642/TealandYellowChurchIconDotsCharityEventFundraisingPoster.jpg',
-                    fit: BoxFit.fill,
-                  )),
-            ],
-          ),
-        )
-      ],
-    );
+  var listNews = [];
+
+  // ! mengambil berita
+  String lastId = '';
+  String lastDate = '';
+  String lastUser = '';
+  String lastTitle = '';
+  String lastImage = '';
+  String lastContent = '';
+  String tests = '';
+  bool loading = true;
+
+  // ! get News Data
+  dataImage() async {
+    String API_URL = 'https://adm.imte.education/api/blog/showAll';
+
+    final response = await http.get(Uri.parse(API_URL));
+
+    final data = await json.decode(response.body);
+
+    for (var a = 0; a < data.length; a++) {
+      listNews.add(News.fromJson(data[a]));
+      var itemNews = listNews[a];
+
+      setState(() {
+        lastId = itemNews.id.toString();
+        lastTitle = itemNews.title.toString();
+        lastUser = itemNews.firstName.toString();
+        lastDate = itemNews.createdAt;
+        lastImage = itemNews.filename.toString();
+        lastContent = itemNews.content.toString();
+      });
+      print(itemNews.createdAt);
+    }
+    DateTime dt = DateTime.parse(lastDate);
+
+    print(DateFormat.yMMMd().format(dt));
+
+    setState(() {
+      loading = false;
+    });
   }
 
+  // ! Empty Page ( when no news Detected )
   emptyPart() {
     return Container(
       width: MediaQuery.of(context).size.width,
@@ -121,95 +84,141 @@ class _NewsPageState extends State<NewsPage> {
     );
   }
 
+  // !  News List
+  buildListview(index) {
+    var itemNews = listNews[index];
+    DateTime dt = DateTime.parse(itemNews.createdAt);
+
+    return newsCard(
+      title: itemNews.title,
+      user: itemNews.firstName,
+      date: DateFormat.yMMMd().format(dt),
+      image: Image.network(
+        'https://adm.imte.education/img/BlogImages/' + itemNews.filename,
+        fit: BoxFit.fill,
+      ),
+      newsDate: DateFormat.yMMMd().format(dt),
+      newsTitle: itemNews.title,
+      newsUser: itemNews.firstName,
+      newsImage:
+          'https://adm.imte.education/img/BlogImages/' + itemNews.filename,
+      newsContent: itemNews.content,
+    );
+  }
+
+  // ! NewsPage ( when news detected)
+  newsPart() {
+    DateTime dt = DateTime.parse(lastDate);
+
+    return Column(children: [
+      // ! NewsPage Header
+      GestureDetector(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => NewsDetailPage(
+                        date: DateFormat.yMMMd().format(dt),
+                        title: lastTitle,
+                        user: lastUser,
+                        newsImage:
+                            'https://adm.imte.education/img/BlogImages/' +
+                                lastImage,
+                        newsTitle: lastTitle,
+                        newsDate: DateFormat.yMMMd().format(dt),
+                        newsUser: lastUser,
+                        newsContent: lastContent,
+                      )));
+        },
+        child: Container(
+            padding: EdgeInsets.all(15),
+            height: MediaQuery.of(context).size.height * 0.5 - 60,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(12),
+                  bottomRight: Radius.circular(12)),
+              color: const Color(0xff7c94b6),
+              image: new DecorationImage(
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                    Color.fromARGB(255, 0, 0, 0).withOpacity(0.7),
+                    BlendMode.darken),
+                image: new NetworkImage(
+                  'https://adm.imte.education/img/BlogImages/' +
+                      lastImage.toString(),
+                ),
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  lastTitle,
+                  style: GoogleFonts.poppins(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    Text('see more',
+                        style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white)),
+                    Icon(
+                      Icons.arrow_right,
+                      color: Colors.white,
+                    )
+                  ],
+                ),
+              ],
+            )),
+      ),
+
+      // ! NewsPage body
+      Container(
+        height: MediaQuery.of(context).size.height * 0.5,
+        padding: EdgeInsets.all(15),
+        child: ListView.builder(
+            padding: EdgeInsets.all(0),
+            itemCount: listNews.length,
+            itemBuilder: (BuildContext context, int index) {
+              return buildListview(index);
+            }),
+      )
+    ]);
+  }
+
+  // ! membuat loading bar
+  Widget loadingBar() {
+    return Container(
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            strokeWidth: 5,
+            color: Color.fromARGB(255, 70, 111, 234),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    dataImage();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: SafeArea(child: SingleChildScrollView(
-      child: LayoutBuilder(builder: (context, constraints) {
-        if (constraints.maxWidth > 350) {
-          return emptyPart();
-        }
-        // ! Small screens
-        return Column(
-          children: [
-            GestureDetector(
-              onTap: () {},
-              child: Container(
-                  padding: EdgeInsets.all(20),
-                  height: MediaQuery.of(context).size.height * 0.5,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage('assets/image/image.jpg'),
-                        fit: BoxFit.cover,
-                      ),
-                      borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(12),
-                          bottomRight: Radius.circular(12))),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        "'V.I.P Imunization' fot the powerful and Their Cronies Ratles South America",
-                        style: GoogleFonts.poppins(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white),
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        children: [
-                          Text('see more',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white)),
-                          Icon(
-                            Icons.arrow_right,
-                            color: Colors.white,
-                          )
-                        ],
-                      ),
-                    ],
-                  )),
-            ),
-            Container(
-              height: MediaQuery.of(context).size.height,
-              padding: EdgeInsets.all(10),
-              child: ListView(
-                padding: EdgeInsets.zero,
-                children: [
-                  newsCard(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/news-detail');
-                      },
-                      title:
-                          "PASS OVER, SOMETHING ROTTEN & More - Check Out This Week's Top Stage Mags",
-                      user: 'Mr. John',
-                      date: '21 - 02 - 2021',
-                      image: Image.network(
-                        'https://static-cse.canva.com/blob/688642/TealandYellowChurchIconDotsCharityEventFundraisingPoster.jpg',
-                        fit: BoxFit.fill,
-                      )),
-                  newsCard(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/news-detail');
-                      },
-                      title:
-                          "PASS OVER, SOMETHING ROTTEN & More - Check Out This Week's Top Stage Mags",
-                      user: 'Mr. John',
-                      date: '21 - 02 - 2021',
-                      image: Image.network(
-                        'https://static-cse.canva.com/blob/688642/TealandYellowChurchIconDotsCharityEventFundraisingPoster.jpg',
-                        fit: BoxFit.fill,
-                      )),
-                ],
-              ),
-            )
-          ],
-        );
-      }),
-    )));
+    return Scaffold(body: (loading == true) ? loadingBar() : newsPart());
   }
 }

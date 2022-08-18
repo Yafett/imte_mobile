@@ -35,6 +35,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   int user = 1;
 
   var profile;
+  var photoName = '';
   bool loading = true;
 
   String dfirst = '';
@@ -56,7 +57,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     print(checkBack());
   }
 
-  var photoName = '';
+  // ! get Data from Camera
   getFromCamera() async {
     final ImagePicker _picker = ImagePicker();
 
@@ -67,6 +68,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     });
   }
 
+  // ! get data Profile
   dataProfile() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -110,6 +112,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     loading = false;
   }
 
+  // ! edit data Profile
   editProfile() async {
     Map data = {
       "first_name": firstnameController.text,
@@ -166,11 +169,12 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     print(data);
   }
 
-  // ! fungsi, apakah perlu menampilkan backButton atau tidak
+  // ! back button !isExist
   checkBack() {
     return (widget.enableBack == 'true') ? 'true' : 'false';
   }
 
+  // ! backButton
   Widget backButton() {
     return Row(
       children: [
@@ -185,6 +189,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     );
   }
 
+  // ! form Part
   Widget photoProfile() {
     return GestureDetector(
       onTap: () {
@@ -562,7 +567,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       ]),
     );
   }
+  // ! form Part end
 
+  // ! loading Bar
   Widget loadingBar() {
     return Container(
       height: MediaQuery.of(context).size.height,
@@ -580,6 +587,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     );
   }
 
+  // ! form
   Widget form() {
     return Column(
       children: [

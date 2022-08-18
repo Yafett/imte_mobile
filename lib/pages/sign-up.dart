@@ -26,9 +26,12 @@ class SignUpPageState extends State<SignUpPage> {
       new TextEditingController();
   TextEditingController mobileController = new TextEditingController();
 
+  var unitval;
+  List unitList = [];
   bool isLoading = false;
+  String? _valFriends;
 
-  // ! fungsi register 
+  // ! sing up func
   signUp(String unit, String firstName, String lastName, String email,
       String password, String passwordConfirmation, String mobile) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -59,8 +62,6 @@ class SignUpPageState extends State<SignUpPage> {
       var snackBar = SnackBar(content: Text(jsonData['errors'].toString()));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-
-    print(data);
   }
 
   // ! textField validator
@@ -89,9 +90,7 @@ class SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  // ! mendapatkan data unit
-  var unitval;
-  List unitList = [];
+  // ! get data Unit
   dataUnit() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -107,27 +106,6 @@ class SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  List _unit = [
-    "Alam Sutra",
-    "Gang Pinggir",
-    "Madiun",
-    "Puri Anjasmoro",
-    "Solo",
-    "Jogjakarta",
-    "Kutoarjo",
-    "Kudus",
-    "Purwodadi",
-  ];
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    dataUnit();
-  }
-
-  String? _valFriends;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,6 +116,7 @@ class SignUpPageState extends State<SignUpPage> {
           width: double.infinity,
           color: Color(0xffFFFFFF),
           child: Column(
+            // ! header
             children: [
               Row(
                 children: [
@@ -421,7 +400,7 @@ class SignUpPageState extends State<SignUpPage> {
                   ),
                   SizedBox(height: 30),
 
-                  // ! button 
+                  // ! button
                   Container(
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height * 0.07,

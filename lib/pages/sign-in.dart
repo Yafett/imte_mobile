@@ -24,14 +24,14 @@ class SignInPageState extends State<SignInPage> {
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
 
-  bool isLoading = false;
+  bool _isLoading = false;
 
-  encrypting() {
-    final key = encrypt.Key.fromLength(32);
-    final iv = encrypt.IV.fromLength(16);
-    final encrypter = encrypt.Encrypter(encrypt.AES(key));
+  @override
+  void initState() {
+    super.initState();
   }
 
+  // ! sign in func
   signIn(String email, String password) async {
     Map data = {
       'email': email,
@@ -51,37 +51,52 @@ class SignInPageState extends State<SignInPage> {
         body: data);
     var result = response.body;
 
-    if (emailController.text.isEmpty) {
-      print('empty');
+    print(result.toString());
+
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      token = jsonData['token'];
+      user = jsonData['user'];
+
+      prefs.setInt('user', user);
+
+      prefs.setString('emails', email);
+
+      print('your token : ' + token);
+
+      print('your email : ' + email);
+
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => DashboardPage(
+                    token: token,
+                  )),
+          (route) => false);
     } else {
-      if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body);
-
-        token = jsonData['token'];
-        user = jsonData['user'];
-
-        prefs.setInt('user', user);
-
-        prefs.setString('emails', email);
-
-        print('your token : ' + token);
-
-        print('your emails : ' + email);
-
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-                builder: (context) => DashboardPage(
-                      token: token,
-                    )),
-            (route) => false);
-      } else {
-        isLoading = false;
-        print(response.body);
-      }
+      var snackBar = SnackBar(content: Text('Wrong Data Input'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      setState(() {});
     }
   }
 
+  // ! loading indicator
+  void _startLoading() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Wait for 3 seconds
+    await Future.delayed(const Duration(seconds: 5));
+    checkingField();
+
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  // ! form part
   Widget imteLogo() {
     return Container(
       margin: EdgeInsets.only(top: 0),
@@ -187,7 +202,9 @@ class SignInPageState extends State<SignInPage> {
           ]),
     );
   }
+  // ! end form part
 
+  // ! signIn Button
   Widget signInButton() {
     return Container(
         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -213,25 +230,7 @@ class SignInPageState extends State<SignInPage> {
         ));
   }
 
-  Widget loadingButton() {
-    return Container(
-        margin: EdgeInsets.only(top: 20),
-        width: MediaQuery.of(context).size.width * 0.8,
-        height: MediaQuery.of(context).size.height * 0.065,
-        child: TextButton(
-          onPressed: () {
-            checkingField();
-          },
-          style: TextButton.styleFrom(
-              backgroundColor: Colors.grey,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12))),
-          child: CircularProgressIndicator(
-            color: Colors.white,
-          ),
-        ));
-  }
-
+  // ! button signup
   Widget signUpNavigation() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -250,13 +249,13 @@ class SignInPageState extends State<SignInPage> {
     );
   }
 
+  // ! empty field validator
   checkingField() {
     if (emailController.text == "" || passwordController.text == "") {
       var snackBar = SnackBar(content: Text("There's still empty"));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
-      isLoading = true;
-      Timer(Duration(seconds: 3), () {
+      Timer(Duration(seconds: 1), () {
         signIn(emailController.text, passwordController.text);
       });
     }
@@ -286,16 +285,41 @@ class SignInPageState extends State<SignInPage> {
                     child: Column(
                       children: [
                         signInText(),
-                        SizedBox(height: 32),
+                        SizedBox(height: 30),
                         Container(
                           child: Column(
                             children: [
                               email(),
-                              SizedBox(height: 20),
+                              SizedBox(height: 10),
                               password(),
-                              (isLoading == false)
-                                  ? signInButton()
-                                  : loadingButton(),
+                              InkWell(
+                                // onTap: _isLoading ? null : _startLoading,
+                                child: Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 10),
+                                    margin: EdgeInsets.only(top: 20),
+                                    width:
+                                        MediaQuery.of(context).size.width * 1,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.065,
+                                    child: TextButton(
+                                      onPressed:
+                                          _isLoading ? null : _startLoading,
+                                      style: TextButton.styleFrom(
+                                          backgroundColor: Color(0xff1F98A8),
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12))),
+                                      child: Text(
+                                        _isLoading ? 'Loading...' : 'Sign In',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    )),
+                              ),
                               SizedBox(height: 10),
                               signUpNavigation(),
                             ],

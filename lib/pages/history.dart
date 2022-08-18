@@ -25,7 +25,7 @@ class _HistoryPageState extends State<HistoryPage> {
 
   bool isLoading = true;
 
-  // ! mendapatkan data history
+  // ! get data history
   getHistory() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -70,6 +70,7 @@ class _HistoryPageState extends State<HistoryPage> {
     }
   }
 
+  // ! result Check
   cekResult(var result) async {
     if (result == 'Exemplary') {
       Color.fromARGB(255, 218, 201, 43);
@@ -84,7 +85,7 @@ class _HistoryPageState extends State<HistoryPage> {
     }
   }
 
-  // ! membuat widget listview
+  // ! history list
   Widget buildListview(index) {
     var itemHistory = listHistory[index];
     var itemPeriod = listPeriod[index];
@@ -214,7 +215,6 @@ class _HistoryPageState extends State<HistoryPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getHistory();
   }
@@ -256,17 +256,6 @@ class _HistoryPageState extends State<HistoryPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [Image.asset('assets/image/404.png')],
                     )))
-
-            //  (isLoading == true)
-            //     ? Container(
-            //         padding: EdgeInsets.all(100),
-            //         width: MediaQuery.of(context).size.width,
-            //         child: Text('No Data'))
-            //     : ListView.builder(
-            //         itemCount: listHistory.length,
-            //         itemBuilder: (BuildContext context, int index) {
-            //           return buildListview(index);
-            //         })),
           ]),
         );
       }

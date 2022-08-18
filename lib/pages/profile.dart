@@ -15,15 +15,10 @@ class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key, required this.enableBack}) : super(key: key);
 
   @override
-  // _ProfilePageStat  e createState() => _ProfilePageState();
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  int user = 1;
-
-  var profile;
-  // _ProfilePageState({required bool enableBack});
   bool loading = true;
 
   String dfirst = '';
@@ -38,19 +33,18 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   void initState() {
-    //you are not allowed to add async modifier to initState
-    // Future.delayed(Duration(seconds: 2), () async {});
     super.initState();
     dataProfile();
     checkBack();
     print(checkBack());
-    
   }
 
+  // ! enableBack !isExist
   checkBack() {
     return (widget.enableBack == 'true') ? 'true' : 'false';
   }
 
+  // ! get data Profile
   dataProfile() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -84,6 +78,7 @@ class _ProfilePageState extends State<ProfilePage> {
     loading = false;
   }
 
+  // ! back Button
   Widget backButton() {
     return Row(
       children: [
@@ -98,6 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // ! form Part
   Widget photoProfile() {
     return CircleAvatar(
       radius: 52,
@@ -431,7 +427,9 @@ class _ProfilePageState extends State<ProfilePage> {
       ]),
     );
   }
+  // ! end Form Part
 
+  // ! loading bar
   Widget loadingBar() {
     return Container(
       height: MediaQuery.of(context).size.height,
@@ -449,6 +447,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  // ! form
   Widget form() {
     return Column(
       children: [

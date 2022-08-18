@@ -46,6 +46,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   url_launcher: ^6.1.4
   flutter_barcode_scanner: ^2.0.0
+  flutter_html: ^3.0.0-alpha.5
 
 
 dev_dependencies:

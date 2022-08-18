@@ -7,6 +7,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:imte_mobile/models/History.dart';
+import 'package:imte_mobile/models/Profile.dart';
 import 'package:imte_mobile/pages/profile.dart';
 import 'package:imte_mobile/widget/enroll-card-small.dart';
 import 'package:imte_mobile/widget/enroll-card.dart';
@@ -16,6 +17,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/Gallery.dart';
+
 class EnrollPage extends StatefulWidget {
   const EnrollPage({Key? key}) : super(key: key);
 
@@ -23,6 +26,7 @@ class EnrollPage extends StatefulWidget {
   State<EnrollPage> createState() => _EnrollPageState();
 }
 
+// ! remove listview scroll glow
 class NoGlow extends ScrollBehavior {
   @override
   Widget buildViewportChrome(
@@ -32,28 +36,49 @@ class NoGlow extends ScrollBehavior {
 }
 
 class _EnrollPageState extends State<EnrollPage> {
-  String email = '';
-  String dfirst = '';
-  String dlast = '';
-  // String photoName = '';
-  String? _valFriends;
-  List<dynamic> teacher = [];
-  String? teacherVal;
-  List<dynamic> _dataProvince = [];
   XFile? imageFile;
+  String id = '';
+  String dlast = '';
+  String email = '';
+  String status = '';
+  String dfirst = '';
+  String statusEnroll = '';
+  String statusProfile = '';
+  String? teacherVal;
   bool isLoading = true;
+  bool isExist = false;
+  Map listTest = {};
+  List<Map> myList = <Map>[];
+  List gradeList = [];
+  List teacherList = [];
+  List instrumentList = [];
+  List<dynamic> teacher = [];
+  List<dynamic> _dataProvince = [];
+  Color warna = Color(0xff873190);
+  Color statusColor = Color(0xffFFFF);
+  Color statusBackground = Color(0xffFFFF);
+  var listProfile = [];
+  var result;
+  var imageSrc;
+  var gradeval;
   var teacherval;
   var instrumentval;
-  var gradeval;
   var dropdownValue;
-  List instrumentList = [];
-  List teacherList = [];
-  List gradeList = [];
+  var itemNum = '';
+  var photoName = '';
+  var activityStatus = '';
+  var listGrade = [];
+  var listMajor = [];
   var listEnroll = [];
   var listStatus = [];
   var listFormat = [];
   var listPeriod = [];
- 
+  var listNumber = [];
+  var listFeed = [];
+  var listTeacher = [];
+
+  // adm.imte.education/img/blogImage/
+
   // ! modal Enroll
   showSimpleCustomDialog(BuildContext context) async {
     String? dropdownValue;
@@ -255,21 +280,20 @@ class _EnrollPageState extends State<EnrollPage> {
         context: context, builder: (BuildContext context) => simpleDialog1);
   }
 
-  // ! background biru
-  Widget fluidContainer() {
-    return Container(
-      height: 150,
-      width: double.infinity,
-      decoration: BoxDecoration(
-          color: Color(0xff0DB1BF),
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(12),
-            bottomRight: Radius.circular(12),
-          )),
-    );
+  // ! get data status
+  dataStatus() async {
+    String API_URL = 'https://adm.imte.education/api/activity/getImteStatus';
+
+    final response = await http.get(Uri.parse(API_URL));
+
+    final data = await json.decode(response.body);
+
+    setState(() {
+      statusEnroll = data['status'];
+    });
   }
 
-  // ! mengambil data untuk nama dan email
+  // ! data profile
   dataProfile() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -288,16 +312,15 @@ class _EnrollPageState extends State<EnrollPage> {
     final data = await json.decode(response.body);
 
     setState(() {
+      id = data['profile'][0]['id'].toString();
       dfirst = data['profile'][0]['first_name'].toString();
       dlast = data['profile'][0]['last_name'].toString();
-    });
-
-    setState(() {
+      statusProfile = data['profile'][0]['status'].toString();
       email = prefs.getString("emails")!;
     });
   }
 
-  // ! mengambil data guru
+  // ! get data teacher
   dataTeacher() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -312,7 +335,7 @@ class _EnrollPageState extends State<EnrollPage> {
     }
   }
 
-  // ! mengambil data instrument
+  // ! get data instrument
   dataInstrument() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -327,7 +350,7 @@ class _EnrollPageState extends State<EnrollPage> {
     }
   }
 
-  // ! mengambil data grade
+  // ! get data grade
   dataGrade() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -344,8 +367,7 @@ class _EnrollPageState extends State<EnrollPage> {
     print(gradeList[0]);
   }
 
-  // ! mengambil gambar dari camera
-  var photoName = '';
+  // ! get image from camera
   getFromCamera() async {
     final ImagePicker _picker = ImagePicker();
 
@@ -356,18 +378,22 @@ class _EnrollPageState extends State<EnrollPage> {
     });
   }
 
-  // ! mengambil data enroll
-  var listNumber = [];
-  var listGrade = [];
-  var listMajor = [];
-  var listTeacher = [];
-  var itemNum = '';
-  List<Map> myList = <Map>[];
-  Map listTest = {};
-  var activityStatus = '';
-  var result;
-  Color warna = Color(0xff873190);
+  // ! get data feed
+  dataFeed() async {
+    String API_URL = 'https://adm.imte.education/api/setup';
 
+    final response = await http.get(Uri.parse(API_URL));
+
+    final data = await json.decode(response.body);
+
+    for (var i = 0; i < data.length; i++) {
+      if (data[i]['name'] == 'feed') {
+        listFeed.add(Gallery.fromJson(data[i]));
+      }
+    }
+  }
+
+  // ! get data enroll
   dataEnroll() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -377,78 +403,71 @@ class _EnrollPageState extends State<EnrollPage> {
     final response = await http.post(Uri.parse(API_URL), headers: {
       'Accept': 'application/json',
     }, body: {
-      // 'tab_user_id': user.toString(),
-      'tab_user_id': '1147',
+      'tab_user_id': id,
     });
+
+    print(id);
 
     final data = await json.decode(response.body);
 
-    if (data.length > 0) {
+    if (data.length > 1) {
+      print(data.length);
+      print('filled');
+      for (var i = 0; i < data.length; i++) {
+        listEnroll.add(History.fromJson(data[i]));
+        listPeriod.add(Period.fromJson(data[i]['period']));
+        listMajor.add(Major.fromJson(data[i]['major']));
+        listGrade.add(Grade.fromJson(data[i]['grade']));
+        listTeacher.add(Teacher.fromJson(data[i]['teacher']));
+        var itemEnroll = listEnroll[i];
+
+        setState(() {
+          activityStatus = itemEnroll.activityStatus;
+          isLoading = false;
+        });
+
+        var activityFormat = itemEnroll.activityFormat;
+
+        if (itemEnroll.status == '0') {
+          status = 'Unverified';
+          statusColor = Color(0xff686868);
+          statusBackground = Color(0xffD9D9D9);
+        } else if (itemEnroll.status == '1') {
+          status = 'Verified';
+          statusColor = Color(0xff27832B);
+          statusBackground = Color(0xff86E88A);
+        } else if (itemEnroll.status == '2') {
+          status = 'Test Taken';
+          statusColor = Color(0xff007BFF);
+          statusBackground = Color(0xffC9F1FE);
+        } else if (itemEnroll.status == '3') {
+          status = 'Result Out';
+          statusColor = Color(0xffCF3333);
+          statusBackground = Color(0xffFFA8A8);
+        }
+      }
+
       setState(() {
-        isLoading = false;
+        isExist = true;
       });
     }
-
-    for (var i = 0; i < data.length; i++) {
-      listEnroll.add(History.fromJson(data[i]));
-      listPeriod.add(Period.fromJson(data[i]['period']));
-      listMajor.add(Major.fromJson(data[i]['major']));
-      listGrade.add(Grade.fromJson(data[i]['grade']));
-      listTeacher.add(Teacher.fromJson(data[i]['teacher']));
-      var itemEnroll = listEnroll[i];
-
-      setState(() {
-        activityStatus = itemEnroll.activityStatus;
-      });
-
-      var activityFormat = itemEnroll.activityFormat;
-
-      listStatus = activityStatus.split('');
-
-      listStatus.asMap();
-
-      print(listStatus);
-
-      listNumber.add(listStatus);
-
-      result =
-          Map.fromIterable(listStatus, key: (v) => v[0], value: (v) => v[0]);
-
-      listFormat = activityFormat.split(',');
-      listFormat.asMap();
-
-      var itemStatus = listFormat[i];
-
-      myList.add({'num' + i.toString(): listNumber[i]});
-
-      // return activityStatus;
-      // print(listStatus[i]);
-
-      // (listStatus[i] == 0) ? print('green') : print('gray');
-    }
-    // print(listNumber);
-    // for (var a = 0; a < listStatus.length; a++) {
-    //   print(a.toString() + ' test ');
-    // }
-
-    // for (var i = 0; i < listNumber[0xff86E88A].length; i++) {}
-    // print(listNumber[0][0]);
-    // if (listNumber[0][0] == listNumber[0][0]) {
-    //   print('sama');
-    // } else {
-    //   print('beda');
-    // }
-
-    // if (listNumber[1][0] == listNumber[0][0]) {
-    //   print('sama');
-    // } else {
-    //   print('beda');
-    // }
-
-    // print(listNumber[0][0].runtimeType);
-    // print(listNumber[1][0]);
   }
 
+  // ! background header
+  Widget fluidContainer() {
+    return Container(
+      height: 150,
+      width: double.infinity,
+      decoration: BoxDecoration(
+          color: Color(0xff0DB1BF),
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(12),
+            bottomRight: Radius.circular(12),
+          )),
+    );
+  }
+
+  // ! textLine for list card enroll
   Widget textLine(String key, Widget value) {
     return Column(
       children: [
@@ -480,9 +499,9 @@ class _EnrollPageState extends State<EnrollPage> {
     );
   }
 
+  // ! listView enroll
   Widget buildListview(index) {
     var itemEnroll = listEnroll[index];
-    var itemFormat = listFormat[index];
     var itemGrade = listGrade[index];
     var itemMajor = listMajor[index];
     var itemTeacher = listTeacher[index];
@@ -523,17 +542,19 @@ class _EnrollPageState extends State<EnrollPage> {
                               )
                             ],
                           ),
-                          Icon(
-                            Icons.close,
-                            color: Color.fromARGB(255, 39, 39, 39),
-                            size: 36.0,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(
+                              Icons.close,
+                              color: Color.fromARGB(255, 39, 39, 39),
+                              size: 36.0,
+                            ),
                           ),
                         ]),
                   ),
                   SizedBox(height: 20),
-
-                  // ! bagian name
-
                   textLine(
                     'Name',
                     Text((dfirst).toLowerCase(),
@@ -559,18 +580,14 @@ class _EnrollPageState extends State<EnrollPage> {
                     Text(itemGrade.grade,
                         style: GoogleFonts.poppins(color: Colors.black)),
                   ),
-
                   Divider(thickness: 1),
-
                   Container(
                       height: MediaQuery.of(context).size.height * 0.15,
-                      child: buildListview2(
+                      child: detailListView(
                           index,
                           itemEnroll.activityStatus.split(''),
                           itemEnroll.activityFormat.split(','))),
-                  // SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   SizedBox(height: 5),
-
                   InkWell(
                     child: Container(
                         padding: EdgeInsets.symmetric(vertical: 10),
@@ -616,6 +633,7 @@ class _EnrollPageState extends State<EnrollPage> {
           child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                // ! verified
                 Container(
                   decoration: BoxDecoration(
                     color: Color(0xffFAFAFA),
@@ -636,25 +654,25 @@ class _EnrollPageState extends State<EnrollPage> {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.all(3),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 3, horizontal: 10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(4),
-                          color: Color(0xff86E88A),
+                          color: statusBackground,
                         ),
-                        width: 80,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Verified',
+                              status,
                               style: GoogleFonts.poppins(
                                   fontSize: 14,
-                                  color: Color(0xff27832B),
+                                  color: statusColor,
                                   fontWeight: FontWeight.w500),
                             ),
                           ],
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
@@ -663,88 +681,20 @@ class _EnrollPageState extends State<EnrollPage> {
                   padding: EdgeInsets.all(15),
                   child: Column(
                     children: [
-                      Row(
-                        children: [
-                          Container(
-                              width: MediaQuery.of(context).size.width * 0.25,
-                              child: Text(
-                                'Grade',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xff616161)),
-                              )),
-                          Container(
-                              width: MediaQuery.of(context).size.width * 0.05,
-                              child: Text(
-                                ':',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xff616161)),
-                              )),
-                          Text(
-                            itemGrade.grade,
-                            style: GoogleFonts.poppins(
-                                fontSize: 14, fontWeight: FontWeight.w500),
-                          )
-                        ],
-                      ),
+                      textLine(
+                          'Grade',
+                          Text(itemGrade.grade,
+                              style: GoogleFonts.poppins(color: Colors.black))),
                       SizedBox(height: 5),
-                      Row(
-                        children: [
-                          Container(
-                              width: MediaQuery.of(context).size.width * 0.25,
-                              child: Text(
-                                'Major',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xff616161)),
-                              )),
-                          Container(
-                              width: MediaQuery.of(context).size.width * 0.05,
-                              child: Text(
-                                ':',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xff616161)),
-                              )),
-                          Text(
-                            itemMajor.major,
-                            style: GoogleFonts.poppins(
-                                fontSize: 14, fontWeight: FontWeight.w500),
-                          )
-                        ],
-                      ),
+                      textLine(
+                          'Major',
+                          Text(itemMajor.major,
+                              style: GoogleFonts.poppins(color: Colors.black))),
                       SizedBox(height: 5),
-                      Row(
-                        children: [
-                          Container(
-                              width: MediaQuery.of(context).size.width * 0.25,
-                              child: Text(
-                                'Date',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xff616161)),
-                              )),
-                          Container(
-                              width: MediaQuery.of(context).size.width * 0.05,
-                              child: Text(
-                                ':',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Color(0xff616161)),
-                              )),
-                          Text(
-                            DateFormat.yMMMd().format(dt),
-                            style: GoogleFonts.poppins(
-                                fontSize: 14, fontWeight: FontWeight.w500),
-                          )
-                        ],
+                      textLine(
+                        'Date',
+                        Text(DateFormat.yMMMd().format(dt),
+                            style: GoogleFonts.poppins(color: Colors.black)),
                       ),
                     ],
                   ),
@@ -753,7 +703,29 @@ class _EnrollPageState extends State<EnrollPage> {
     );
   }
 
-  Widget buildListview2(index, listNumber, listStatus) {
+  Widget buildFeedList(index) {
+    var itemFeed = listFeed[index];
+    var image = itemFeed.src;
+    var mii = image.replaceAll('./', '');
+
+    return InkWell(
+      onTap: () {
+        launch(itemFeed.url);
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12), // Image border
+        child: SizedBox.fromSize(
+          size: Size.fromRadius(
+            MediaQuery.of(context).size.width * 0.155,
+          ), // Image radius
+          child: Image.network('https://imte.education/' + mii),
+        ),
+      ),
+    );
+  }
+
+  // ! detail listview enroll
+  Widget detailListView(index, listNumber, listStatus) {
     var listNum = listNumber;
     var listStat = listStatus;
 
@@ -784,6 +756,8 @@ class _EnrollPageState extends State<EnrollPage> {
     dataInstrument();
     dataGrade();
     dataEnroll();
+    dataStatus();
+    dataFeed();
   }
 
   @override
@@ -864,9 +838,10 @@ class _EnrollPageState extends State<EnrollPage> {
                               width: MediaQuery.of(context).size.height * 0.15,
                               height: MediaQuery.of(context).size.height * 0.05,
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: Color(0xffAE2329),
-                              ),
+                                  borderRadius: BorderRadius.circular(12),
+                                  color: (statusEnroll == 'active')
+                                      ? Color(0xffAE2329)
+                                      : Color.fromARGB(255, 141, 141, 141)),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -880,7 +855,9 @@ class _EnrollPageState extends State<EnrollPage> {
                               ),
                             ),
                             onTap: () {
-                              showSimpleCustomDialog(context);
+                              (statusEnroll == 'active')
+                                  ? showSimpleCustomDialog(context)
+                                  : null;
                             },
                           ),
                         ],
@@ -921,7 +898,7 @@ class _EnrollPageState extends State<EnrollPage> {
                     Container(
                         height: MediaQuery.of(context).size.height - 550,
                         width: MediaQuery.of(context).size.width,
-                        child: (isLoading == true)
+                        child: !isExist
                             ? Container(
                                 margin: EdgeInsets.only(top: 10),
                                 height:
@@ -961,72 +938,16 @@ class _EnrollPageState extends State<EnrollPage> {
                       ),
                     ),
                     Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              launch(
-                                  'https://www.instagram.com/p/CYbKBpjrpul/?utm_medium=copy_link');
-                            },
-                            child: Container(
-                              child: ClipRRect(
-                                borderRadius:
-                                    BorderRadius.circular(12), // Image border
-                                child: SizedBox.fromSize(
-                                  size: Size.fromRadius(
-                                    MediaQuery.of(context).size.width * 0.15,
-                                  ), // Image radius
-                                  child: Image.asset('assets/image/ban2.png'),
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12)),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              launch(
-                                  'https://www.instagram.com/p/CYbKBpjrpul/?utm_medium=copy_link');
-                            },
-                            child: Container(
-                              child: ClipRRect(
-                                borderRadius:
-                                    BorderRadius.circular(12), // Image border
-                                child: SizedBox.fromSize(
-                                  size: Size.fromRadius(
-                                    MediaQuery.of(context).size.width * 0.15,
-                                  ), // Image radius
-                                  child: Image.asset('assets/image/ban1.png'),
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12)),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              launch(
-                                  'https://www.instagram.com/p/CYbKBpjrpul/?utm_medium=copy_link');
-                            },
-                            child: Container(
-                              child: ClipRRect(
-                                borderRadius:
-                                    BorderRadius.circular(12), // Image border
-                                child: SizedBox.fromSize(
-                                  size: Size.fromRadius(
-                                    MediaQuery.of(context).size.width * 0.15,
-                                  ), // Image radius
-                                  child: Image.asset('assets/image/ban3.jpg'),
-                                ),
-                              ),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                        height: MediaQuery.of(context).size.height * 0.14,
+                        width: MediaQuery.of(context).size.width,
+                        padding: EdgeInsets.all(0),
+                        child: ListView.builder(
+                            padding: EdgeInsets.all(0),
+                            scrollDirection: Axis.horizontal,
+                            itemCount: listFeed.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return buildFeedList(index);
+                            })),
                     Divider(
                       thickness: 1,
                     ),
@@ -1044,30 +965,6 @@ class _EnrollPageState extends State<EnrollPage> {
                         ),
                       ],
                     ),
-                    // Container(
-                    //   margin: EdgeInsets.only(top: 5),
-                    //   child: Column(children: [
-                    //     enrollNewsCard(
-                    //       title:
-                    //           'Why NFT Creators Are Picking Arweave Over IPFS (What Solana And Metaplex Have Known For Some Time Now)',
-                    //       user: 'Mr. Yafet',
-                    //       date: '15 - 07 - 2022',
-                    //       image: Image.network(
-                    //         'https://uploads-ssl.webflow.com/61c8ba3864049fa06a524bbd/61e2a0ac1ee9e1696610c78d_3.jpg',
-                    //         fit: BoxFit.cover,
-                    //       ),
-                    //     ),
-                    //     enrollNewsCard(
-                    //       title:
-                    //           'Metaplex Protocol: Fueling Solana (NFT) Summer',
-                    //       user: 'Mrs. Lidya',
-                    //       date: '12 - 07 - 2022',
-                    //       image: Image.network(
-                    //           fit: BoxFit.cover,
-                    //           'https://cdn.sanity.io/images/2bt0j8lu/production/1e83eae3c3b81ae83ff33fb0f0e1218538bd9221-1280x720.png?w=714&fit=max&auto=format&dpr=3'),
-                    //     ),
-                    //   ]),
-                    // )
                   ]),
                 ),
               ),
@@ -1306,8 +1203,6 @@ class _EnrollPageState extends State<EnrollPage> {
         //                 ]),
         //           ),
         return Container();
-        //           // ! Listview small
-
         // Container(
         //   height: MediaQuery.of(context).size.height - 550,
         //   width: MediaQuery.of(context).size.width,
