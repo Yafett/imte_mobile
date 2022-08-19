@@ -328,7 +328,7 @@ class _EnrollPageState extends State<EnrollPage> {
         await http.get(Uri.parse('https://adm.imte.education/api/teacher'));
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
+      var jsonData = json.decode( response.body);
       setState(() {
         teacherList = jsonData;
       });
@@ -938,7 +938,7 @@ class _EnrollPageState extends State<EnrollPage> {
                       ),
                     ),
                     Container(
-                        height: MediaQuery.of(context).size.height * 0.14,
+                        height: MediaQuery.of(context).size.height * 0.145,
                         width: MediaQuery.of(context).size.width,
                         padding: EdgeInsets.all(0),
                         child: ListView.builder(
@@ -951,7 +951,7 @@ class _EnrollPageState extends State<EnrollPage> {
                     Divider(
                       thickness: 1,
                     ),
-
+                    
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [

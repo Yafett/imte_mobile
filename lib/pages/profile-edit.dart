@@ -6,9 +6,12 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:imte_mobile/pages/dashboard.dart';
 import 'package:imte_mobile/pages/profile.dart';
 import 'package:imte_mobile/shared/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'enroll.dart';
 
 class ProfileEditPage extends StatefulWidget {
   final String enableBack;
@@ -144,21 +147,15 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     final result = await json.decode(response.body);
 
     if (result['message'] == "Update User Profile Berhasil.") {
-      var snackBar = SnackBar(content: Text(result['message']));
+      var snackBar = SnackBar(content: Text(result['Update User Profile Berhasil.']));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      Navigator.pop(context);
-      Navigator.push(
+      Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-              builder: (context) => ProfilePage(
-                    enableBack: 'true',
-                  )));
-      Navigator.pop(context);
-      //  Navigator.pop(
-      //       context,
-      //       MaterialPageRoute(
-      //           builder: (context) => ProfilePage(enableBack: 'true')));
-
+              builder: (context) => DashboardPage(
+                    token: token,
+                  )),
+          (route) => false);
     } else {
       var snackBar =
           SnackBar(content: Text('Terjadi Kesalahan, Gagal Mengupdate Data'));

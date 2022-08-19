@@ -9,6 +9,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:imte_mobile/pages/profile-edit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:html/dom.dart' as dom;
 
 class NewsDetailPage extends StatefulWidget {
   final String title;
@@ -124,6 +126,12 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
         'p': Style.fromTextStyle(
             GoogleFonts.gothicA1(fontSize: 17, letterSpacing: 1)),
         'html': Style(textAlign: TextAlign.justify),
+      },
+      onLinkTap: (String? url, RenderContext context,
+          Map<String, String> attributes, dom.Element? element) {
+        print(url);
+        //open URL in webview, or launch URL in browser, or any other logic here
+        launch(url!);
       },
     ));
   }
