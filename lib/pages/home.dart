@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:imte_mobile/models/Gallery.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -52,14 +53,40 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget smallText() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Column(
       children: [
-        Text(
-          "Start Now!",
-          style: GoogleFonts.poppins(
-            fontSize: 12,
-            color: Colors.white,
+        GestureDetector(
+          onTap: () {
+            launch('https://sister.sekolahmusik.co.id/terms');
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Terms and Conditions",
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            launch('https://sister.sekolahmusik.co.id/privacy');
+          },
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Privacy Policy",
+                style: GoogleFonts.poppins(
+                  fontSize: 12,
+                  color: Colors.white,
+                ),
+              ),
+            ],
           ),
         ),
       ],

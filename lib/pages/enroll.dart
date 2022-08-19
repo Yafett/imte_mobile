@@ -18,6 +18,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/Gallery.dart';
+import '../models/News.dart';
+import '../widget/news-card.dart';
 
 class EnrollPage extends StatefulWidget {
   const EnrollPage({Key? key}) : super(key: key);
@@ -44,7 +46,15 @@ class _EnrollPageState extends State<EnrollPage> {
   String dfirst = '';
   String statusEnroll = '';
   String statusProfile = '';
+  String lastId = '';
+  String lastDate = '';
+  String lastUser = '';
+  String lastTitle = '';
+  String lastImage = '';
+  String lastContent = '';
+  String tests = '';
   String? teacherVal;
+  bool loading = true;
   bool isLoading = true;
   bool isExist = false;
   Map listTest = {};
@@ -76,6 +86,7 @@ class _EnrollPageState extends State<EnrollPage> {
   var listNumber = [];
   var listFeed = [];
   var listTeacher = [];
+  var listNews = [];
 
   // adm.imte.education/img/blogImage/
 
@@ -325,7 +336,7 @@ class _EnrollPageState extends State<EnrollPage> {
         await http.get(Uri.parse('https://adm.imte.education/api/teacher'));
 
     if (response.statusCode == 200) {
-      var jsonData = json.decode( response.body);
+      var jsonData = json.decode(response.body);
       setState(() {
         teacherList = jsonData;
       });
@@ -448,6 +459,37 @@ class _EnrollPageState extends State<EnrollPage> {
         isExist = true;
       });
     }
+  }
+
+  // ! get data news
+  dataNews() async {
+    String API_URL = 'https://adm.imte.education/api/blog/showAll';
+
+    final response = await http.get(Uri.parse(API_URL));
+
+    final data = await json.decode(response.body);
+
+    for (var a = 0; a < data.length; a++) {
+      listNews.add(News.fromJson(data[a]));
+      var itemNews = listNews[a];
+
+      setState(() {
+        lastId = itemNews.id.toString();
+        lastTitle = itemNews.title.toString();
+        lastUser = itemNews.firstName.toString();
+        lastDate = itemNews.createdAt;
+        lastImage = itemNews.filename.toString();
+        lastContent = itemNews.content.toString();
+      });
+      print(itemNews.createdAt);
+    }
+    DateTime dt = DateTime.parse(lastDate);
+
+    print(DateFormat.yMMMd().format(dt));
+
+    setState(() {
+      loading = false;
+    });
   }
 
   // ! background header
@@ -700,6 +742,7 @@ class _EnrollPageState extends State<EnrollPage> {
     );
   }
 
+  // ! listView Feed
   Widget buildFeedList(index) {
     var itemFeed = listFeed[index];
     var image = itemFeed.src;
@@ -718,6 +761,28 @@ class _EnrollPageState extends State<EnrollPage> {
           child: Image.network('https://imte.education/' + mii),
         ),
       ),
+    );
+  }
+
+  // ! listView news
+  Widget buildListviewNews(index) {
+    var itemNews = listNews[index];
+    DateTime dt = DateTime.parse(itemNews.createdAt);
+
+    return newsCard(
+      title: itemNews.title,
+      user: itemNews.firstName,
+      date: DateFormat.yMMMd().format(dt),
+      image: Image.network(
+        'https://adm.imte.education/img/BlogImages/' + itemNews.filename,
+        fit: BoxFit.fill,
+      ),
+      newsDate: DateFormat.yMMMd().format(dt),
+      newsTitle: itemNews.title,
+      newsUser: itemNews.firstName,
+      newsImage:
+          'https://adm.imte.education/img/BlogImages/' + itemNews.filename,
+      newsContent: itemNews.content,
     );
   }
 
@@ -745,6 +810,22 @@ class _EnrollPageState extends State<EnrollPage> {
     );
   }
 
+  Widget loadingNews() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Text(
+          'No Updated News',
+          style: GoogleFonts.poppins(
+            color: Color.fromARGB(255, 0, 0, 0),
+            fontSize: 18,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -755,6 +836,7 @@ class _EnrollPageState extends State<EnrollPage> {
     dataEnroll();
     dataStatus();
     dataFeed();
+    dataNews();
   }
 
   @override
@@ -830,39 +912,11 @@ class _EnrollPageState extends State<EnrollPage> {
                               ),
                             ],
                           ),
-                          InkWell(
-                            child: Container(
-                              width: MediaQuery.of(context).size.height * 0.15,
-                              height: MediaQuery.of(context).size.height * 0.05,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: (statusEnroll == 'active')
-                                      ? Color(0xffAE2329)
-                                      : Color.fromARGB(255, 141, 141, 141)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text('ENROLL',
-                                      style: GoogleFonts.poppins(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.white,
-                                      )),
-                                ],
-                              ),
-                            ),
-                            onTap: () {
-                              (statusEnroll == 'active')
-                                  ? showSimpleCustomDialog(context)
-                                  : null;
-                            },
-                          ),
                         ],
                       ),
                     ),
                     Container(
                       margin: EdgeInsets.only(top: 10),
-                      padding: EdgeInsets.all(10),
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                           color: Colors.white,
@@ -879,19 +933,49 @@ class _EnrollPageState extends State<EnrollPage> {
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Activity',
-                              style: GoogleFonts.poppins(),
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              child: Text(
+                                'Activity',
+                                style: GoogleFonts.gothicA1(fontSize: 16),
+                              ),
                             ),
-                            Icon(
-                              Icons.refresh_outlined,
-                              color: Color.fromARGB(255, 0, 0, 0),
-                              size: 26,
+                            InkWell(
+                              child: Container(
+                                width:
+                                    MediaQuery.of(context).size.height * 0.15,
+                                height:
+                                    MediaQuery.of(context).size.height * 0.05,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(12),
+                                      bottomRight: Radius.circular(12),
+                                    ),
+                                    color: (statusEnroll == 'active')
+                                        ? Color(0xffAE2329)
+                                        : Color.fromARGB(255, 141, 141, 141)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text('Enroll',
+                                        style: GoogleFonts.gothicA1(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white,
+                                        )),
+                                  ],
+                                ),
+                              ),
+                              onTap: () {
+                                (statusEnroll == 'active')
+                                    ? showSimpleCustomDialog(context)
+                                    : null;
+                              },
                             ),
                           ]),
                     ),
 
-                    // ! Listview
+                    // ! Listview Enroll
                     Container(
                         height: MediaQuery.of(context).size.height - 550,
                         width: MediaQuery.of(context).size.width,
@@ -909,7 +993,20 @@ class _EnrollPageState extends State<EnrollPage> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Image.asset('assets/image/404.png')
+                                    Container(
+                                      width: 300,
+                                      child: Text(
+                                        'You have never taken the IMTE exam.',
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.gothicA1(
+                                            textBaseline:
+                                                TextBaseline.alphabetic,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w400,
+                                            color: Color.fromARGB(
+                                                255, 83, 83, 83)),
+                                      ),
+                                    )
                                   ],
                                 ))
                             : ListView.builder(
@@ -934,34 +1031,35 @@ class _EnrollPageState extends State<EnrollPage> {
                         ],
                       ),
                     ),
-                    Container(
-                        height: MediaQuery.of(context).size.height * 0.145,
-                        width: MediaQuery.of(context).size.width,
-                        padding: EdgeInsets.all(0),
-                        child: ListView.builder(
-                            padding: EdgeInsets.all(0),
-                            scrollDirection: Axis.horizontal,
-                            itemCount: listFeed.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return buildFeedList(index);
-                            })),
-                    Divider(
-                      thickness: 1,
-                    ),
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          'No Updated News',
-                          style: GoogleFonts.poppins(
-                            color: Color.fromARGB(255, 0, 0, 0),
-                            fontSize: 18,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ],
+                    // ! list Feed
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.145,
+                      width: MediaQuery.of(context).size.width,
+                      padding: EdgeInsets.all(0),
+                      child: ListView.builder(
+                        padding: EdgeInsets.all(0),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: listFeed.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return buildFeedList(index);
+                        },
+                      ),
                     ),
+                    Divider(thickness: 1),
+
+                    // ! list News
+                    loading
+                        ? loadingNews()
+                        : Container(
+                            height: MediaQuery.of(context).size.height * 0.3,
+                            child: ListView.builder(
+                                padding: EdgeInsets.symmetric(horizontal: 5),
+                                itemCount: listNews.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  return buildListviewNews(index);
+                                }),
+                          )
                   ]),
                 ),
               ),
