@@ -228,9 +228,6 @@ class _EnrollPageState extends State<EnrollPage> {
                                   : photoName,
                               suffixIcon: GestureDetector(
                                 onTap: () {
-                                  print('ajakd');
-                                  // ImagePicker()
-                                  //     .getImage(source: ImageSource.gallery);
                                   getFromCamera();
                                 },
                                 child: Container(
@@ -951,7 +948,7 @@ class _EnrollPageState extends State<EnrollPage> {
                     Divider(
                       thickness: 1,
                     ),
-                    
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
