@@ -86,8 +86,8 @@ class _ProfilePageState extends State<ProfilePage> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon:
-              Icon(Icons.arrow_back, color: Color.fromARGB(255, 147, 163, 173)),
+          icon: Icon(Icons.arrow_back_ios,
+              color: Color.fromARGB(255, 147, 163, 173)),
         ),
       ],
     );
@@ -95,13 +95,17 @@ class _ProfilePageState extends State<ProfilePage> {
 
   // ! form Part
   Widget photoProfile() {
-    return CircleAvatar(
-      radius: 52,
-      backgroundColor: Color(0xff2398D4),
-      child: CircleAvatar(
-        radius: 50,
-        backgroundImage: AssetImage('assets/image/learn.jpg'),
-      ),
+    return Container(
+      height: 100,
+      width: 100,
+      decoration: BoxDecoration(
+          color: Colors.red,
+          image: DecorationImage(
+            image: AssetImage('assets/image/smile.jpg'),
+            fit: BoxFit.fill,
+          ),
+          border: Border.all(color: Colors.blue),
+          borderRadius: BorderRadius.circular(12)),
     );
   }
 

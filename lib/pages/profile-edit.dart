@@ -38,6 +38,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   int user = 1;
 
   var profile;
+  bool buttonLoading = false;
   var photoName = '';
   bool loading = true;
 
@@ -145,9 +146,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         body: data);
 
     final result = await json.decode(response.body);
+    print(result['message']);
+    print(data);
 
     if (result['message'] == "Update User Profile Berhasil.") {
-      var snackBar = SnackBar(content: Text(result['Update User Profile Berhasil.']));
+      var snackBar = SnackBar(content: Text('Update User Profile Berhasil.'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       Navigator.pushAndRemoveUntil(
           context,
@@ -161,9 +164,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           SnackBar(content: Text('Terjadi Kesalahan, Gagal Mengupdate Data'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
-
-    print(result['message']);
-    print(data);
+    setState(() {
+      loading = true;
+    });
   }
 
   // ! back button !isExist
@@ -179,8 +182,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon:
-              Icon(Icons.arrow_back, color: Color.fromARGB(255, 147, 163, 173)),
+          icon: Icon(Icons.arrow_back_ios,
+              color: Color.fromARGB(255, 147, 163, 173)),
         ),
       ],
     );
@@ -192,13 +195,17 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       onTap: () {
         getFromCamera();
       },
-      child: CircleAvatar(
-        radius: 52,
-        backgroundColor: Color(0xff2398D4),
-        child: CircleAvatar(
-          radius: 50,
-          backgroundImage: AssetImage('assets/image/learn.jpg'),
-        ),
+      child: Container(
+        height: 100,
+        width: 100,
+        decoration: BoxDecoration(
+            color: Colors.red,
+            image: DecorationImage(
+              image: AssetImage('assets/image/smile.jpg'),
+              fit: BoxFit.fill,
+            ),
+            border: Border.all(color: Colors.blue),
+            borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -617,7 +624,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12))),
               child: Text(
-                'Edit ',
+                (buttonLoading == true) ? "Loading..." : 'Edit ',
                 style: TextStyle(
                     fontSize: 18, color: Color.fromARGB(249, 255, 255, 255)),
               ),

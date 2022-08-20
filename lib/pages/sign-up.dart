@@ -107,6 +107,13 @@ class SignUpPageState extends State<SignUpPage> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    dataUnit();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: SafeArea(

@@ -7,6 +7,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:imte_mobile/models/History.dart';
+import 'package:imte_mobile/models/Instrument.dart';
 import 'package:imte_mobile/models/Profile.dart';
 import 'package:imte_mobile/pages/profile.dart';
 import 'package:imte_mobile/widget/enroll-card-small.dart';
@@ -78,6 +79,7 @@ class _EnrollPageState extends State<EnrollPage> {
   var photoName = '';
   var activityStatus = '';
   var listGrade = [];
+  var listInstrument = [];
   var listMajor = [];
   var listEnroll = [];
   var listStatus = [];
@@ -87,6 +89,29 @@ class _EnrollPageState extends State<EnrollPage> {
   var listFeed = [];
   var listTeacher = [];
   var listNews = [];
+
+  var instrument = [
+    'CFK 1',
+    'CFK 2',
+    'JC 1',
+    'JC 2',
+    'JC 3',
+    'JC 4',
+    'JC 5',
+    'JC 6'
+  ];
+  var instrument2 = [
+    'CFK 1',
+    'CFK 2',
+    'JC 1',
+    'JC 2',
+    'JC 3',
+    'JC 4',
+    'JC 5 - Pop Jazz',
+    'JC 5 - Classical',
+    'JC 6 - Pop Jazz',
+    'JC 6 - Classical'
+  ];
 
   // adm.imte.education/img/blogImage/
 
@@ -168,15 +193,16 @@ class _EnrollPageState extends State<EnrollPage> {
                         underline: SizedBox(),
                         isExpanded: true,
                         hint: Text('Select Your Instruments'),
-                        items: instrumentList.map((item) {
+                        items: listInstrument.map((item) {
                           return DropdownMenuItem(
-                            value: item['major'].toString(),
-                            child: Text(item['major'].toString()),
+                            value: item.major.toString(),
+                            child: Text(item.major.toString()),
                           );
                         }).toList(),
                         onChanged: (newVal) {
                           setState(() {
                             instrumentval = newVal;
+                            print(instrumentval);
                           });
                         },
                         value: instrumentval,
@@ -202,12 +228,25 @@ class _EnrollPageState extends State<EnrollPage> {
                         underline: SizedBox(),
                         isExpanded: true,
                         hint: Text('Select Your Grade'),
-                        items: gradeList.map((item) {
-                          return DropdownMenuItem(
-                            value: item['grade'].toString(),
-                            child: Text(item['grade'].toString()),
-                          );
-                        }).toList(),
+                        items: (instrumentval != 'Piano')
+                            ? instrument.map((item) {
+                                return DropdownMenuItem(
+                                  value: item.toString(),
+                                  child: Text(item.toString()),
+                                );
+                              }).toList()
+                            : instrument2.map((item) {
+                                return DropdownMenuItem(
+                                  value: item.toString(),
+                                  child: Text(item.toString()),
+                                );
+                              }).toList(),
+                        //  gradeList.map((item) {
+                        //   return DropdownMenuItem(
+                        //     value: item['grade'].toString(),
+                        //     child: Text(item['grade'].toString()),
+                        //   );
+                        // }).toList(),
                         onChanged: (newVal) {
                           setState(() {
                             gradeval = newVal;
@@ -350,11 +389,13 @@ class _EnrollPageState extends State<EnrollPage> {
     http.Response response =
         await http.get(Uri.parse('https://adm.imte.education/api/major'));
 
-    if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
-      setState(() {
-        instrumentList = jsonData;
-      });
+    final data = await json.decode(response.body);
+
+    for (var a = 0; a < data.length; a++) {
+      listInstrument.add(Instrument.fromJson(data[a]));
+      var itemInstrument = listInstrument[a];
+
+      print(itemInstrument);
     }
   }
 
@@ -365,14 +406,14 @@ class _EnrollPageState extends State<EnrollPage> {
     http.Response response =
         await http.get(Uri.parse('https://adm.imte.education/api/grade'));
 
-    if (response.statusCode == 200) {
-      var jsonData = json.decode(response.body);
-      setState(() {
-        gradeList = jsonData;
-      });
-    }
+    final data = await json.decode(response.body);
 
-    print(gradeList[0]);
+    for (var a = 0; a < data.length; a++) {
+      listGrade.add(Grade.fromJson(data[a]));
+      var itemGrade = listGrade[a];
+
+      print(itemGrade.grade);
+    }
   }
 
   // ! get image from camera
@@ -753,7 +794,7 @@ class _EnrollPageState extends State<EnrollPage> {
         launch(itemFeed.url);
       },
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(12), // Image border
+        borderRadius: BorderRadius.circular(16), // Image border
         child: SizedBox.fromSize(
           size: Size.fromRadius(
             MediaQuery.of(context).size.width * 0.155,
@@ -829,7 +870,7 @@ class _EnrollPageState extends State<EnrollPage> {
   @override
   void initState() {
     super.initState();
-    dataProfile();
+    // dataProfile();
     dataTeacher();
     dataInstrument();
     dataGrade();
@@ -943,7 +984,7 @@ class _EnrollPageState extends State<EnrollPage> {
                             InkWell(
                               child: Container(
                                 width:
-                                    MediaQuery.of(context).size.height * 0.15,
+                                    MediaQuery.of(context).size.height * 0.10,
                                 height:
                                     MediaQuery.of(context).size.height * 0.05,
                                 decoration: BoxDecoration(
