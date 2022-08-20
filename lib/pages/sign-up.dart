@@ -154,7 +154,7 @@ class SignUpPageState extends State<SignUpPage> {
                     children: [
                       Text(
                         'Unit',
-                        style: GoogleFonts.poppins(
+                        style: GoogleFonts.gothicA1(
                             fontSize: 16,
                             color: Color(0xff535353),
                             fontWeight: FontWeight.w500),
@@ -171,7 +171,13 @@ class SignUpPageState extends State<SignUpPage> {
                         child: DropdownButton(
                           underline: SizedBox(),
                           isExpanded: true,
-                          hint: Text('Select Your Unit'),
+                          hint: Text(
+                            'Select Your Unit',
+                            style: GoogleFonts.gothicA1(
+                                fontSize: 16,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w600),
+                          ),
                           items: unitList.map((item) {
                             return DropdownMenuItem(
                               value: item['id'].toString(),
@@ -202,16 +208,16 @@ class SignUpPageState extends State<SignUpPage> {
                             children: [
                               Text(
                                 'First Name',
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.gothicA1(
                                     fontSize: 16,
                                     color: Color(0xff535353),
                                     fontWeight: FontWeight.w500),
                               ),
                               SizedBox(height: 5),
                               TextFormField(
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.gothicA1(
                                     fontSize: 16,
-                                    color: Color(0xff979797),
+                                    color: Colors.grey,
                                     fontWeight: FontWeight.w500),
                                 controller: firstnameController,
                                 decoration: InputDecoration(
@@ -234,7 +240,7 @@ class SignUpPageState extends State<SignUpPage> {
                             children: [
                               Text(
                                 'Last Name',
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.gothicA1(
                                   fontSize: 16,
                                   color: Color(0xff535353),
                                   fontWeight: FontWeight.w500,
@@ -242,9 +248,9 @@ class SignUpPageState extends State<SignUpPage> {
                               ),
                               SizedBox(height: 5),
                               TextFormField(
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.gothicA1(
                                     fontSize: 16,
-                                    color: Color(0xff979797),
+                                    color: Colors.grey,
                                     fontWeight: FontWeight.w500),
                                 controller: lastnameController,
                                 decoration: InputDecoration(
@@ -271,7 +277,7 @@ class SignUpPageState extends State<SignUpPage> {
                         children: [
                           Text(
                             'Email',
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.gothicA1(
                                 fontSize: 16,
                                 color: Color(0xff535353),
                                 fontWeight: FontWeight.w500),
@@ -280,8 +286,9 @@ class SignUpPageState extends State<SignUpPage> {
                           TextFormField(
                             controller: emailController,
                             decoration: InputDecoration(
-                              hintStyle: GoogleFonts.poppins(
-                                  color: Color(0xff979797),
+                              hintStyle: GoogleFonts.gothicA1(
+                                  fontSize: 16,
+                                  color: Colors.grey,
                                   fontWeight: FontWeight.w500),
                               hintText: 'Email Address',
                               border: OutlineInputBorder(
@@ -304,7 +311,7 @@ class SignUpPageState extends State<SignUpPage> {
                         children: [
                           Text(
                             'Mobile',
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.gothicA1(
                                 fontSize: 16,
                                 color: Color(0xff535353),
                                 fontWeight: FontWeight.w500),
@@ -313,7 +320,8 @@ class SignUpPageState extends State<SignUpPage> {
                           TextFormField(
                             controller: mobileController,
                             decoration: InputDecoration(
-                              hintStyle: GoogleFonts.poppins(
+                              hintStyle: GoogleFonts.gothicA1(
+                                  fontSize: 16,
                                   color: Color(0xff979797),
                                   fontWeight: FontWeight.w500),
                               hintText: 'Mobile',
@@ -339,14 +347,14 @@ class SignUpPageState extends State<SignUpPage> {
                             children: [
                               Text(
                                 'Password',
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.gothicA1(
                                     fontSize: 16,
                                     color: Color(0xff535353),
                                     fontWeight: FontWeight.w500),
                               ),
                               Text(
                                 ' | must contain 8 characters',
-                                style: GoogleFonts.poppins(
+                                style: GoogleFonts.gothicA1(
                                     fontSize: 16,
                                     color: Color.fromARGB(255, 157, 20, 20),
                                     fontWeight: FontWeight.w500),
@@ -358,7 +366,7 @@ class SignUpPageState extends State<SignUpPage> {
                             controller: passwordController,
                             obscureText: true,
                             decoration: InputDecoration(
-                              hintStyle: GoogleFonts.poppins(
+                              hintStyle: GoogleFonts.gothicA1(
                                   color: Color(0xff979797),
                                   fontWeight: FontWeight.w500),
                               hintText: 'Password',
@@ -382,7 +390,7 @@ class SignUpPageState extends State<SignUpPage> {
                         children: [
                           Text(
                             'Confirm Password',
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.gothicA1(
                                 fontSize: 16,
                                 color: Color(0xff535353),
                                 fontWeight: FontWeight.w500),
@@ -391,7 +399,8 @@ class SignUpPageState extends State<SignUpPage> {
                           TextFormField(
                             controller: passwordConfirmationController,
                             decoration: InputDecoration(
-                              hintStyle: GoogleFonts.poppins(
+                              hintStyle: GoogleFonts.gothicA1(
+                                  fontSize: 16,
                                   color: Color(0xff979797),
                                   fontWeight: FontWeight.w500),
                               hintText: 'Confirm Password',
@@ -405,7 +414,7 @@ class SignUpPageState extends State<SignUpPage> {
                           )
                         ]),
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
 
                   // ! button
                   Container(

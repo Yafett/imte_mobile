@@ -112,7 +112,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget nameTag() {
     return Column(
       children: [
-        Text(dfirst + ' ' + dlast,
+        Text(dfirst.toUpperCase() + ' ' + dlast.toUpperCase(),
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.bold,

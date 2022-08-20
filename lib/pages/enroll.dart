@@ -64,7 +64,6 @@ class _EnrollPageState extends State<EnrollPage> {
   List teacherList = [];
   List instrumentList = [];
   List<dynamic> teacher = [];
-  List<dynamic> _dataProvince = [];
   Color warna = Color(0xff873190);
   Color statusColor = Color(0xffFFFF);
   Color statusBackground = Color(0xffFFFF);
@@ -870,7 +869,7 @@ class _EnrollPageState extends State<EnrollPage> {
   @override
   void initState() {
     super.initState();
-    dataProfile();
+    // dataProfile();
     dataTeacher();
     dataInstrument();
     dataGrade();
@@ -1065,7 +1064,7 @@ class _EnrollPageState extends State<EnrollPage> {
                         children: [
                           Text(
                             'Recent News',
-                            style: GoogleFonts.poppins(
+                            style: GoogleFonts.gothicA1(
                               color: Color.fromARGB(255, 0, 0, 0),
                               fontSize: 20,
                               fontWeight: FontWeight.w500,

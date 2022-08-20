@@ -25,6 +25,8 @@ class _HistoryPageState extends State<HistoryPage> {
 
   bool isLoading = true;
 
+  // You have never taken the IMTE exam.
+
   // ! get data history
   getHistory() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -217,7 +219,7 @@ class _HistoryPageState extends State<HistoryPage> {
   void initState() {
     super.initState();
     getHistory();
-  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -240,21 +242,33 @@ class _HistoryPageState extends State<HistoryPage> {
                 ),
               ],
             ),
+            Divider(
+              thickness: 1,
+            ),
             Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
-                  // border: Border.all(color: Colors.grey),
                 ),
                 height: MediaQuery.of(context).size.height - 200,
                 child: Container(
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                            color: Color.fromARGB(255, 200, 200, 200))),
+                      borderRadius: BorderRadius.circular(12),
+                      // border:
+                      //     Border.all(color: Color.fromARGB(255, 200, 200, 200)),
+                    ),
                     width: MediaQuery.of(context).size.width,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [Image.asset('assets/image/404.png')],
+                      children: [
+                        Text(
+                          'You have never taken the IMTE exam.',
+                          style: GoogleFonts.gothicA1(
+                            color: Colors.grey,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        )
+                      ],
                     )))
           ]),
         );

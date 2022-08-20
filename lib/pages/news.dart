@@ -21,7 +21,6 @@ class NewsPage extends StatefulWidget {
 class _NewsPageState extends State<NewsPage> {
   var listNews = [];
 
-  // ! mengambil berita
   String lastId = '';
   String lastDate = '';
   String lastUser = '';
@@ -30,6 +29,8 @@ class _NewsPageState extends State<NewsPage> {
   String lastContent = '';
   String tests = '';
   bool loading = true;
+
+  
 
   // ! get News Data
   dataImage() async {

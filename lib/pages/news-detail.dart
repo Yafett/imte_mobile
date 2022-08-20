@@ -76,7 +76,8 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
         SizedBox(height: 30),
         Text(
           widget.newsTitle,
-          style: GoogleFonts.roboto(fontSize: 28, fontWeight: FontWeight.bold),
+          style:
+              GoogleFonts.gothicA1(fontSize: 28, fontWeight: FontWeight.bold),
         ),
       ],
     );
@@ -103,13 +104,13 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
           children: [
             Text(
               widget.newsUser,
-              style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.w600, fontSize: 18),
+              style: GoogleFonts.gothicA1(
+                  fontWeight: FontWeight.w600, fontSize: 16),
             ),
             Text(
               widget.newsDate,
-              style: GoogleFonts.roboto(
-                  fontSize: 18, color: Color.fromARGB(255, 115, 115, 115)),
+              style: GoogleFonts.gothicA1(
+                  fontSize: 16, color: Color.fromARGB(255, 115, 115, 115)),
             ),
           ],
         ),
@@ -124,7 +125,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
       data: widget.newsContent,
       style: {
         'p': Style.fromTextStyle(
-            GoogleFonts.gothicA1(fontSize: 17, letterSpacing: 1)),
+            GoogleFonts.gothicA1(fontSize: 16, letterSpacing: 1)),
         'html': Style(textAlign: TextAlign.justify),
       },
       onLinkTap: (String? url, RenderContext context,
