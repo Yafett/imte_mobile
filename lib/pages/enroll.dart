@@ -870,7 +870,7 @@ class _EnrollPageState extends State<EnrollPage> {
   @override
   void initState() {
     super.initState();
-    // dataProfile();
+    dataProfile();
     dataTeacher();
     dataInstrument();
     dataGrade();
@@ -1037,7 +1037,9 @@ class _EnrollPageState extends State<EnrollPage> {
                                     Container(
                                       width: 300,
                                       child: Text(
-                                        'You have never taken the IMTE exam.',
+                                        (statusEnroll == 'active')
+                                            ? 'You have never taken the IMTE exam.'
+                                            : 'IMTE registration period has closed.',
                                         textAlign: TextAlign.center,
                                         style: GoogleFonts.gothicA1(
                                             textBaseline:
