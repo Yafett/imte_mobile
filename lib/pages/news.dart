@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:imte_mobile/models/News.dart';
 import 'package:imte_mobile/pages/news-detail.dart';
+import 'package:imte_mobile/shared/theme.dart';
 import 'package:imte_mobile/widget/history-card.dart';
 import 'package:imte_mobile/widget/news-card.dart';
 import 'package:http/http.dart' as http;
@@ -29,8 +30,6 @@ class _NewsPageState extends State<NewsPage> {
   String lastContent = '';
   String tests = '';
   bool loading = true;
-
-  
 
   // ! get News Data
   dataImage() async {
@@ -73,14 +72,8 @@ class _NewsPageState extends State<NewsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              'No Updated News',
-              style: GoogleFonts.poppins(
-                color: Color.fromARGB(255, 0, 0, 0),
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
+            Text('No Updated News',
+                style: blackTextStyle.copyWith(fontSize: 16)),
           ]),
     );
   }
@@ -155,21 +148,20 @@ class _NewsPageState extends State<NewsPage> {
               children: [
                 Text(
                   lastTitle,
-                  style: GoogleFonts.poppins(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                  textAlign: TextAlign.start,
+                  style: whiteTextStyle.copyWith(
+                      fontSize: 28, fontWeight: semiBold),
                 ),
                 SizedBox(
                   height: 20,
                 ),
                 Row(
                   children: [
-                    Text('see more',
-                        style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white)),
+                    Text(
+                      'see more',
+                      style: whiteTextStyle.copyWith(
+                          fontSize: 16, fontWeight: semiBold),
+                    ),
                     Icon(
                       Icons.arrow_right,
                       color: Colors.white,

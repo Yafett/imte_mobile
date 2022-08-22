@@ -11,6 +11,7 @@ import 'package:imte_mobile/models/Instrument.dart';
 import 'package:imte_mobile/models/Profile.dart';
 import 'package:imte_mobile/pages/profile-edit.dart';
 import 'package:imte_mobile/pages/profile.dart';
+import 'package:imte_mobile/shared/theme.dart';
 import 'package:imte_mobile/widget/enroll-card-small.dart';
 import 'package:imte_mobile/widget/enroll-card.dart';
 import 'package:imte_mobile/widget/enroll-news-card.dart';
@@ -539,7 +540,7 @@ class _EnrollPageState extends State<EnrollPage> {
       height: 150,
       width: double.infinity,
       decoration: BoxDecoration(
-          color: Color(0xff0DB1BF),
+          color: kBlueColor,
           borderRadius: BorderRadius.only(
             bottomLeft: Radius.circular(12),
             bottomRight: Radius.circular(12),
@@ -557,19 +558,15 @@ class _EnrollPageState extends State<EnrollPage> {
                 width: MediaQuery.of(context).size.width * 0.25,
                 child: Text(
                   key,
-                  style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff616161)),
+                  style: greyTextStyle.copyWith(
+                      fontSize: 16, fontWeight: semiBold),
                 )),
             Container(
                 width: MediaQuery.of(context).size.width * 0.05,
                 child: Text(
                   ':',
-                  style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xff616161)),
+                  style: greyTextStyle.copyWith(
+                      fontSize: 16, fontWeight: semiBold),
                 )),
             value,
           ],
@@ -601,7 +598,7 @@ class _EnrollPageState extends State<EnrollPage> {
               padding: EdgeInsets.all(15),
               height: MediaQuery.of(context).size.height,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: radiusNormal,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -615,10 +612,7 @@ class _EnrollPageState extends State<EnrollPage> {
                             children: [
                               Text(
                                 'Details',
-                                style: GoogleFonts.poppins(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.black),
+                                style: blackTextStyle.copyWith(fontSize: 20),
                               )
                             ],
                           ),
@@ -628,7 +622,7 @@ class _EnrollPageState extends State<EnrollPage> {
                             },
                             child: Icon(
                               Icons.close,
-                              color: Color.fromARGB(255, 39, 39, 39),
+                              color: kBlackColor,
                               size: 36.0,
                             ),
                           ),
@@ -638,27 +632,27 @@ class _EnrollPageState extends State<EnrollPage> {
                   textLine(
                     'Name',
                     Text((dfirst).toLowerCase(),
-                        style: GoogleFonts.poppins(color: Colors.black)),
+                        style: blackTextStyle.copyWith(fontSize: 16)),
                   ),
                   textLine(
                     'Teacher',
                     Text(itemTeacher.firstName.toString().toLowerCase(),
-                        style: GoogleFonts.poppins(color: Colors.black)),
+                        style: blackTextStyle.copyWith(fontSize: 16)),
                   ),
                   textLine(
                     'Date',
                     Text(DateFormat.yMMMd().format(dt),
-                        style: GoogleFonts.poppins(color: Colors.black)),
+                        style: blackTextStyle.copyWith(fontSize: 16)),
                   ),
                   textLine(
                     'Major',
                     Text(itemMajor.major,
-                        style: GoogleFonts.poppins(color: Colors.black)),
+                        style: blackTextStyle.copyWith(fontSize: 16)),
                   ),
                   textLine(
                     'Grade',
                     Text(itemGrade.grade,
-                        style: GoogleFonts.poppins(color: Colors.black)),
+                        style: blackTextStyle.copyWith(fontSize: 16)),
                   ),
                   Divider(thickness: 1),
                   Container(
@@ -674,13 +668,13 @@ class _EnrollPageState extends State<EnrollPage> {
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
                             border: Border.all(color: Colors.green),
-                            borderRadius: BorderRadius.circular(12)),
+                            borderRadius: radiusNormal),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               'View Certificate',
-                              style: GoogleFonts.poppins(
+                              style: GoogleFonts.openSans(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w500,
                                 color: Colors.green,
@@ -859,7 +853,7 @@ class _EnrollPageState extends State<EnrollPage> {
           'No Updated News',
           style: GoogleFonts.poppins(
             color: Color.fromARGB(255, 0, 0, 0),
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -902,12 +896,6 @@ class _EnrollPageState extends State<EnrollPage> {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  // Navigator.push(
-                                  //     context,
-                                  //     MaterialPageRoute(
-                                  //         builder: (context) => ProfilePage(
-                                  //               enableBack: 'true',
-                                  //             )));
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -926,8 +914,7 @@ class _EnrollPageState extends State<EnrollPage> {
                                               'assets/image/learn.jpg'),
                                           fit: BoxFit.fill,
                                         ),
-                                        borderRadius:
-                                            BorderRadius.circular(12)),
+                                        borderRadius: radiusNormal),
                                   ),
                                 ),
                               ),
@@ -938,22 +925,14 @@ class _EnrollPageState extends State<EnrollPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      (dfirst).toLowerCase() + ' ',
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    Text(
-                                      email,
-                                      style: GoogleFonts.poppins(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
+                                    Text((dfirst).toLowerCase() + ' ',
+                                        style: whiteTextStyle.copyWith(
+                                          fontSize: 16,
+                                        )),
+                                    Text(email,
+                                        style: whiteTextStyle.copyWith(
+                                          fontSize: 16,
+                                        )),
                                   ],
                                 ),
                               ),
@@ -967,7 +946,7 @@ class _EnrollPageState extends State<EnrollPage> {
                       width: MediaQuery.of(context).size.width,
                       decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: radiusNormal,
                           boxShadow: [
                             BoxShadow(
                               color: Colors.grey
@@ -984,7 +963,10 @@ class _EnrollPageState extends State<EnrollPage> {
                               padding: EdgeInsets.all(10),
                               child: Text(
                                 'Activity',
-                                style: GoogleFonts.gothicA1(fontSize: 16),
+                                style: blackTextStyle.copyWith(
+                                  fontSize: 16,
+                                  fontWeight: semi,
+                                ),
                               ),
                             ),
                             InkWell(
@@ -994,21 +976,20 @@ class _EnrollPageState extends State<EnrollPage> {
                                 height:
                                     MediaQuery.of(context).size.height * 0.05,
                                 decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(12),
-                                      bottomRight: Radius.circular(12),
-                                    ),
-                                    color: (statusEnroll == 'active')
-                                        ? Color(0xffAE2329)
-                                        : Color.fromARGB(255, 141, 141, 141)),
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(12),
+                                    bottomRight: Radius.circular(12),
+                                  ),
+                                  color: (statusEnroll == 'active')
+                                      ? Color.fromARGB(255, 157, 20, 20)
+                                      : Colors.grey,
+                                ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text('Enroll',
-                                        style: GoogleFonts.gothicA1(
+                                        style: whiteTextStyle.copyWith(
                                           fontSize: 16,
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.white,
                                         )),
                                   ],
                                 ),
@@ -1033,7 +1014,7 @@ class _EnrollPageState extends State<EnrollPage> {
                                     MediaQuery.of(context).size.height - 550,
                                 width: MediaQuery.of(context).size.width,
                                 decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: radiusNormal,
                                     border: Border.all(
                                         color: Color.fromARGB(
                                             255, 200, 200, 200))),
@@ -1047,13 +1028,8 @@ class _EnrollPageState extends State<EnrollPage> {
                                             ? 'You have never taken the IMTE exam.'
                                             : 'IMTE registration period has closed.',
                                         textAlign: TextAlign.center,
-                                        style: GoogleFonts.gothicA1(
-                                            textBaseline:
-                                                TextBaseline.alphabetic,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w400,
-                                            color: Color.fromARGB(
-                                                255, 83, 83, 83)),
+                                        style: greyTextStyle.copyWith(
+                                            fontSize: 16),
                                       ),
                                     )
                                   ],
@@ -1069,14 +1045,11 @@ class _EnrollPageState extends State<EnrollPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(
-                            'Recent News',
-                            style: GoogleFonts.gothicA1(
-                              color: Color.fromARGB(255, 0, 0, 0),
-                              fontSize: 20,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
+                          Text('Recent News',
+                              style: blackTextStyle.copyWith(
+                                fontSize: 20,
+                                fontWeight: semiBold,
+                              )),
                         ],
                       ),
                     ),

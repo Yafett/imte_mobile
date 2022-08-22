@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:imte_mobile/pages/history.dart';
 import 'package:imte_mobile/pages/profile.dart';
+import 'package:imte_mobile/shared/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'enroll.dart';
@@ -41,13 +42,19 @@ class _DashboardPageState extends State<DashboardPage> {
   showAlertDialog(BuildContext context) {
     // set up the buttons
     Widget cancelButton = TextButton(
-      child: Text("Nope"),
+      child: Text(
+        "Nope",
+        style: blackTextStyle.copyWith(fontSize: 16),
+      ),
       onPressed: () {
         Navigator.pop(context);
       },
     );
     Widget continueButton = TextButton(
-      child: Text("Sure"),
+      child: Text(
+        "Sure",
+        style: blackTextStyle.copyWith(fontSize: 16),
+      ),
       onPressed: () {
         SystemNavigator.pop();
       },
@@ -55,8 +62,14 @@ class _DashboardPageState extends State<DashboardPage> {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Alert"),
-      content: Text("Are you sure want to leave this Page?"),
+      title: Text(
+        "Alert",
+        style: blackTextStyle.copyWith(fontSize: 20, fontWeight: semiBold),
+      ),
+      content: Text(
+        "Are you sure want to leave this Page?",
+        style: greyTextStyle.copyWith(fontSize: 16),
+      ),
       actions: [
         cancelButton,
         continueButton,
@@ -76,7 +89,6 @@ class _DashboardPageState extends State<DashboardPage> {
   final _pageOptions = [
     EnrollPage(),
     NewsPage(),
- 
     HistoryPage(),
   ];
 

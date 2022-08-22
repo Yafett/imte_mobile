@@ -7,6 +7,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:imte_mobile/pages/profile-edit.dart';
+import 'package:imte_mobile/shared/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -494,19 +495,14 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           actions: [
             InkWell(
-              onTap: () {
-                print('asd');
-              },
+              onTap: () {},
               child: Container(
                 margin: EdgeInsets.only(right: 15),
                 child: Chip(
                   backgroundColor: Color.fromARGB(255, 79, 143, 81),
                   label: Text(
                     'save',
-                    style: GoogleFonts.gothicA1(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: whiteTextStyle.copyWith(),
                   ),
                 ),
               ),

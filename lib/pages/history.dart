@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:imte_mobile/models/History.dart';
+import 'package:imte_mobile/shared/theme.dart';
 import 'package:imte_mobile/widget/history-card.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -102,7 +103,7 @@ class _HistoryPageState extends State<HistoryPage> {
           width: MediaQuery.of(context).size.width * 0.3,
           decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: radiusNormal,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.1), //color of shadow
@@ -141,7 +142,7 @@ class _HistoryPageState extends State<HistoryPage> {
           margin: EdgeInsets.only(left: 5),
           decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: radiusNormal,
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.1), //color of shadow
@@ -192,7 +193,7 @@ class _HistoryPageState extends State<HistoryPage> {
                               image: AssetImage('assets/image/1.png'),
                               fit: BoxFit.fill,
                             ),
-                            borderRadius: BorderRadius.circular(12)),
+                            borderRadius: radiusNormal),
                       ),
                   ],
                 ),
@@ -232,14 +233,11 @@ class _HistoryPageState extends State<HistoryPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Text(
-                  'History',
-                  style: GoogleFonts.poppins(
-                    color: Color.fromARGB(255, 19, 19, 19),
-                    fontSize: 34,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                Text('History',
+                    style: blackTextStyle.copyWith(
+                      fontSize: 30,
+                      fontWeight: semiBold,
+                    )),
               ],
             ),
             Divider(
@@ -247,27 +245,19 @@ class _HistoryPageState extends State<HistoryPage> {
             ),
             Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: radiusNormal,
                 ),
                 height: MediaQuery.of(context).size.height - 250,
                 child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      // border:
-                      //     Border.all(color: Color.fromARGB(255, 200, 200, 200)),
+                      borderRadius: radiusNormal,
                     ),
                     width: MediaQuery.of(context).size.width,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'You have never taken the IMTE exam.',
-                          style: GoogleFonts.gothicA1(
-                            color: Colors.grey,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        )
+                        Text('You have never taken the IMTE exam.',
+                            style: greyTextStyle.copyWith(fontSize: 16))
                       ],
                     )))
           ]),

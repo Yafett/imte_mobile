@@ -113,7 +113,7 @@ class SignInPageState extends State<SignInPage> {
   Widget signInText() {
     return Text(
       'Sign In',
-      style: GoogleFonts.gothicA1(fontSize: 30, fontWeight: FontWeight.w600),
+      style: blackTextStyle.copyWith(fontSize: 26, fontWeight: semiBold),
     );
   }
 
@@ -124,25 +124,18 @@ class SignInPageState extends State<SignInPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Email',
-              style: GoogleFonts.gothicA1(
-                  fontSize: 16,
-                  color: Color(0xff535353),
-                  fontWeight: FontWeight.w500),
-            ),
+            Text('Email', style: blackTextStyle.copyWith(fontSize: 16)),
             SizedBox(height: 5),
             TextFormField(
               controller: emailController,
               decoration: InputDecoration(
-                hintStyle: GoogleFonts.gothicA1(
-                    color: Color(0xff979797), fontWeight: FontWeight.w500),
+                hintStyle: greyTextStyle.copyWith(fontSize: 16),
                 hintText: 'Email Address',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: radiusNormal,
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: radiusNormal,
                 ),
               ),
               validator: (text) {
@@ -166,26 +159,19 @@ class SignInPageState extends State<SignInPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Password',
-              style: GoogleFonts.gothicA1(
-                  fontSize: 16,
-                  color: Color(0xff535353),
-                  fontWeight: FontWeight.w500),
-            ),
+            Text('Password', style: blackTextStyle.copyWith(fontSize: 16)),
             SizedBox(height: 5),
             TextFormField(
               controller: passwordController,
               obscureText: true,
               decoration: InputDecoration(
-                hintStyle: GoogleFonts.gothicA1(
-                    color: Color(0xff979797), fontWeight: FontWeight.w500),
+                hintStyle: greyTextStyle.copyWith(fontSize: 16),
                 hintText: 'Password',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: radiusNormal,
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: radiusNormal,
                 ),
               ),
               validator: (text) {
@@ -205,28 +191,24 @@ class SignInPageState extends State<SignInPage> {
 
   // ! signIn Button
   Widget signInButton() {
-    return Container(
-        padding: EdgeInsets.symmetric(horizontal: 10),
-        margin: EdgeInsets.only(top: 20),
-        width: MediaQuery.of(context).size.width * 1,
-        height: MediaQuery.of(context).size.height * 0.065,
-        child: TextButton(
-          onPressed: () {
-            checkingField();
-          },
-          style: TextButton.styleFrom(
-              backgroundColor: Color(0xff1F98A8),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12))),
-          child: Text(
-            'Sign In ',
-            style: GoogleFonts.gothicA1(
-              fontSize: 18,
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ));
+    return InkWell(
+      child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 10),
+          margin: EdgeInsets.only(top: 20),
+          width: MediaQuery.of(context).size.width * 1,
+          height: MediaQuery.of(context).size.height * 0.070,
+          child: TextButton(
+            onPressed: _isLoading ? null : _startLoading,
+            style: TextButton.styleFrom(
+                backgroundColor: Color(0xff1F98A8),
+                shape: RoundedRectangleBorder(borderRadius: radiusNormal)),
+            child: Text(_isLoading ? 'Loading...' : 'Sign In',
+                style: whiteTextStyle.copyWith(
+                  fontSize: 20,
+                  fontWeight: semiBold,
+                )),
+          )),
+    );
   }
 
   // ! button signup
@@ -235,11 +217,9 @@ class SignInPageState extends State<SignInPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text("Didn't have any Account yet? ",
-            style: GoogleFonts.gothicA1(fontSize: 12)),
+            style: blackTextStyle.copyWith(fontSize: 14)),
         GestureDetector(
-          child: Text('Sign Up',
-              style:
-                  GoogleFonts.gothicA1(fontSize: 12, color: Color(0xff1F98A8))),
+          child: Text('Sign Up', style: blueTextStyle.copyWith(fontSize: 14)),
           onTap: () {
             Navigator.pushNamed(context, '/sign-up');
           },
@@ -275,7 +255,7 @@ class SignInPageState extends State<SignInPage> {
                   SizedBox(height: 2),
                   Container(
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: radiusNormal,
                         border: Border.all(
                             color: Color.fromARGB(174, 143, 143, 143))),
                     padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
@@ -289,34 +269,7 @@ class SignInPageState extends State<SignInPage> {
                               email(),
                               SizedBox(height: 10),
                               password(),
-                              InkWell(
-                                // onTap: _isLoading ? null : _startLoading,
-                                child: Container(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 10),
-                                    margin: EdgeInsets.only(top: 20),
-                                    width:
-                                        MediaQuery.of(context).size.width * 1,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.065,
-                                    child: TextButton(
-                                      onPressed:
-                                          _isLoading ? null : _startLoading,
-                                      style: TextButton.styleFrom(
-                                          backgroundColor: Color(0xff1F98A8),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(12))),
-                                      child: Text(
-                                        _isLoading ? 'Loading...' : 'Sign In',
-                                        style: GoogleFonts.gothicA1(
-                                          fontSize: 18,
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    )),
-                              ),
+                              signInButton(),
                               SizedBox(height: 10),
                               signUpNavigation(),
                             ],

@@ -392,7 +392,7 @@ class _LoginPageState extends State<LoginPage> {
             padding: EdgeInsets.all(20),
             width: double.infinity,
             // height: 980,
-            color: kMaroonColor,
+            // color: kMaroonColor,
             child: Column(
               children: [
                 Column(
@@ -404,7 +404,8 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                           fontSize: 38,
                           fontWeight: FontWeight.bold,
-                          color: kWhiteColor),
+                          color: kWhiteColor,
+                          ),
                     ),
                     Divider(
                       height: 50,

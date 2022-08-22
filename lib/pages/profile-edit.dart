@@ -626,7 +626,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 editProfile();
               },
               style: TextButton.styleFrom(
-                  backgroundColor: kBlueColor,
+                  backgroundColor: Color(0xff1F98A8),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12))),
               child: Text(
@@ -659,33 +659,31 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             ),
           ),
           actions: [
-            InkWell(
+            GestureDetector(
               onTap: () {
-                print('asd');
                 editProfile();
               },
               child: Container(
                 margin: EdgeInsets.only(right: 15),
                 child: Chip(
-                  backgroundColor: Color(0xff0DB1BF),
-                  label: Text(
-                    'save',
-                    style: GoogleFonts.gothicA1(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  backgroundColor: kBlueColor,
+                  label: Text('save',
+                      style: whiteTextStyle.copyWith(
+                        fontSize: 16,
+                        fontWeight: semiBold,
+                      )),
                 ),
               ),
             )
           ],
-          title: Text('My Profile',
-              style: GoogleFonts.gothicA1(
-                  color: Color.fromARGB(255, 41, 41, 41),
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold)),
+          title: Text(
+            'My Profile',
+            style: blackTextStyle.copyWith(
+              fontSize: 20,
+              fontWeight: semiBold,
+            ),
+          ),
         ),
-        // backgroundColor: Color.fromARGB(255, 207, 32, 32),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Container(
@@ -704,8 +702,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text('Profile Image',
-                                style: GoogleFonts.openSans(
-                                    fontSize: 14, fontWeight: FontWeight.bold)),
+                                style: blackTextStyle.copyWith(
+                                  fontSize: 16,
+                                  fontWeight: semiBold,
+                                )),
                             InkWell(
                               onTap: () {
                                 getFromCamera();
@@ -721,18 +721,18 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                                       fit: BoxFit.fill,
                                     ),
                                     border: Border.all(color: Colors.blue),
-                                    borderRadius: BorderRadius.circular(120)),
+                                    borderRadius: radiusNormal),
                               ),
                             ),
                             Text('Change',
-                                style: GoogleFonts.openSans(fontSize: 14)),
+                                style: blackTextStyle.copyWith(fontSize: 14)),
                           ],
                         ),
                         SizedBox(width: 10),
                         Flexible(
                           child: Text(
                             "Put your best profile picture!.",
-                            style: GoogleFonts.openSans(fontSize: 14),
+                            style: blackTextStyle.copyWith(fontSize: 14),
                           ),
                         )
                       ],
@@ -740,13 +740,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                 SizedBox(height: 50),
 
                 Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                  Text(
-                    'Student',
-                    style: GoogleFonts.openSans(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  )
+                  Text('Student',
+                      style: blackTextStyle.copyWith(
+                        fontSize: 20,
+                        fontWeight: semiBold,
+                      ))
                 ]),
                 // !
                 SizedBox(height: 30),
@@ -992,10 +990,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                       Text(
                         'Guardian',
-                        style: GoogleFonts.openSans(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
+                        style: blackTextStyle.copyWith(
+                          fontSize: 20,
+                          fontWeight: semiBold,
+                        ),
                       )
                     ]),
 

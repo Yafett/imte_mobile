@@ -8,6 +8,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:imte_mobile/pages/profile-edit.dart';
+import 'package:imte_mobile/shared/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:html/dom.dart' as dom;
@@ -75,8 +76,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
       children: [
         Text(
           widget.newsTitle,
-          style:
-              GoogleFonts.gothicA1(fontSize: 28, fontWeight: FontWeight.bold),
+          style: blackTextStyle.copyWith(fontSize: 26, fontWeight: semiBold),
         ),
       ],
     );
@@ -101,15 +101,10 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.newsUser,
-              style: GoogleFonts.gothicA1(
-                  fontWeight: FontWeight.w600, fontSize: 16),
-            ),
+            Text(widget.newsUser, style: blackTextStyle.copyWith(fontSize: 16)),
             Text(
               widget.newsDate,
-              style: GoogleFonts.gothicA1(
-                  fontSize: 16, color: Color.fromARGB(255, 115, 115, 115)),
+              style: greyTextStyle.copyWith(fontSize: 16),
             ),
           ],
         ),
@@ -123,8 +118,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
         child: Html(
       data: widget.newsContent,
       style: {
-        'p': Style.fromTextStyle(
-            GoogleFonts.gothicA1(fontSize: 16, letterSpacing: 1)),
+        'p': Style.fromTextStyle(blackTextStyle.copyWith(fontSize: 16)),
         'html': Style(textAlign: TextAlign.justify),
       },
       onLinkTap: (String? url, RenderContext context,
@@ -148,7 +142,7 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
           },
           child: Icon(
             Icons.arrow_back_ios,
-            color: Colors.grey,
+            color: Color.fromARGB(255, 37, 37, 37),
             size: 25,
           ),
         ),
@@ -158,26 +152,23 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
               child: Icon(
                 Icons.comment,
                 size: 25,
-                color: Colors.grey,
+                color: Color.fromARGB(255, 37, 37, 37),
               )),
         ],
-        title: Text('News Detail',
-            style: GoogleFonts.gothicA1(
-                color: Color.fromARGB(255, 124, 124, 124),
-                fontSize: 20,
-                fontWeight: FontWeight.bold)),
+        title: Text(widget.newsTitle,
+            style: blackTextStyle.copyWith(fontSize: 20, fontWeight: semiBold)),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
             child: Container(
           padding: EdgeInsets.all(15),
           child: Column(children: [
-            headerText(),
-            SizedBox(height: 30),
+            // headerText(),
+            // SizedBox(height: 30),
             headerContent(),
-            SizedBox(height: 30),
-            headerImage(),
             SizedBox(height: 20),
+            headerImage(),
+            SizedBox(height: 10),
             content()
           ]),
         )),

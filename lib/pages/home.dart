@@ -6,6 +6,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:imte_mobile/models/Gallery.dart';
+import 'package:imte_mobile/shared/theme.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
@@ -40,15 +41,13 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.symmetric(vertical: 15, horizontal: 115),
           margin: EdgeInsets.only(bottom: 5),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: radiusNormal,
             color: Color(0xffAE2329),
           ),
-          child: Text('Login',
-              style: GoogleFonts.poppins(
-                fontSize: 22,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-              )),
+          child: Text(
+            'Login',
+            style: whiteTextStyle.copyWith(fontSize: 20, fontWeight: semiBold),
+          ),
         ));
   }
 
@@ -64,10 +63,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Text(
                 "Terms and Conditions",
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  color: Colors.white,
-                ),
+                style: whiteTextStyle.copyWith(fontSize: 14),
               ),
             ],
           ),
@@ -81,10 +77,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Text(
                 "Privacy Policy",
-                style: GoogleFonts.poppins(
-                  fontSize: 12,
-                  color: Colors.white,
-                ),
+                style: whiteTextStyle.copyWith(fontSize: 14),
               ),
             ],
           ),
