@@ -219,7 +219,7 @@ class _HistoryPageState extends State<HistoryPage> {
   void initState() {
     super.initState();
     getHistory();
-}
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -249,7 +249,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
                 ),
-                height: MediaQuery.of(context).size.height - 200,
+                height: MediaQuery.of(context).size.height - 250,
                 child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),

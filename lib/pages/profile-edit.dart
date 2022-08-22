@@ -53,6 +53,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   String daddress = '';
   String dcity = '';
 
+  String _title = 'Radio Button Example';
+
+  var genderList = ['Laki-laki', 'Perempuan'];
+  var genderval;
+
   @override
   void initState() {
     super.initState();
@@ -111,6 +116,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       cityController.text = dcity;
       addressController.text = daddress;
       birthController.text = dbirth;
+      genderval = dgender == 'L' ? 'Laki-laki' : 'Perempuan';
     });
 
     loading = false;
@@ -121,7 +127,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     Map data = {
       "first_name": firstnameController.text,
       "last_name": lastnameController.text,
-      "gender": genderController.text,
+      "gender": genderval == 'Perempuan' ? 'P' : 'L',
       "place": placeController.text,
       "date_of_birth": birthController.text,
       "mobile": mobileController.text,
@@ -639,21 +645,417 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Color(0xFFF0F0F0),
+          leading: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: Color.fromARGB(255, 37, 37, 37),
+              size: 25,
+            ),
+          ),
+          actions: [
+            InkWell(
+              onTap: () {
+                print('asd');
+                editProfile();
+              },
+              child: Container(
+                margin: EdgeInsets.only(right: 15),
+                child: Chip(
+                  backgroundColor: Color(0xff0DB1BF),
+                  label: Text(
+                    'save',
+                    style: GoogleFonts.gothicA1(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
+          title: Text('My Profile',
+              style: GoogleFonts.gothicA1(
+                  color: Color.fromARGB(255, 41, 41, 41),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold)),
+        ),
+        // backgroundColor: Color.fromARGB(255, 207, 32, 32),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Container(
               padding: EdgeInsets.all(15),
-              width: double.infinity,
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+              width: MediaQuery.of(context).size.width,
+              child: Column(children: [
+                SizedBox(height: 10),
+                Container(
+                    color: Color(0xFFF0F0F0),
+                    height: MediaQuery.of(context).size.height * 0.18,
+                    width: MediaQuery.of(context).size.width,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Profile Image',
+                                style: GoogleFonts.openSans(
+                                    fontSize: 14, fontWeight: FontWeight.bold)),
+                            InkWell(
+                              onTap: () {
+                                getFromCamera();
+                              },
+                              child: Container(
+                                height: 80,
+                                width: 80,
+                                decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    image: DecorationImage(
+                                      image:
+                                          AssetImage('assets/image/smile.jpg'),
+                                      fit: BoxFit.fill,
+                                    ),
+                                    border: Border.all(color: Colors.blue),
+                                    borderRadius: BorderRadius.circular(120)),
+                              ),
+                            ),
+                            Text('Change',
+                                style: GoogleFonts.openSans(fontSize: 14)),
+                          ],
+                        ),
+                        SizedBox(width: 10),
+                        Flexible(
+                          child: Text(
+                            "Put your best profile picture!.",
+                            style: GoogleFonts.openSans(fontSize: 14),
+                          ),
+                        )
+                      ],
+                    )),
+                SizedBox(height: 50),
+
+                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                  Text(
+                    'Student',
+                    style: GoogleFonts.openSans(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold),
+                  )
+                ]),
+                // !
+                SizedBox(height: 30),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      child: Column(children: [
-                        form(),
-                      ]),
+                    TextFormField(
+                      controller: firstnameController,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(0),
+                          labelStyle: GoogleFonts.openSans(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                          hintText: 'e.g., John Doe',
+                          label: Row(
+                            children: [
+                              Text('Name '),
+                              Text('*', style: TextStyle(color: Colors.red)),
+                            ],
+                          )),
+                      onSaved: (String? value) {
+                        // This optional block of code can be used to run
+                        // code when the user saves the form.
+                      },
+                      validator: (String? value) {
+                        return (value!.length < 0 || value.contains('@'))
+                            ? "Can't be empty"
+                            : null;
+                      },
                     ),
-                  ]),
+                    SizedBox(height: 30),
+
+                    // !
+                    Row(
+                      children: [
+                        Text('Gender '),
+                        Text('*', style: TextStyle(color: Colors.red)),
+                      ],
+                    ),
+
+                    DropdownButton(
+                      underline: Container(
+                          height: 2, color: Color.fromARGB(255, 209, 209, 209)),
+                      isExpanded: true,
+                      hint: Text('Select your gender'),
+                      items: genderList.map((item) {
+                        return DropdownMenuItem(
+                          value: item.toString(),
+                          child: Text(item.toString()),
+                        );
+                      }).toList(),
+                      onChanged: (newVal) {
+                        setState(() {
+                          genderval = newVal;
+                        });
+                      },
+                      value: genderval,
+                    ),
+
+                    // ! radio buttons
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    //   children: [
+                    //     Expanded(
+                    //       child: Row(
+                    //         children: [
+                    //           Radio(
+                    //             value: 'b',
+                    //             groupValue: _title,
+                    //             onChanged: (String? value) {
+                    //               setState(() {
+                    //                 _title = value!;
+                    //               });
+                    //             },
+                    //           ),
+                    //           Expanded(
+                    //             child: Text('Laki-laki'),
+                    //           )
+                    //         ],
+                    //       ),
+                    //       flex: 1,
+                    //     ),
+                    //     Expanded(
+                    //       child: Row(
+                    //         children: [
+                    //           Radio(
+                    //             value: 'a',
+                    //             groupValue: _title,
+                    //             onChanged: (String? value) {
+                    //               setState(() {
+                    //                 _title = value!;
+                    //               });
+                    //             },
+                    //           ),
+                    //           Expanded(child: Text('Perempuan'))
+                    //         ],
+                    //       ),
+                    //       flex: 1,
+                    //     ),
+                    //   ],
+                    // ),
+
+                    SizedBox(height: 30),
+
+                    // !
+                    TextFormField(
+                      controller: placeController,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(0),
+                          labelStyle: GoogleFonts.openSans(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                          hintText: 'e.g city',
+                          label: Row(
+                            children: [
+                              Text('Place '),
+                              Text('*', style: TextStyle(color: Colors.red)),
+                            ],
+                          )),
+                      onSaved: (String? value) {
+                        // This optional block of code can be used to run
+                        // code when the user saves the form.
+                      },
+                      validator: (String? value) {
+                        return (value!.length < 0) ? "Can't be empty" : null;
+                      },
+                    ),
+                    SizedBox(height: 30),
+
+                    // !
+                    TextFormField(
+                      controller: birthController,
+                      decoration: InputDecoration(
+                          suffix: IconButton(
+                            icon: Icon(
+                              Icons.edit_calendar,
+                              size: 20,
+                            ),
+                            onPressed: () {},
+                          ),
+                          contentPadding: EdgeInsets.all(0),
+                          labelStyle: GoogleFonts.openSans(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                          hintText: 'e.g city',
+                          label: Row(
+                            children: [
+                              Text('Birth Date '),
+                              Text('*', style: TextStyle(color: Colors.red)),
+                            ],
+                          )),
+                      onSaved: (String? value) {
+                        // This optional block of code can be used to run
+                        // code when the user saves the form.
+                      },
+                      validator: (String? value) {
+                        return (value!.length < 0) ? "Can't be empty" : null;
+                      },
+                    ),
+                    SizedBox(height: 30),
+
+                    // !
+                    TextFormField(
+                      controller: addressController,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(0),
+                          labelStyle: GoogleFonts.openSans(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                          hintText: 'e.g city',
+                          label: Row(
+                            children: [
+                              Text('Address '),
+                              Text('*', style: TextStyle(color: Colors.red)),
+                            ],
+                          )),
+                      onSaved: (String? value) {
+                        // This optional block of code can be used to run
+                        // code when the user saves the form.
+                      },
+                      validator: (String? value) {
+                        return (value!.length < 0) ? "Can't be empty" : null;
+                      },
+                    ),
+                    SizedBox(height: 30),
+
+                    // !
+                    TextFormField(
+                      controller: cityController,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(0),
+                          labelStyle: GoogleFonts.openSans(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                          hintText: 'e.g city',
+                          label: Row(
+                            children: [
+                              Text('City '),
+                              Text('*', style: TextStyle(color: Colors.red)),
+                            ],
+                          )),
+                      onSaved: (String? value) {
+                        // This optional block of code can be used to run
+                        // code when the user saves the form.
+                      },
+                      validator: (String? value) {
+                        return (value!.length < 0) ? "Can't be empty" : null;
+                      },
+                    ),
+                    SizedBox(height: 30),
+
+                    // !
+                    TextFormField(
+                      controller: mobileController,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(0),
+                          labelStyle: GoogleFonts.openSans(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                          hintText: 'e.g 123xxxxxx',
+                          label: Row(
+                            children: [
+                              Text('Mobile '),
+                              Text('*', style: TextStyle(color: Colors.red)),
+                            ],
+                          )),
+                      onSaved: (String? value) {
+                        // This optional block of code can be used to run
+                        // code when the user saves the form.
+                      },
+                      validator: (String? value) {
+                        return (value!.length < 0) ? "Can't be empty" : null;
+                      },
+                    ),
+                    SizedBox(height: 40),
+
+                    Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                      Text(
+                        'Guardian',
+                        style: GoogleFonts.openSans(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      )
+                    ]),
+
+                    SizedBox(height: 30),
+
+                    // !
+
+                    TextFormField(
+                      controller: waliController,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(0),
+                          labelStyle: GoogleFonts.openSans(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                          hintText: 'e.g., John Doe',
+                          label: Row(
+                            children: [
+                              Text('Name '),
+                              Text('*', style: TextStyle(color: Colors.red)),
+                            ],
+                          )),
+                      onSaved: (String? value) {
+                        // This optional block of code can be used to run
+                        // code when the user saves the form.
+                      },
+                      validator: (String? value) {
+                        return (value!.length < 0 || value.contains('@'))
+                            ? "Can't be empty"
+                            : null;
+                      },
+                    ),
+                    SizedBox(height: 30),
+                    TextFormField(
+                      controller: noWaliController,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(0),
+                          labelStyle: GoogleFonts.openSans(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                          hintText: 'e.g 123xxxxxx',
+                          label: Row(
+                            children: [
+                              Text('Mobile '),
+                              Text('*', style: TextStyle(color: Colors.red)),
+                            ],
+                          )),
+                      onSaved: (String? value) {
+                        // This optional block of code can be used to run
+                        // code when the user saves the form.
+                      },
+                      validator: (String? value) {
+                        return (value!.length < 0) ? "Can't be empty" : null;
+                      },
+                    ),
+                    SizedBox(height: 30),
+                  ],
+                ),
+              ]),
             ),
           ),
         ));

@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:imte_mobile/models/History.dart';
 import 'package:imte_mobile/models/Instrument.dart';
 import 'package:imte_mobile/models/Profile.dart';
+import 'package:imte_mobile/pages/profile-edit.dart';
 import 'package:imte_mobile/pages/profile.dart';
 import 'package:imte_mobile/widget/enroll-card-small.dart';
 import 'package:imte_mobile/widget/enroll-card.dart';
@@ -869,7 +870,7 @@ class _EnrollPageState extends State<EnrollPage> {
   @override
   void initState() {
     super.initState();
-    // dataProfile();
+    dataProfile();
     dataTeacher();
     dataInstrument();
     dataGrade();
@@ -901,10 +902,16 @@ class _EnrollPageState extends State<EnrollPage> {
                             children: [
                               GestureDetector(
                                 onTap: () {
+                                  // Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: (context) => ProfilePage(
+                                  //               enableBack: 'true',
+                                  //             )));
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => ProfilePage(
+                                          builder: (context) => ProfileEditPage(
                                                 enableBack: 'true',
                                               )));
                                 },

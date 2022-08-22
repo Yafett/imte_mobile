@@ -87,8 +87,7 @@ class SignInPageState extends State<SignInPage> {
       _isLoading = true;
     });
 
-    // Wait for 3 seconds
-    await Future.delayed(const Duration(seconds: 5));
+    await Future.delayed(const Duration(seconds: 2));
     checkingField();
 
     setState(() {
@@ -114,7 +113,7 @@ class SignInPageState extends State<SignInPage> {
   Widget signInText() {
     return Text(
       'Sign In',
-      style: GoogleFonts.poppins(fontSize: 30, fontWeight: FontWeight.w600),
+      style: GoogleFonts.gothicA1(fontSize: 30, fontWeight: FontWeight.w600),
     );
   }
 
@@ -127,7 +126,7 @@ class SignInPageState extends State<SignInPage> {
           children: [
             Text(
               'Email',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.gothicA1(
                   fontSize: 16,
                   color: Color(0xff535353),
                   fontWeight: FontWeight.w500),
@@ -136,7 +135,7 @@ class SignInPageState extends State<SignInPage> {
             TextFormField(
               controller: emailController,
               decoration: InputDecoration(
-                hintStyle: GoogleFonts.poppins(
+                hintStyle: GoogleFonts.gothicA1(
                     color: Color(0xff979797), fontWeight: FontWeight.w500),
                 hintText: 'Email Address',
                 border: OutlineInputBorder(
@@ -169,7 +168,7 @@ class SignInPageState extends State<SignInPage> {
           children: [
             Text(
               'Password',
-              style: GoogleFonts.poppins(
+              style: GoogleFonts.gothicA1(
                   fontSize: 16,
                   color: Color(0xff535353),
                   fontWeight: FontWeight.w500),
@@ -179,7 +178,7 @@ class SignInPageState extends State<SignInPage> {
               controller: passwordController,
               obscureText: true,
               decoration: InputDecoration(
-                hintStyle: GoogleFonts.poppins(
+                hintStyle: GoogleFonts.gothicA1(
                     color: Color(0xff979797), fontWeight: FontWeight.w500),
                 hintText: 'Password',
                 border: OutlineInputBorder(
@@ -221,7 +220,7 @@ class SignInPageState extends State<SignInPage> {
                   borderRadius: BorderRadius.circular(12))),
           child: Text(
             'Sign In ',
-            style: GoogleFonts.poppins(
+            style: GoogleFonts.gothicA1(
               fontSize: 18,
               color: Colors.white,
               fontWeight: FontWeight.w500,
@@ -236,11 +235,11 @@ class SignInPageState extends State<SignInPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text("Didn't have any Account yet? ",
-            style: GoogleFonts.poppins(fontSize: 12)),
+            style: GoogleFonts.gothicA1(fontSize: 12)),
         GestureDetector(
           child: Text('Sign Up',
               style:
-                  GoogleFonts.poppins(fontSize: 12, color: Color(0xff1F98A8))),
+                  GoogleFonts.gothicA1(fontSize: 12, color: Color(0xff1F98A8))),
           onTap: () {
             Navigator.pushNamed(context, '/sign-up');
           },
@@ -255,9 +254,7 @@ class SignInPageState extends State<SignInPage> {
       var snackBar = SnackBar(content: Text("There's still empty"));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
-      Timer(Duration(seconds: 1), () {
-        signIn(emailController.text, passwordController.text);
-      });
+      signIn(emailController.text, passwordController.text);
     }
   }
 
@@ -312,7 +309,7 @@ class SignInPageState extends State<SignInPage> {
                                                   BorderRadius.circular(12))),
                                       child: Text(
                                         _isLoading ? 'Loading...' : 'Sign In',
-                                        style: GoogleFonts.poppins(
+                                        style: GoogleFonts.gothicA1(
                                           fontSize: 18,
                                           color: Colors.white,
                                           fontWeight: FontWeight.w500,

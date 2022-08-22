@@ -73,7 +73,6 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   headerText() {
     return Column(
       children: [
-        SizedBox(height: 30),
         Text(
           widget.newsTitle,
           style:
@@ -140,25 +139,39 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Color(0xFFF0F0F0),
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.grey,
+            size: 25,
+          ),
+        ),
+        actions: [
+          Container(
+              margin: EdgeInsets.only(right: 15),
+              child: Icon(
+                Icons.comment,
+                size: 25,
+                color: Colors.grey,
+              )),
+        ],
+        title: Text('News Detail',
+            style: GoogleFonts.gothicA1(
+                color: Color.fromARGB(255, 124, 124, 124),
+                fontSize: 20,
+                fontWeight: FontWeight.bold)),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
             child: Container(
           padding: EdgeInsets.all(15),
           child: Column(children: [
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Icon(
-                    Icons.arrow_back_ios,
-                    color: Color.fromARGB(255, 82, 82, 82),
-                    size: 30.0,
-                  ),
-                ),
-              ],
-            ),
             headerText(),
             SizedBox(height: 30),
             headerContent(),

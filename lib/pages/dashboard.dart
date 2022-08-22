@@ -76,9 +76,7 @@ class _DashboardPageState extends State<DashboardPage> {
   final _pageOptions = [
     EnrollPage(),
     NewsPage(),
-    ProfilePage(
-      enableBack: 'false',
-    ),
+ 
     HistoryPage(),
   ];
 
@@ -93,8 +91,8 @@ class _DashboardPageState extends State<DashboardPage> {
                   icon: Icon(Icons.home_outlined, size: 30), label: ''),
               BottomNavigationBarItem(
                   icon: Icon(Icons.newspaper_outlined, size: 30), label: ''),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.person, size: 30), label: ''),
+              // BottomNavigationBarItem(
+              //     icon: Icon(Icons.person, size: 30), label: ''),
               BottomNavigationBarItem(
                 label: '',
                 icon: Icon(Icons.history_outlined, size: 30),

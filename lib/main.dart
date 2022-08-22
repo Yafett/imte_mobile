@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
       theme: new ThemeData(scaffoldBackgroundColor: const Color(0xFFF0F0F0)),
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => SignInPage(),
+        '/': (context) => HomePage(),
         '/sign-in': (context) => SignInPage(),
         '/sign-up': (context) => SignUpPage(),
         '/dashboard': (context) => DashboardPage(token: ''),
