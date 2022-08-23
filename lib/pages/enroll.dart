@@ -783,17 +783,20 @@ class _EnrollPageState extends State<EnrollPage> {
     var image = itemFeed.src;
     var mii = image.replaceAll('./', '');
 
-    return InkWell(
-      onTap: () {
-        launch(itemFeed.url);
-      },
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16), // Image border
-        child: SizedBox.fromSize(
-          size: Size.fromRadius(
-            MediaQuery.of(context).size.width * 0.155,
-          ), // Image radius
-          child: Image.network('https://imte.education/' + mii),
+    return Container(
+      margin: EdgeInsets.only(right: 5),
+      child: InkWell(
+        onTap: () {
+          launch(itemFeed.url);
+        },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16), // Image border
+          child: SizedBox.fromSize(
+            size: Size.fromRadius(
+              MediaQuery.of(context).size.width * 0.150,
+            ), // Image radius
+            child: Image.network('https://imte.education/' + mii),
+          ),
         ),
       ),
     );
@@ -919,7 +922,7 @@ class _EnrollPageState extends State<EnrollPage> {
                                 ),
                               ),
                               Container(
-                                width: MediaQuery.of(context).size.width * 0.4,
+                                width: MediaQuery.of(context).size.width * 0.7,
                                 margin: EdgeInsets.only(left: 12),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,

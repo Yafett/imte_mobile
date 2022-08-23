@@ -195,13 +195,28 @@ class _NewsPageState extends State<NewsPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CircularProgressIndicator(
-            strokeWidth: 5,
-            color: Color.fromARGB(255, 70, 111, 234),
-          ),
+          Text(
+            'Now Loading...',
+            style: greyTextStyle.copyWith(fontSize: 20),
+          )
         ],
       ),
     );
+
+    // Container(
+    //   height: MediaQuery.of(context).size.height,
+    //   width: MediaQuery.of(context).size.width,
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     crossAxisAlignment: CrossAxisAlignment.center,
+    //     children: [
+    //       CircularProgressIndicator(
+    //         strokeWidth: 5,
+    //         color: Color.fromARGB(255, 70, 111, 234),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   @override
