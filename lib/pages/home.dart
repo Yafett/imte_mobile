@@ -7,9 +7,12 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:imte_mobile/models/Gallery.dart';
 import 'package:imte_mobile/shared/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
+
+import 'dashboard.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -21,7 +24,15 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var listGallery = [];
   var videoSrc = '';
-  VideoPlayerController _controller = VideoPlayerController.network('');
+
+  TextEditingController emailController = new TextEditingController();
+  TextEditingController passwordController = new TextEditingController();
+
+  bool _isLoading = false;
+
+  // VideoPlayerController _controller = VideoPlayerController.network('');
+  VideoPlayerController _controller =
+      VideoPlayerController.asset('assets/video/opening.mp4');
 
   @override
   void initState() {
@@ -31,58 +42,62 @@ class _HomePageState extends State<HomePage> {
 
   Widget loginButton() {
     return InkWell(
-        onTap: () {
-          _controller.pause();
-
-          Navigator.pushNamedAndRemoveUntil(
-              context, '/sign-in', (route) => false);
-        },
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 15, horizontal: 115),
-          margin: EdgeInsets.only(bottom: 5),
-          decoration: BoxDecoration(
-            borderRadius: radiusNormal,
-            color: Color(0xffAE2329),
-          ),
-          child: Text(
-            'Login',
-            style: whiteTextStyle.copyWith(fontSize: 20, fontWeight: semiBold),
-          ),
-        ));
+      child: Container(
+          // margin: EdgeInsets.only(top: 20),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height * 0.070,
+          child: TextButton(
+            onPressed: _isLoading ? null : _startLoading,
+            style: TextButton.styleFrom(
+                backgroundColor: Color(0xffAE2329),
+                shape: RoundedRectangleBorder(borderRadius: radiusNormal)),
+            child: Text(_isLoading ? 'Loading...' : 'Sign In',
+                style: whiteTextStyle.copyWith(
+                  fontSize: 20,
+                  fontWeight: semiBold,
+                )),
+          )),
+    );
   }
 
   Widget smallText() {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            launch('https://sister.sekolahmusik.co.id/terms');
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Terms and Conditions",
-                style: whiteTextStyle.copyWith(fontSize: 14),
-              ),
-            ],
+    return Container(
+      margin: EdgeInsets.only(bottom: 15),
+      height: MediaQuery.of(context).size.height,
+      width: MediaQuery.of(context).size.width,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          GestureDetector(
+            onTap: () {
+              launch('https://imte.education/terms');
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Terms and Conditions",
+                  style: whiteTextStyle.copyWith(fontSize: 14),
+                ),
+              ],
+            ),
           ),
-        ),
-        GestureDetector(
-          onTap: () {
-            launch('https://sister.sekolahmusik.co.id/privacy');
-          },
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Privacy Policy",
-                style: whiteTextStyle.copyWith(fontSize: 14),
-              ),
-            ],
+          GestureDetector(
+            onTap: () {
+              launch('https://imte.education/privacy');
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Privacy Policy",
+                  style: whiteTextStyle.copyWith(fontSize: 14),
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -107,6 +122,101 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
+    );
+  }
+
+  Widget signInText() {
+    return Text(
+      'Sign In',
+      style: blackTextStyle.copyWith(fontSize: 26, fontWeight: semiBold),
+    );
+  }
+
+  Widget email() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Email', style: blackTextStyle.copyWith(fontSize: 16)),
+            SizedBox(height: 5),
+            TextFormField(
+              // controller: emailController,
+              decoration: InputDecoration(
+                hintStyle: greyTextStyle.copyWith(fontSize: 16),
+                hintText: 'Email Address',
+                border: OutlineInputBorder(
+                  borderRadius: radiusNormal,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: radiusNormal,
+                ),
+              ),
+              validator: (text) {
+                if (text == null || text.isEmpty) {
+                  return 'Can\'t be empty';
+                }
+                if (text.length < 4) {
+                  return 'Too short';
+                }
+                return null;
+              },
+            )
+          ]),
+    );
+  }
+
+  Widget password() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Password', style: blackTextStyle.copyWith(fontSize: 16)),
+            SizedBox(height: 5),
+            TextFormField(
+              // controller: passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                hintStyle: greyTextStyle.copyWith(fontSize: 16),
+                hintText: 'Password',
+                border: OutlineInputBorder(
+                  borderRadius: radiusNormal,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: radiusNormal,
+                ),
+              ),
+              validator: (text) {
+                if (text == null || text.isEmpty) {
+                  return 'Can\'t be empty';
+                }
+                if (text.length < 4) {
+                  return 'Too short';
+                }
+                return null;
+              },
+            )
+          ]),
+    );
+  }
+  // ! end form part
+
+  Widget signUpNavigation() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text("Didn't have any Account yet? ",
+            style: blackTextStyle.copyWith(fontSize: 14)),
+        GestureDetector(
+          child: Text('Sign Up', style: blueTextStyle.copyWith(fontSize: 14)),
+          onTap: () {
+            Navigator.pushNamed(context, '/sign-up');
+          },
+        )
+      ],
     );
   }
 
@@ -169,7 +279,8 @@ class _HomePageState extends State<HomePage> {
     var vii = videoSrc.replaceAll('./', '');
     print(vii);
 
-    _controller = VideoPlayerController.network('https://imte.education/' + vii)
+    // _controller = VideoPlayerController.network('https://imte.education/' + vii)
+    _controller = VideoPlayerController.asset('assets/video/op.mp4')
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
@@ -177,29 +288,187 @@ class _HomePageState extends State<HomePage> {
 
     _controller.play();
     _controller.setLooping(true);
+    _controller.setVolume(0);
+  }
+
+// ! empty field validator
+  checkingField() {
+    if (emailController.text == "" || passwordController.text == "") {
+      var snackBar = SnackBar(content: Text("There's still empty"));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      signIn(emailController.text, passwordController.text);
+    }
+  }
+
+  signIn(String email, String password) async {
+    Map data = {
+      'email': email,
+      'password': password,
+    };
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    var token = '';
+    int user = 0;
+
+    var response = await http.post(
+        Uri.parse('https://adm.imte.education/api/user/loginv2'),
+        headers: {
+          "Accept": "application/json",
+        },
+        body: data);
+    var result = response.body;
+
+    print(result.toString());
+
+    if (response.statusCode == 200) {
+      var jsonData = jsonDecode(response.body);
+
+      token = jsonData['token'];
+      user = jsonData['user'];
+
+      prefs.setInt('user', user);
+
+      prefs.setString('emails', email);
+
+      print('your token : ' + token);
+
+      print('your email : ' + email);
+
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+              builder: (context) => DashboardPage(
+                    token: token,
+                  )),
+          (route) => false);
+    } else {
+      var snackBar = SnackBar(content: Text('Wrong Data Input'));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      setState(() {});
+    }
+  }
+
+  // ! loading indicator
+  void _startLoading() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    await Future.delayed(const Duration(seconds: 2));
+    checkingField();
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Stack(
-          children: <Widget>[
-            videoBackground(),
-            darkenEffect(),
-            Container(
-              margin: EdgeInsets.only(bottom: 50),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  loginButton(),
-                  smallText(),
-                ],
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Stack(
+            children: <Widget>[
+              videoBackground(),
+              darkenEffect(),
+              imteLogo(),
+              Container(
+                padding: EdgeInsets.all(15),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: 150),
+                      decoration: BoxDecoration(
+                        borderRadius: radiusNormal,
+                        color: Colors.white70,
+                      ),
+                      padding: EdgeInsets.all(15),
+                      child: Column(
+                        children: [
+                          SizedBox(height: 10),
+                          TextFormField(
+                            controller: emailController,
+                            style: blackTextStyle,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(
+                                Icons.person_outline,
+                                color: kBlackColor,
+                              ),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                                //  when the TextFormField in unfocused
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                                //  when the TextFormField in focused
+                              ),
+                              border: UnderlineInputBorder(),
+                              focusColor: Colors.black,
+                              hintText: 'Email',
+                              hintStyle: blackTextStyle.copyWith(fontSize: 16),
+                            ),
+                            onSaved: (String? value) {
+                              // This optional block of code can be used to run
+                              // code when the user saves the form.
+                            },
+                            validator: (String? value) {
+                              return (value!.length < 0)
+                                  ? "Can't be empty"
+                                  : null;
+                            },
+                          ),
+                          SizedBox(height: 20),
+                          TextFormField(
+                            obscureText: true,
+                            controller: passwordController,
+                            style: blackTextStyle,
+                            decoration: InputDecoration(
+                              suffixIcon:
+                                  Icon(Icons.visibility, color: kBlackColor),
+                              prefixIcon:
+                                  Icon(Icons.lock_outline, color: kBlackColor),
+                              enabledBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                                //  when the TextFormField in unfocused
+                              ),
+                              focusedBorder: UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                                //  when the TextFormField in focused
+                              ),
+                              border: UnderlineInputBorder(),
+                              focusColor: Colors.black,
+                              hintText: 'Password',
+                              hintStyle: blackTextStyle.copyWith(fontSize: 16),
+                            ),
+                            onSaved: (String? value) {
+                              // This optional block of code can be used to run
+                              // code when the user saves the form.
+                            },
+                            validator: (String? value) {
+                              return (value!.length < 0)
+                                  ? "Can't be empty"
+                                  : null;
+                            },
+                          ),
+                          SizedBox(height: 20),
+                          SizedBox(height: 10),
+                          loginButton(),
+                          signUpNavigation(),
+                          SizedBox(height: 10),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            imteLogo(),
-          ],
+              smallText()
+            ],
+          ),
         ),
       ),
     );
