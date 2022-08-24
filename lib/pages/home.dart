@@ -24,6 +24,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var listGallery = [];
   var videoSrc = '';
+  // Initially password is obscure
+  bool _obscureText = true;
+
+  String _password = '';
+
+  // Toggles the password show status
+  void _toggle() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
 
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
@@ -367,110 +378,119 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          child: Stack(
-            children: <Widget>[
-              videoBackground(),
-              darkenEffect(),
-              imteLogo(),
-              Container(
-                padding: EdgeInsets.all(15),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+        body: SingleChildScrollView(
+            child: Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                child: Stack(
+                  children: <Widget>[
+                    videoBackground(),
+                    darkenEffect(),
+                    imteLogo(),
                     Container(
-                      margin: EdgeInsets.only(top: 150),
-                      decoration: BoxDecoration(
-                        borderRadius: radiusNormal,
-                        color: Colors.white70,
-                      ),
                       padding: EdgeInsets.all(15),
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(height: 10),
-                          TextFormField(
-                            controller: emailController,
-                            style: blackTextStyle,
-                            decoration: InputDecoration(
-                              prefixIcon: Icon(
-                                Icons.person_outline,
-                                color: kBlackColor,
-                              ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                                //  when the TextFormField in unfocused
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                                //  when the TextFormField in focused
-                              ),
-                              border: UnderlineInputBorder(),
-                              focusColor: Colors.black,
-                              hintText: 'Email',
-                              hintStyle: blackTextStyle.copyWith(fontSize: 16),
+                          Container(
+                            margin: EdgeInsets.only(top: 150),
+                            decoration: BoxDecoration(
+                              borderRadius: radiusNormal,
+                              color: Colors.white70,
                             ),
-                            onSaved: (String? value) {
-                              // This optional block of code can be used to run
-                              // code when the user saves the form.
-                            },
-                            validator: (String? value) {
-                              return (value!.length < 0)
-                                  ? "Can't be empty"
-                                  : null;
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          TextFormField(
-                            obscureText: true,
-                            controller: passwordController,
-                            style: blackTextStyle,
-                            decoration: InputDecoration(
-                              suffixIcon:
-                                  Icon(Icons.visibility, color: kBlackColor),
-                              prefixIcon:
-                                  Icon(Icons.lock_outline, color: kBlackColor),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                                //  when the TextFormField in unfocused
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                                //  when the TextFormField in focused
-                              ),
-                              border: UnderlineInputBorder(),
-                              focusColor: Colors.black,
-                              hintText: 'Password',
-                              hintStyle: blackTextStyle.copyWith(fontSize: 16),
+                            padding: EdgeInsets.all(15),
+                            child: Column(
+                              children: [
+                                SizedBox(height: 10),
+                                TextFormField(
+                                  controller: emailController,
+                                  style: blackTextStyle,
+                                  decoration: InputDecoration(
+                                    prefixIcon: Icon(
+                                      Icons.person_outline,
+                                      color: kBlackColor,
+                                    ),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black),
+                                      //  when the TextFormField in unfocused
+                                    ),
+                                    focusedBorder: UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black),
+                                      //  when the TextFormField in focused
+                                    ),
+                                    border: UnderlineInputBorder(),
+                                    focusColor: Colors.black,
+                                    hintText: 'Email',
+                                    hintStyle:
+                                        blackTextStyle.copyWith(fontSize: 16),
+                                  ),
+                                  onSaved: (String? value) {
+                                    // This optional block of code can be used to run
+                                    // code when the user saves the form.
+                                  },
+                                  validator: (String? value) {
+                                    return (value!.length < 0)
+                                        ? "Can't be empty"
+                                        : null;
+                                  },
+                                ),
+                                SizedBox(height: 20),
+                                TextFormField(
+                                  obscureText: _obscureText,
+                                  controller: passwordController,
+                                  style: blackTextStyle,
+                                  decoration: InputDecoration(
+                                    suffix: IconButton(
+                                      icon: Icon((_obscureText
+                                          ? Icons.visibility
+                                          : Icons.visibility_off)),
+                                      onPressed: () {
+                                        _toggle();
+                                      },
+                                    ),
+                                    prefixIcon: Icon(Icons.lock_outline,
+                                        color: kBlackColor),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black),
+                                      //  when the TextFormField in unfocused
+                                    ),
+                                    focusedBorder: UnderlineInputBorder(
+                                      borderSide:
+                                          BorderSide(color: Colors.black),
+                                      //  when the TextFormField in focused
+                                    ),
+                                    border: UnderlineInputBorder(),
+                                    focusColor: Colors.black,
+                                    hintText: 'Password',
+                                    hintStyle:
+                                        blackTextStyle.copyWith(fontSize: 16),
+                                  ),
+                                  onSaved: (String? value) {
+                                    // This optional block of code can be used to run
+                                    // code when the user saves the form.
+                                  },
+                                  validator: (String? value) {
+                                    return (value!.length < 0)
+                                        ? "Can't be empty"
+                                        : null;
+                                  },
+                                ),
+                                SizedBox(height: 20),
+                                SizedBox(height: 10),
+                                loginButton(),
+                                signUpNavigation(),
+                                SizedBox(height: 10),
+                              ],
                             ),
-                            onSaved: (String? value) {
-                              // This optional block of code can be used to run
-                              // code when the user saves the form.
-                            },
-                            validator: (String? value) {
-                              return (value!.length < 0)
-                                  ? "Can't be empty"
-                                  : null;
-                            },
                           ),
-                          SizedBox(height: 20),
-                          SizedBox(height: 10),
-                          loginButton(),
-                          signUpNavigation(),
-                          SizedBox(height: 10),
                         ],
                       ),
                     ),
+                    smallText()
                   ],
-                ),
-              ),
-              smallText()
-            ],
-          ),
-        ),
-      ),
-    );
+                ))));
   }
 }
