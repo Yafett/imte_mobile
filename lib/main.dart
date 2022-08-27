@@ -15,6 +15,7 @@ import 'package:imte_mobile/widget/enroll-card.dart';
 import 'package:imte_mobile/widget/news-card.dart';
 import 'widget/sticky_navbar.dart';
 import 'pages/login.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   // add these lines
@@ -39,6 +40,15 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       theme: new ThemeData(scaffoldBackgroundColor: const Color(0xFFF0F0F0)),
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en', ''), // English, no country code
+        Locale('id', ''), // Spanish, no country code
+      ],
       routes: {
         '/': (context) => HomePage(),
         '/sign-in': (context) => SignInPage(),

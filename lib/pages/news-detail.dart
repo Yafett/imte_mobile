@@ -149,10 +149,16 @@ class _NewsDetailPageState extends State<NewsDetailPage> {
         actions: [
           Container(
               margin: EdgeInsets.only(right: 15),
-              child: Icon(
-                Icons.comment,
-                size: 25,
-                color: Color.fromARGB(255, 37, 37, 37),
+              child: IconButton(
+                onPressed: () {
+                  var snackBar = SnackBar(content: Text("Not ready yet"));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                },
+                icon: Icon(
+                  Icons.comment,
+                  size: 25,
+                  color: Color.fromARGB(255, 37, 37, 37),
+                ),
               )),
         ],
         title: Text(widget.newsTitle,
