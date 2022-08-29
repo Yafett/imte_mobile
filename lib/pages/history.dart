@@ -38,8 +38,8 @@ class _HistoryPageState extends State<HistoryPage> {
     final response = await http.post(Uri.parse(API_URL), headers: {
       'Accept': 'application/json',
     }, body: {
-      // 'tab_user_id': user.toString(),
-      'tab_user_id': '1482',
+      'tab_user_id': user.toString(),
+      // 'tab_user_id': '1482',
     });
 
     final data = await json.decode(response.body);
@@ -118,19 +118,11 @@ class _HistoryPageState extends State<HistoryPage> {
               if (itemHistory.result.toString() == 'null')
                 Text(
                   '0',
-                  style: GoogleFonts.poppins(
-                    fontSize: 30,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: greyTextStyle.copyWith(fontSize: 30),
                 ),
               Text(
                 'Not Yet',
-                style: GoogleFonts.poppins(
-                  fontSize: 20,
-                  color: Colors.grey,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: greyTextStyle.copyWith(fontSize: 30),
               ),
             ],
           ),
@@ -162,11 +154,8 @@ class _HistoryPageState extends State<HistoryPage> {
                       children: [
                         Text(
                           itemPeriod.periodName,
-                          style: GoogleFonts.poppins(
-                            color: Color(0xff505050),
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: blackTextStyle.copyWith(
+                              fontSize: 18, fontWeight: semiBold),
                         ),
                         Container(
                           width: MediaQuery.of(context).size.width * 0.3,
@@ -174,11 +163,7 @@ class _HistoryPageState extends State<HistoryPage> {
                             itemTeacher.firstName + itemTeacher.lastName,
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
-                            style: GoogleFonts.poppins(
-                              fontSize: 12.0,
-                              color: new Color(0xFF212121),
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: greyTextStyle.copyWith(fontSize: 14),
                           ),
                         ),
                       ],
@@ -202,11 +187,11 @@ class _HistoryPageState extends State<HistoryPage> {
                   children: [
                     Text(
                       '21 Juni 2022',
-                      style: GoogleFonts.poppins(),
+                      style: blackTextStyle,
                     ),
                     Text(
                       itemGrade.grade,
-                      style: GoogleFonts.poppins(),
+                      style: blackTextStyle,
                     ),
                   ],
                 )
@@ -253,13 +238,20 @@ class _HistoryPageState extends State<HistoryPage> {
                       borderRadius: radiusNormal,
                     ),
                     width: MediaQuery.of(context).size.width,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text('You have never taken the IMTE exam.',
-                            style: greyTextStyle.copyWith(fontSize: 16))
-                      ],
-                    )))
+                    child: (listHistory.length > 0)
+                        ? ListView.builder(
+                            itemCount: listHistory.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return buildListview(index);
+                            },
+                          )
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('You have never taken the IMTE exam.',
+                                  style: greyTextStyle.copyWith(fontSize: 16)),
+                            ],
+                          )))
           ]),
         );
       }

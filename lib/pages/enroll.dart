@@ -623,7 +623,7 @@ class _EnrollPageState extends State<EnrollPage> {
                             child: Icon(
                               Icons.close,
                               color: kBlackColor,
-                              size: 36.0,
+                              size: 30,
                             ),
                           ),
                         ]),
@@ -632,27 +632,27 @@ class _EnrollPageState extends State<EnrollPage> {
                   textLine(
                     'Name',
                     Text((dfirst).toLowerCase(),
-                        style: blackTextStyle.copyWith(fontSize: 16)),
+                        style: blackTextStyle.copyWith(fontSize: 14)),
                   ),
                   textLine(
                     'Teacher',
                     Text(itemTeacher.firstName.toString().toLowerCase(),
-                        style: blackTextStyle.copyWith(fontSize: 16)),
+                        style: blackTextStyle.copyWith(fontSize: 14)),
                   ),
                   textLine(
                     'Date',
                     Text(DateFormat.yMMMd().format(dt),
-                        style: blackTextStyle.copyWith(fontSize: 16)),
+                        style: blackTextStyle.copyWith(fontSize: 14)),
                   ),
                   textLine(
                     'Major',
                     Text(itemMajor.major,
-                        style: blackTextStyle.copyWith(fontSize: 16)),
+                        style: blackTextStyle.copyWith(fontSize: 14)),
                   ),
                   textLine(
                     'Grade',
                     Text(itemGrade.grade,
-                        style: blackTextStyle.copyWith(fontSize: 16)),
+                        style: blackTextStyle.copyWith(fontSize: 14)),
                   ),
                   Divider(thickness: 1),
                   Container(
@@ -661,8 +661,33 @@ class _EnrollPageState extends State<EnrollPage> {
                           index,
                           itemEnroll.activityStatus.split(''),
                           itemEnroll.activityFormat.split(','))),
+                  InkWell(
+                    onTap: () {},
+                    child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        width: MediaQuery.of(context).size.width,
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.green),
+                            borderRadius: radiusNormal),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'View Result',
+                              style: GoogleFonts.openSans(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        )),
+                  ),
                   SizedBox(height: 5),
                   InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/certificate');
+                    },
                     child: Container(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         width: MediaQuery.of(context).size.width,
@@ -793,7 +818,7 @@ class _EnrollPageState extends State<EnrollPage> {
           borderRadius: BorderRadius.circular(16), // Image border
           child: SizedBox.fromSize(
             size: Size.fromRadius(
-              MediaQuery.of(context).size.width * 0.150,
+              MediaQuery.of(context).size.width * 0.145,
             ), // Image radius
             child: Image.network('https://imte.education/' + mii),
           ),
@@ -839,10 +864,9 @@ class _EnrollPageState extends State<EnrollPage> {
               (listNumber[i].toString() == '1')
                   ? Text(
                       'Done',
-                      style: GoogleFonts.poppins(color: Colors.green),
+                      style: greenTextStyle,
                     )
-                  : Text('Not Yet',
-                      style: GoogleFonts.poppins(color: Colors.grey)));
+                  : Text('Not Yet', style: greyTextStyle));
         },
       ),
     );
@@ -922,7 +946,7 @@ class _EnrollPageState extends State<EnrollPage> {
                                 ),
                               ),
                               Container(
-                                width: MediaQuery.of(context).size.width * 0.7,
+                                width: MediaQuery.of(context).size.width * 0.6,
                                 margin: EdgeInsets.only(left: 12),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1037,11 +1061,14 @@ class _EnrollPageState extends State<EnrollPage> {
                                     )
                                   ],
                                 ))
-                            : ListView.builder(
-                                itemCount: listEnroll.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return buildListview(index);
-                                })),
+                            : ScrollConfiguration(
+                                behavior: NoGlow(),
+                                child: ListView.builder(
+                                    itemCount: listEnroll.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return buildListview(index);
+                                    }))),
 
                     Container(
                       margin: EdgeInsets.only(top: 30, bottom: 10),
@@ -1078,12 +1105,16 @@ class _EnrollPageState extends State<EnrollPage> {
                         ? loadingNews()
                         : Container(
                             height: MediaQuery.of(context).size.height * 0.3,
-                            child: ListView.builder(
-                                padding: EdgeInsets.symmetric(horizontal: 5),
-                                itemCount: listNews.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  return buildListviewNews(index);
-                                }),
+                            child: ScrollConfiguration(
+                                behavior: NoGlow(),
+                                child: ListView.builder(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 5),
+                                    itemCount: listNews.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      return buildListviewNews(index);
+                                    })),
                           )
                   ]),
                 ),

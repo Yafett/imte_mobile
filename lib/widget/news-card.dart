@@ -95,7 +95,7 @@ class newsCard extends StatelessWidget {
                                   width: 5,
                                 ),
                                 Container(
-                                  width: 100,
+                                  width: 80,
                                   child: Text(
                                     user,
                                     style: greyTextStyle.copyWith(),
@@ -118,7 +118,7 @@ class newsCard extends StatelessWidget {
                                 ),
                                 SizedBox(width: 5),
                                 Container(
-                                  width: 100,
+                                  width: 80,
                                   child: Text(
                                     date,
                                     style: greyTextStyle.copyWith(),

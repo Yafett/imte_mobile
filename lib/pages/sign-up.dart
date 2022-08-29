@@ -17,6 +17,15 @@ class SignUpPage extends StatefulWidget {
   State<SignUpPage> createState() => SignUpPageState();
 }
 
+// ! remove listview scroll glow
+class NoGlow extends ScrollBehavior {
+  @override
+  Widget buildViewportChrome(
+      BuildContext context, Widget child, AxisDirection axisDirection) {
+    return child;
+  }
+}
+
 class SignUpPageState extends State<SignUpPage> {
   TextEditingController firstnameController = new TextEditingController();
   TextEditingController lastnameController = new TextEditingController();
@@ -155,10 +164,12 @@ class SignUpPageState extends State<SignUpPage> {
         ),
         body: SafeArea(
           child: SingleChildScrollView(
+              child: ScrollConfiguration(
+            behavior: NoGlow(),
             child: Container(
               padding: EdgeInsets.all(15),
               width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height - 100,
+              height: MediaQuery.of(context).size.height,
               color: kWhiteColor,
               child: Column(
                 // ! header
@@ -394,7 +405,7 @@ class SignUpPageState extends State<SignUpPage> {
                 ],
               ),
             ),
-          ),
+          )),
         ));
   }
 }

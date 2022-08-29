@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:imte_mobile/pages/certificate.dart';
 import 'package:imte_mobile/pages/dashboard.dart';
 import 'package:imte_mobile/pages/enroll.dart';
 import 'package:imte_mobile/pages/history.dart';
@@ -60,6 +61,7 @@ class _MyAppState extends State<MyApp> {
             ),
         '/news': (context) => NewsPage(),
         '/history': (context) => HistoryPage(),
+        '/certificate': (context) => CertificatePage(),
       },
     );
   }

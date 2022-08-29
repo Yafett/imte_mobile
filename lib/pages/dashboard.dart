@@ -44,7 +44,7 @@ class _DashboardPageState extends State<DashboardPage> {
     Widget cancelButton = TextButton(
       child: Text(
         "Nope",
-        style: blackTextStyle.copyWith(fontSize: 16),
+        style: redTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
       ),
       onPressed: () {
         Navigator.pop(context);
@@ -53,7 +53,8 @@ class _DashboardPageState extends State<DashboardPage> {
     Widget continueButton = TextButton(
       child: Text(
         "Sure",
-        style: blackTextStyle.copyWith(fontSize: 16),
+        style: blackTextStyle.copyWith(
+            fontSize: 16, color: Colors.green, fontWeight: semiBold),
       ),
       onPressed: () {
         SystemNavigator.pop();
