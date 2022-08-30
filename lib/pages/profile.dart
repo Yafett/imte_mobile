@@ -765,6 +765,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     TextFormField(
                       initialValue: '0192831031',
                       decoration: InputDecoration(
+                          suffix: Icon(Icons.check),
                           contentPadding: EdgeInsets.all(0),
                           labelStyle: GoogleFonts.openSans(
                               color: Colors.black,

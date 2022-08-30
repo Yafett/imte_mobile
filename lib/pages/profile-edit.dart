@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -34,6 +36,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   TextEditingController cityController = new TextEditingController();
   TextEditingController waliController = new TextEditingController();
   TextEditingController noWaliController = new TextEditingController();
+  TextEditingController emailController = new TextEditingController();
 
   int user = 1;
 
@@ -52,6 +55,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   String dnowali = '';
   String daddress = '';
   String dcity = '';
+  int did = 0;
 
   String _title = 'Radio Button Example';
 
@@ -106,6 +110,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       dnowali = data['profile'][0]['no_wali'].toString();
       daddress = data['profile'][0]['address'].toString();
       dcity = data['profile'][0]['city'].toString();
+      did = data['profile'][0]['id'];
       firstnameController.text = dfirst;
       lastnameController.text = dlast;
       genderController.text = dgender;
@@ -114,6 +119,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       waliController.text = dwali;
       noWaliController.text = dnowali;
       cityController.text = dcity;
+      emailController.text = prefs.getString('emails')!;
       addressController.text = daddress;
       birthController.text = dbirth;
       genderval = dgender == 'L' ? 'Laki-laki' : 'Perempuan';
@@ -178,6 +184,76 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   // ! back button !isExist
   checkBack() {
     return (widget.enableBack == 'true') ? 'true' : 'false';
+  }
+
+  // ! Request  OTP Email
+  otpEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String API_URL = 'https://adm.imte.education/api/user/sendVerifEmail';
+
+    String emailOTP = prefs.getString('emails').toString();
+
+    final response = await http.post(Uri.parse(API_URL),
+        headers: {'Accept': 'application/json'}, body: {'id': did.toString()});
+
+    final data = await json.decode(response.body);
+
+    print(data);
+  }
+
+  sendOtpEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String API_URL = 'https://adm.imte.education/api/user/sendVerifEmail';
+
+    String emailOTP = prefs.getString('emails').toString();
+
+    final response = await http.post(Uri.parse(API_URL), headers: {
+      'Accept': 'application/json'
+    }, body: {
+      'id': did.toString(),
+      'otp': '',
+    });
+
+    final data = await json.decode(response.body);
+
+    print(data);
+  }
+
+  // ! Request OTP Wa
+  otpWa() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String API_URL = 'https://adm.imte.education/api/user/sendVerifEmail';
+
+    String emailOTP = prefs.getString('emails').toString();
+
+    final response = await http.post(Uri.parse(API_URL),
+        headers: {'Accept': 'application/json'}, body: {'id': did.toString()});
+
+    final data = await json.decode(response.body);
+
+    print(data);
+  }
+
+  sendOtpWa() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String API_URL = 'https://adm.imte.education/api/user/waVerifRequest';
+
+    String emailOTP = prefs.getString('emails').toString();
+
+    final response = await http.post(Uri.parse(API_URL), headers: {
+      'Accept': 'application/json'  
+    }, body: {
+      'id': did.toString(),
+      'otp': '',
+    });
+
+    final data = await json.decode(response.body);
+
+    print(data);
   }
 
   // ! backButton
@@ -597,6 +673,164 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     );
   }
 
+  // ! Modal OTP E-Mail
+  showOTPEmail(BuildContext context) {
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+      ),
+      content: Container(
+        height: MediaQuery.of(context).size.height * 0.3,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Activation',
+                    style: blackTextStyle.copyWith(
+                        fontSize: 20, fontWeight: semiBold)),
+                GestureDetector(
+                    child: Icon(Icons.close),
+                    onTap: () {
+                      Navigator.pop(context);
+                    }),
+              ],
+            ),
+            Divider(thickness: 2, height: 30),
+            Text(
+              'Please Input the OTP',
+              style: greyTextStyle.copyWith(fontSize: 12),
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              style: greyTextStyle.copyWith(fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'Input Here..',
+                border: OutlineInputBorder(
+                  borderRadius: radiusNormal,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: radiusNormal,
+                ),
+              ),
+            ),
+            Divider(thickness: 2, height: 30),
+            Row(
+              children: [
+                Container(
+                  margin: EdgeInsets.only(right: 10),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: Colors.amber),
+                    onPressed: () {},
+                    child: Text('Verified Later', style: blackTextStyle),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Resend OTP', style: whiteTextStyle),
+                ),
+              ],
+            ),
+            Text('Email is sent, Please Check your Email for OTP',
+                style: greyTextStyle.copyWith(fontSize: 12)),
+          ],
+        ),
+      ),
+      actions: [],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  // ! Modal OTP Wa
+  showOTPWa(BuildContext context) {
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+      ),
+      content: Container(
+        height: MediaQuery.of(context).size.height * 0.3,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Activation',
+                    style: blackTextStyle.copyWith(
+                        fontSize: 20, fontWeight: semiBold)),
+                GestureDetector(
+                    child: Icon(Icons.close),
+                    onTap: () {
+                      Navigator.pop(context);
+                    }),
+              ],
+            ),
+            Divider(thickness: 2, height: 30),
+            Text(
+              'Please Input the OTP',
+              style: greyTextStyle.copyWith(fontSize: 12),
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              style: greyTextStyle.copyWith(fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'Input Here..',
+                border: OutlineInputBorder(
+                  borderRadius: radiusNormal,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: radiusNormal,
+                ),
+              ),
+            ),
+            Divider(thickness: 2, height: 30),
+            Row(
+              children: [
+                Container(
+                  margin: EdgeInsets.only(right: 10),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: Colors.amber),
+                    onPressed: () {},
+                    child: Text('Verified Later', style: blackTextStyle),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {},
+                  child: Text('Resend OTP', style: whiteTextStyle),
+                ),
+              ],
+            ),
+            Text('Email is sent, Please Check your Whatsapp for OTP',
+                style: greyTextStyle.copyWith(fontSize: 12)),
+          ],
+        ),
+      ),
+      actions: [],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   // ! form
   Widget form() {
     return Column(
@@ -738,7 +972,6 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       ],
                     )),
                 SizedBox(height: 50),
-
                 Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                   Text('Student',
                       style: blackTextStyle.copyWith(
@@ -746,11 +979,11 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                         fontWeight: semiBold,
                       ))
                 ]),
-                // !
                 SizedBox(height: 30),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // ! Name
                     TextFormField(
                       controller: firstnameController,
                       decoration: InputDecoration(
@@ -778,14 +1011,51 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     ),
                     SizedBox(height: 30),
 
-                    // !
+                    // ! Email
+                    TextFormField(
+                      // enabled: false,
+                      controller: emailController,
+                      decoration: InputDecoration(
+                          suffix: InkWell(
+                            onTap: () {
+                              otpEmail();
+
+                              showOTPEmail(context);
+                            },
+                            child: Icon(
+                              Icons.check_circle_outline,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          contentPadding: EdgeInsets.all(0),
+                          labelStyle: GoogleFonts.openSans(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                          hintText: 'e.g., JohnDoe@gmail.com',
+                          label: Row(
+                            children: [
+                              Text('Email '),
+                              Text('*', style: TextStyle(color: Colors.red)),
+                            ],
+                          )),
+                      onSaved: (String? value) {
+                        // This optional block of code can be used to run
+                        // code when the user saves the form.
+                      },
+                      validator: (String? value) {
+                        return (value!.length < 0) ? "Can't be empty" : null;
+                      },
+                    ),
+                    SizedBox(height: 30),
+
+                    // ! Gender
                     Row(
                       children: [
                         Text('Gender '),
                         Text('*', style: TextStyle(color: Colors.red)),
                       ],
                     ),
-
                     DropdownButton(
                       underline: Container(
                           height: 2, color: Color.fromARGB(255, 209, 209, 209)),
@@ -850,7 +1120,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
                     SizedBox(height: 30),
 
-                    // !
+                    // ! Place
                     TextFormField(
                       controller: placeController,
                       decoration: InputDecoration(
@@ -876,7 +1146,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     ),
                     SizedBox(height: 30),
 
-                    // !
+                    // ! Birth
                     TextFormField(
                       controller: birthController,
                       decoration: InputDecoration(
@@ -909,7 +1179,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     ),
                     SizedBox(height: 30),
 
-                    // !
+                    // ! Address
                     TextFormField(
                       controller: addressController,
                       decoration: InputDecoration(
@@ -935,7 +1205,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     ),
                     SizedBox(height: 30),
 
-                    // !
+                    // ! City
                     TextFormField(
                       controller: cityController,
                       decoration: InputDecoration(
@@ -961,10 +1231,22 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     ),
                     SizedBox(height: 30),
 
-                    // !
+                    // ! Mobile
                     TextFormField(
+                      keyboardType: TextInputType.number,
                       controller: mobileController,
                       decoration: InputDecoration(
+                          suffix: InkWell(
+                            onTap: () {
+                              otpWa();
+
+                              showOTPWa(context);
+                            },
+                            child: Icon(
+                              Icons.check_circle_outline,
+                              color: Colors.grey,
+                            ),
+                          ),
                           contentPadding: EdgeInsets.all(0),
                           labelStyle: GoogleFonts.openSans(
                               color: Colors.black,
@@ -987,6 +1269,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     ),
                     SizedBox(height: 40),
 
+                    // ! Guardian Title
                     Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                       Text(
                         'Guardian',
@@ -999,8 +1282,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
                     SizedBox(height: 30),
 
-                    // !
-
+                    // ! Guardian Name
                     TextFormField(
                       controller: waliController,
                       decoration: InputDecoration(
@@ -1027,7 +1309,10 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                       },
                     ),
                     SizedBox(height: 30),
+
+                    // ! Guardian Mobile
                     TextFormField(
+                      keyboardType: TextInputType.number,
                       controller: noWaliController,
                       decoration: InputDecoration(
                           contentPadding: EdgeInsets.all(0),

@@ -15,7 +15,7 @@ import 'package:imte_mobile/pages/test.dart';
 import 'package:imte_mobile/widget/enroll-card.dart';
 import 'package:imte_mobile/widget/news-card.dart';
 import 'widget/sticky_navbar.dart';
-import 'pages/login.dart';
+import 'pages/login.dart'; 
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
@@ -63,6 +63,6 @@ class _MyAppState extends State<MyApp> {
         '/history': (context) => HistoryPage(),
         '/certificate': (context) => CertificatePage(),
       },
-    );
+    );  
   }
 }

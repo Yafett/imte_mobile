@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -888,6 +890,31 @@ class _EnrollPageState extends State<EnrollPage> {
     );
   }
 
+  Widget profilePicture() {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ProfileEditPage(
+                      enableBack: 'true',
+                    )));
+      },
+      child: Container(
+        child: Container(
+          height: 70,
+          width: 70,
+          decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/image/learn.jpg'),
+                fit: BoxFit.fill,
+              ),
+              borderRadius: radiusNormal),
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -916,35 +943,15 @@ class _EnrollPageState extends State<EnrollPage> {
                   child: Column(children: [
                     Container(
                       margin: EdgeInsets.symmetric(vertical: 15),
-                      child: Row(
+                      child:
+
+                          // ! Section Header
+                          Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Row(
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ProfileEditPage(
-                                                enableBack: 'true',
-                                              )));
-                                },
-                                child: Container(
-                                  child: Container(
-                                    height: 70,
-                                    width: 70,
-                                    decoration: BoxDecoration(
-                                        color: Colors.red,
-                                        image: DecorationImage(
-                                          image: AssetImage(
-                                              'assets/image/learn.jpg'),
-                                          fit: BoxFit.fill,
-                                        ),
-                                        borderRadius: radiusNormal),
-                                  ),
-                                ),
-                              ),
+                              profilePicture(),
                               Container(
                                 width: MediaQuery.of(context).size.width * 0.6,
                                 margin: EdgeInsets.only(left: 12),

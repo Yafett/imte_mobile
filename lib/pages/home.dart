@@ -24,12 +24,12 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var listGallery = [];
   var videoSrc = '';
-  // Initially password is obscure
+  var emailUp = '';
+  var passUp = '';
+
   bool _obscureText = true;
 
-  String _password = '';
-
-  // Toggles the password show status
+  // !Toggles the password show status
   void _toggle() {
     setState(() {
       _obscureText = !_obscureText;
@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     dataVideo();
+    afterSignUp();
   }
 
   Widget loginButton() {
@@ -312,13 +313,24 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // ! get after data
+  afterSignUp() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // emailUp = prefs.getString('emailSignUp')!;
+    // passUp = prefs.getString('passwordSignUp')!;
+
+    // print('your email after : ' + emailUp.toString());
+    // print('your password after : ' + passUp.toString());
+  }
+
   signIn(String email, String password) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
     Map data = {
       'email': email,
       'password': password,
     };
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     var token = '';
     int user = 0;
@@ -354,6 +366,9 @@ class _HomePageState extends State<HomePage> {
                     token: token,
                   )),
           (route) => false);
+
+      prefs.remove('emailSignUp');
+      prefs.remove('passwordSignUp');
     } else {
       var snackBar = SnackBar(content: Text('Wrong Data Input'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -396,13 +411,16 @@ class _HomePageState extends State<HomePage> {
                             margin: EdgeInsets.only(top: 150),
                             decoration: BoxDecoration(
                               borderRadius: radiusNormal,
-                              color: Colors.white70,
+                              color: Color.fromARGB(143, 255, 255, 255),
                             ),
                             padding: EdgeInsets.all(15),
                             child: Column(
                               children: [
                                 SizedBox(height: 10),
+
+                                // ! email
                                 TextFormField(
+                                  keyboardType: TextInputType.emailAddress,
                                   controller: emailController,
                                   style: blackTextStyle,
                                   decoration: InputDecoration(
@@ -437,6 +455,8 @@ class _HomePageState extends State<HomePage> {
                                   },
                                 ),
                                 SizedBox(height: 20),
+
+                                // ! password
                                 TextFormField(
                                   obscureText: _obscureText,
                                   controller: passwordController,
@@ -478,8 +498,8 @@ class _HomePageState extends State<HomePage> {
                                         : null;
                                   },
                                 ),
-                                SizedBox(height: 20),
-                                SizedBox(height: 10),
+                                SizedBox(height: 30),
+
                                 loginButton(),
                                 signUpNavigation(),
                                 SizedBox(height: 10),

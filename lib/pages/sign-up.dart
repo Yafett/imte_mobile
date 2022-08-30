@@ -39,6 +39,9 @@ class SignUpPageState extends State<SignUpPage> {
   List unitList = [];
   bool isLoading = false;
   String? _valFriends;
+  bool _obscureText = true;
+  bool _isLoading = false;
+  String _password = '';
 
   // ! sing up func
   signUp(String unit, String firstName, String lastName, String email,
@@ -66,7 +69,10 @@ class SignUpPageState extends State<SignUpPage> {
     print(jsonData);
 
     if (response.statusCode == 200) {
-      Navigator.pushNamedAndRemoveUntil(context, '/sign-in', (route) => false);
+      prefs.setString('emailSignUp', email);
+      prefs.setString('passwordSignUp', password);
+
+      Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
     } else {
       var snackBar = SnackBar(content: Text(jsonData['errors'].toString()));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -84,7 +90,6 @@ class SignUpPageState extends State<SignUpPage> {
       var snackBar = SnackBar(content: Text("There's still empty"));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
-      isLoading = true;
       Timer(Duration(seconds: 3), () {
         signUp(
           _valFriends.toString(),
@@ -97,6 +102,19 @@ class SignUpPageState extends State<SignUpPage> {
         );
       });
     }
+  }
+
+  void _startLoading() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    checkingField();
+    await Future.delayed(const Duration(seconds: 2));
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   // ! get data Unit
@@ -125,174 +143,115 @@ class SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: kWhiteColor,
-          leading: InkWell(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: kWhiteColor,
+        leading: InkWell(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.arrow_back_ios,
+            color: Color.fromARGB(255, 37, 37, 37),
+            size: 25,
+          ),
+        ),
+        actions: [
+          GestureDetector(
             onTap: () {
-              Navigator.pop(context);
+              print('sadada');
+              _isLoading ? null : _startLoading();
             },
-            child: Icon(
-              Icons.arrow_back_ios,
-              color: Color.fromARGB(255, 37, 37, 37),
-              size: 25,
+            child: Container(
+              margin: EdgeInsets.only(right: 15),
+              child: Chip(
+                backgroundColor: Color(0xff1F98A8),
+                label: Text(_isLoading ? 'Loading...' : 'Sign In',
+                    style: whiteTextStyle.copyWith(
+                      fontSize: 16,
+                      fontWeight: semiBold,
+                    )),
+              ),
             ),
           ),
-          actions: [
-            GestureDetector(
-              onTap: () {
-                checkingField();
-              },
-              child: Container(
-                margin: EdgeInsets.only(right: 15),
-                child: Chip(
-                  backgroundColor: Color(0xff1F98A8),
-                  label: Text('save',
-                      style: whiteTextStyle.copyWith(
-                        fontSize: 16,
-                        fontWeight: semiBold,
-                      )),
-                ),
-              ),
-            )
-          ],
-          title: Text('Sign Up',
-              style: blackTextStyle.copyWith(
-                fontSize: 20,
-                fontWeight: semiBold,
-              )),
-        ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-              child: ScrollConfiguration(
-            behavior: NoGlow(),
-            child: Container(
-              padding: EdgeInsets.all(15),
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              color: kWhiteColor,
-              child: Column(
-                // ! header
+        ],
+        title: Text('Sign Up',
+            style: blackTextStyle.copyWith(
+              fontSize: 20,
+              fontWeight: semiBold,
+            )),
+      ),
+      body: SingleChildScrollView(
+          child: ScrollConfiguration(
+        behavior: NoGlow(),
+        child: Container(
+          padding: EdgeInsets.all(15),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: kWhiteColor,
+          child: Column(
+            // ! header
+            children: [
+              Column(
                 children: [
+                  // ! unit textField
                   Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // ! unit textField
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Unit',
-                            style: blackTextStyle.copyWith(fontSize: 16),
-                          ),
-                          Container(
-                            margin: EdgeInsets.only(top: 5),
-                            padding: EdgeInsets.symmetric(
-                                vertical: 3, horizontal: 10),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: radiusNormal,
-                            ),
-                            width: MediaQuery.of(context).size.width,
-                            child: DropdownButton(
-                              underline: SizedBox(),
-                              isExpanded: true,
-                              hint: Text('Select Your Unit',
-                                  style: greyTextStyle.copyWith(fontSize: 16)),
-                              items: unitList.map((item) {
-                                return DropdownMenuItem(
-                                  value: item['id'].toString(),
-                                  child: Text(item['unit_name'].toString()),
-                                );
-                              }).toList(),
-                              onChanged: (newVal) {
-                                setState(() {
-                                  unitval = newVal;
-                                });
-                              },
-                              value: unitval,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        'Unit',
+                        style: blackTextStyle.copyWith(fontSize: 16),
                       ),
-                      SizedBox(height: 20),
-
-                      // ! first name textField
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.45,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('First Name',
-                                      style: blackTextStyle.copyWith(
-                                          fontSize: 16)),
-                                  SizedBox(height: 5),
-                                  TextFormField(
-                                    style: greyTextStyle.copyWith(fontSize: 16),
-                                    controller: firstnameController,
-                                    decoration: InputDecoration(
-                                      hintText: 'First Name',
-                                      border: OutlineInputBorder(
-                                        borderRadius: radiusNormal,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: radiusNormal,
-                                      ),
-                                    ),
-                                  )
-                                ]),
-                          ),
-                          Container(
-                            width: MediaQuery.of(context).size.width * 0.45,
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Last Name',
-                                    style:
-                                        blackTextStyle.copyWith(fontSize: 16),
-                                  ),
-                                  SizedBox(height: 5),
-                                  TextFormField(
-                                    style: greyTextStyle.copyWith(fontSize: 16),
-                                    controller: lastnameController,
-                                    decoration: InputDecoration(
-                                      hintText: 'Last Name',
-                                      border: OutlineInputBorder(
-                                        borderRadius: radiusNormal,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: radiusNormal,
-                                      ),
-                                    ),
-                                  )
-                                ]),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-
-                      // ! email textField
                       Container(
+                        margin: EdgeInsets.only(top: 5),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: radiusNormal,
+                        ),
+                        width: MediaQuery.of(context).size.width,
+                        child: DropdownButton(
+                          underline: SizedBox(),
+                          isExpanded: true,
+                          hint: Text('Select Your Unit',
+                              style: greyTextStyle.copyWith(fontSize: 16)),
+                          items: unitList.map((item) {
+                            return DropdownMenuItem(
+                              value: item['id'].toString(),
+                              child: Text(item['unit_name'].toString()),
+                            );
+                          }).toList(),
+                          onChanged: (newVal) {
+                            setState(() {
+                              unitval = newVal;
+                            });
+                          },
+                          value: unitval,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+
+                  // ! first name textField
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.45,
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                'Email',
-                                style: blackTextStyle.copyWith(fontSize: 16),
-                              ),
+                              Text('First Name',
+                                  style: blackTextStyle.copyWith(fontSize: 16)),
                               SizedBox(height: 5),
                               TextFormField(
-                                controller: emailController,
+                                style: greyTextStyle.copyWith(fontSize: 16),
+                                controller: firstnameController,
                                 decoration: InputDecoration(
-                                  hintStyle:
-                                      greyTextStyle.copyWith(fontSize: 16),
-                                  hintText: 'Email Address',
+                                  hintText: 'First Name',
                                   border: OutlineInputBorder(
                                     borderRadius: radiusNormal,
                                   ),
@@ -303,93 +262,22 @@ class SignUpPageState extends State<SignUpPage> {
                               )
                             ]),
                       ),
-                      SizedBox(height: 20),
-
-                      // ! Mobile textField
                       Container(
+                        width: MediaQuery.of(context).size.width * 0.45,
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Mobile',
+                                'Last Name',
                                 style: blackTextStyle.copyWith(fontSize: 16),
                               ),
                               SizedBox(height: 5),
                               TextFormField(
-                                controller: mobileController,
+                                style: greyTextStyle.copyWith(fontSize: 16),
+                                controller: lastnameController,
                                 decoration: InputDecoration(
-                                  hintStyle:
-                                      greyTextStyle.copyWith(fontSize: 16),
-                                  hintText: 'Mobile',
-                                  border: OutlineInputBorder(
-                                    borderRadius: radiusNormal,
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: radiusNormal,
-                                  ),
-                                ),
-                              )
-                            ]),
-                      ),
-                      SizedBox(height: 20),
-
-                      // ! Password textField
-                      Container(
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    'Password',
-                                    style:
-                                        blackTextStyle.copyWith(fontSize: 16),
-                                  ),
-                                  Text(
-                                    ' | must contain 8 characters',
-                                    style: redTextStyle.copyWith(fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: 6),
-                              TextFormField(
-                                controller: passwordController,
-                                obscureText: true,
-                                decoration: InputDecoration(
-                                  hintStyle:
-                                      greyTextStyle.copyWith(fontSize: 16),
-                                  hintText: 'Password',
-                                  border: OutlineInputBorder(
-                                    borderRadius: radiusNormal,
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: radiusNormal,
-                                  ),
-                                ),
-                              )
-                            ]),
-                      ),
-                      SizedBox(height: 20),
-
-                      // ! Confirm Password textField
-                      Container(
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Confirm Password',
-                                style: blackTextStyle.copyWith(fontSize: 16),
-                              ),
-                              SizedBox(height: 5),
-                              TextFormField(
-                                controller: passwordConfirmationController,
-                                decoration: InputDecoration(
-                                  hintStyle:
-                                      greyTextStyle.copyWith(fontSize: 16),
-                                  hintText: 'Confirm Password',
+                                  hintText: 'Last Name',
                                   border: OutlineInputBorder(
                                     borderRadius: radiusNormal,
                                   ),
@@ -401,11 +289,136 @@ class SignUpPageState extends State<SignUpPage> {
                             ]),
                       ),
                     ],
-                  )
+                  ),
+                  SizedBox(height: 20),
+
+                  // ! email textField
+                  Container(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Email',
+                            style: blackTextStyle.copyWith(fontSize: 16),
+                          ),
+                          SizedBox(height: 5),
+                          TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            controller: emailController,
+                            decoration: InputDecoration(
+                              hintStyle: greyTextStyle.copyWith(fontSize: 16),
+                              hintText: 'Email Address',
+                              border: OutlineInputBorder(
+                                borderRadius: radiusNormal,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: radiusNormal,
+                              ),
+                            ),
+                          )
+                        ]),
+                  ),
+                  SizedBox(height: 20),
+
+                  // ! Mobile textField
+                  Container(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Mobile',
+                            style: blackTextStyle.copyWith(fontSize: 16),
+                          ),
+                          SizedBox(height: 5),
+                          TextFormField(
+                            keyboardType: TextInputType.number,
+                            controller: mobileController,
+                            decoration: InputDecoration(
+                              hintStyle: greyTextStyle.copyWith(fontSize: 16),
+                              hintText: 'Mobile',
+                              border: OutlineInputBorder(
+                                borderRadius: radiusNormal,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: radiusNormal,
+                              ),
+                            ),
+                          )
+                        ]),
+                  ),
+                  SizedBox(height: 20),
+
+                  // ! Password textField
+                  Container(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                'Password',
+                                style: blackTextStyle.copyWith(fontSize: 16),
+                              ),
+                              Text(
+                                ' | must contain 8 characters',
+                                style: redTextStyle.copyWith(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 6),
+                          TextFormField(
+                            controller: passwordController,
+                            obscureText: true,
+                            decoration: InputDecoration(
+                              hintStyle: greyTextStyle.copyWith(fontSize: 16),
+                              hintText: 'Password',
+                              border: OutlineInputBorder(
+                                borderRadius: radiusNormal,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: radiusNormal,
+                              ),
+                            ),
+                          )
+                        ]),
+                  ),
+                  SizedBox(height: 20),
+
+                  // ! Confirm Password textField
+                  Container(
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Confirm Password',
+                            style: blackTextStyle.copyWith(fontSize: 16),
+                          ),
+                          SizedBox(height: 5),
+                          TextFormField(
+                            controller: passwordConfirmationController,
+                            decoration: InputDecoration(
+                              hintStyle: greyTextStyle.copyWith(fontSize: 16),
+                              hintText: 'Confirm Password',
+                              border: OutlineInputBorder(
+                                borderRadius: radiusNormal,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: radiusNormal,
+                              ),
+                            ),
+                          )
+                        ]),
+                  ),
                 ],
-              ),
-            ),
-          )),
-        ));
+              )
+            ],
+          ),
+        ),
+      )),
+    );
   }
 }
