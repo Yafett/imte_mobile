@@ -368,6 +368,8 @@ class _EnrollPageState extends State<EnrollPage> {
       statusProfile = data['profile'][0]['status'].toString();
       email = prefs.getString("emails")!;
     });
+
+    dataEnroll();
   }
 
   // ! get data teacher
@@ -458,7 +460,7 @@ class _EnrollPageState extends State<EnrollPage> {
       'tab_user_id': id,
     });
 
-    print(id);
+    print('id : ' + id);
 
     final data = await json.decode(response.body);
 
@@ -922,7 +924,7 @@ class _EnrollPageState extends State<EnrollPage> {
     dataTeacher();
     dataInstrument();
     dataGrade();
-    dataEnroll();
+
     dataStatus();
     dataFeed();
     dataNews();
@@ -987,7 +989,7 @@ class _EnrollPageState extends State<EnrollPage> {
                                   .withOpacity(0.1), //color of shadow
                               spreadRadius: 5, //spread radius
                               blurRadius: 10, // blur radius
-                              offset: Offset(0, 2),
+                              offset: Offset(0, 1),
                             ),
                           ]),
                       child: Row(
@@ -1003,36 +1005,69 @@ class _EnrollPageState extends State<EnrollPage> {
                                 ),
                               ),
                             ),
-                            InkWell(
-                              child: Container(
-                                width:
-                                    MediaQuery.of(context).size.height * 0.10,
-                                height:
-                                    MediaQuery.of(context).size.height * 0.05,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(12),
-                                    bottomRight: Radius.circular(12),
+                            Row(
+                              children: [
+                                InkWell(
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.height *
+                                        0.10,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.06,
+                                    decoration: BoxDecoration(
+                                      color: (statusEnroll == 'active')
+                                          ? Color.fromARGB(255, 255, 166, 0)
+                                          : Colors.grey,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text('Refresh',
+                                            style: blackTextStyle.copyWith(
+                                              fontSize: 16,
+                                            )),
+                                      ],
+                                    ),
                                   ),
-                                  color: (statusEnroll == 'active')
-                                      ? Color.fromARGB(255, 157, 20, 20)
-                                      : Colors.grey,
+                                  onTap: () {
+                                    (statusEnroll == 'active')
+                                        ? dataProfile()
+                                        : null;
+                                  },
                                 ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text('Enroll',
-                                        style: whiteTextStyle.copyWith(
-                                          fontSize: 16,
-                                        )),
-                                  ],
+                                InkWell(
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.height *
+                                        0.10,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.06,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(12),
+                                        bottomRight: Radius.circular(12),
+                                      ),
+                                      color: (statusEnroll == 'active')
+                                          ? Color.fromARGB(255, 157, 20, 20)
+                                          : Colors.grey,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text('Enroll',
+                                            style: whiteTextStyle.copyWith(
+                                              fontSize: 16,
+                                            )),
+                                      ],
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    (statusEnroll == 'active')
+                                        ? showSimpleCustomDialog(context)
+                                        : null;
+                                  },
                                 ),
-                              ),
-                              onTap: () {
-                                (statusEnroll == 'active')
-                                    ? showSimpleCustomDialog(context)
-                                    : null;
-                              },
+                              ],
                             ),
                           ]),
                     ),

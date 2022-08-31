@@ -462,13 +462,13 @@ class _HomePageState extends State<HomePage> {
                                   controller: passwordController,
                                   style: blackTextStyle,
                                   decoration: InputDecoration(
-                                    suffix: IconButton(
-                                      icon: Icon((_obscureText
-                                          ? Icons.visibility
-                                          : Icons.visibility_off)),
-                                      onPressed: () {
+                                    suffix: GestureDetector(
+                                      onTap: () {
                                         _toggle();
                                       },
+                                      child: Icon((_obscureText
+                                          ? Icons.visibility
+                                          : Icons.visibility_off)),
                                     ),
                                     prefixIcon: Icon(Icons.lock_outline,
                                         color: kBlackColor),

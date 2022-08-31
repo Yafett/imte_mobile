@@ -70,7 +70,7 @@ class History {
     grade = json['grade'] != null ? new Grade.fromJson(json['grade']) : null;
     teacher =
         json['teacher'] != null ? new Teacher.fromJson(json['teacher']) : null;
-    result = json['result'];
+    
   }
 
   Map<String, dynamic> toJson() {

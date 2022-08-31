@@ -11,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:imte_mobile/pages/dashboard.dart';
 import 'package:imte_mobile/pages/profile.dart';
 import 'package:imte_mobile/shared/theme.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'enroll.dart';
@@ -37,6 +38,8 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   TextEditingController waliController = new TextEditingController();
   TextEditingController noWaliController = new TextEditingController();
   TextEditingController emailController = new TextEditingController();
+  TextEditingController smsController = new TextEditingController();
+  TextEditingController emailOtpController = new TextEditingController();
 
   int user = 1;
 
@@ -205,7 +208,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   sendOtpEmail() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String API_URL = 'https://adm.imte.education/api/user/sendVerifEmail';
+    String API_URL = 'https://adm.imte.education/api/user/verifyOtp';
 
     String emailOTP = prefs.getString('emails').toString();
 
@@ -213,10 +216,18 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
       'Accept': 'application/json'
     }, body: {
       'id': did.toString(),
-      'otp': '',
+      'otp': emailOtpController.text,
     });
 
     final data = await json.decode(response.body);
+
+    Navigator.pop(context);
+    var snackBar = SnackBar(content: Text(data['message']));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+    setState(() {
+      emailOtpController.text = '';
+    });
 
     print(data);
   }
@@ -225,7 +236,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
   otpWa() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String API_URL = 'https://adm.imte.education/api/user/sendVerifEmail';
+    String API_URL = 'https://adm.imte.education/api/user/waVerifRequest';
 
     String emailOTP = prefs.getString('emails').toString();
 
@@ -245,13 +256,56 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
     String emailOTP = prefs.getString('emails').toString();
 
     final response = await http.post(Uri.parse(API_URL), headers: {
-      'Accept': 'application/json'  
+      'Accept': 'application/json'
     }, body: {
       'id': did.toString(),
       'otp': '',
     });
 
     final data = await json.decode(response.body);
+
+    print(data);
+  }
+
+  // ! Request OTP SMS
+  otpSms() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String API_URL = 'https://adm.imte.education/api/user/mobileotp';
+
+    String emailOTP = prefs.getString('emails').toString();
+
+    final response = await http.post(Uri.parse(API_URL),
+        headers: {'Accept': 'application/json'}, body: {'id': did.toString()});
+
+    final data = await json.decode(response.body);
+
+    print(data);
+  }
+
+  sendOtpSms() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    String API_URL = 'https://adm.imte.education/api/user/verifyOtp';
+
+    String emailOTP = prefs.getString('emails').toString();
+
+    final response = await http.post(Uri.parse(API_URL), headers: {
+      'Accept': 'application/json'
+    }, body: {
+      'id': did.toString(),
+      'otp': smsController.text,
+    });
+
+    final data = await json.decode(response.body);
+
+    Navigator.pop(context);
+    var snackBar = SnackBar(content: Text(data['message']));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+    setState(() {
+      smsController.text = '';
+    });
 
     print(data);
   }
@@ -707,6 +761,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             ),
             SizedBox(height: 10),
             TextFormField(
+              controller: emailOtpController,
               style: greyTextStyle.copyWith(fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Input Here..',
@@ -725,12 +780,16 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   margin: EdgeInsets.only(right: 10),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(primary: Colors.amber),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     child: Text('Verified Later', style: blackTextStyle),
                   ),
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    sendOtpEmail();
+                  },
                   child: Text('Resend OTP', style: whiteTextStyle),
                 ),
               ],
@@ -760,7 +819,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
       content: Container(
-        height: MediaQuery.of(context).size.height * 0.3,
+        height: MediaQuery.of(context).size.height * 0.35,
         width: MediaQuery.of(context).size.width,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -786,6 +845,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
             ),
             SizedBox(height: 10),
             TextFormField(
+              controller: smsController,
               style: greyTextStyle.copyWith(fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Input Here..',
@@ -804,7 +864,9 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                   margin: EdgeInsets.only(right: 10),
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(primary: Colors.amber),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     child: Text('Verified Later', style: blackTextStyle),
                   ),
                 ),
@@ -815,6 +877,92 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
               ],
             ),
             Text('Email is sent, Please Check your Whatsapp for OTP',
+                style: greyTextStyle.copyWith(fontSize: 12)),
+          ],
+        ),
+      ),
+      actions: [],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  // ! Modal OTP Wa
+  showOTPSms(BuildContext context) {
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+      ),
+      content: Container(
+        height: MediaQuery.of(context).size.height * 0.35,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Activation',
+                    style: blackTextStyle.copyWith(
+                        fontSize: 20, fontWeight: semiBold)),
+                GestureDetector(
+                    child: Icon(Icons.close),
+                    onTap: () {
+                      Navigator.pop(context);
+                    }),
+              ],
+            ),
+            Divider(thickness: 2, height: 30),
+            Text(
+              'Please Input the OTP',
+              style: greyTextStyle.copyWith(fontSize: 12),
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              controller: smsController,
+              style: greyTextStyle.copyWith(fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'Input Here..',
+                border: OutlineInputBorder(
+                  borderRadius: radiusNormal,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: radiusNormal,
+                ),
+              ),
+            ),
+            Divider(thickness: 2, height: 30),
+            Row(
+              children: [
+                Container(
+                  margin: EdgeInsets.only(right: 10),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: Colors.amber),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Verified Later', style: blackTextStyle),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    print(smsController.text);
+
+                    sendOtpSms();
+                  },
+                  child: Text('Send OTP', style: whiteTextStyle),
+                ),
+              ],
+            ),
+            Text('SMS is sent, Please Check your Message for OTP',
                 style: greyTextStyle.copyWith(fontSize: 12)),
           ],
         ),
@@ -1014,6 +1162,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                     // ! Email
                     TextFormField(
                       // enabled: false,
+                      readOnly: true,
                       controller: emailController,
                       decoration: InputDecoration(
                           suffix: InkWell(
@@ -1148,6 +1297,7 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
                     // ! Birth
                     TextFormField(
+                      readOnly: true,
                       controller: birthController,
                       decoration: InputDecoration(
                           suffix: IconButton(
@@ -1155,7 +1305,31 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
                               Icons.edit_calendar,
                               size: 20,
                             ),
-                            onPressed: () {},
+                            onPressed: () async {
+                              DateTime? pickedDate = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.now(),
+                                  firstDate: DateTime(
+                                      2000), //DateTime.now() - not to allow to choose before today.
+                                  lastDate: DateTime(2101));
+
+                              if (pickedDate != null) {
+                                print(
+                                    pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
+                                String formattedDate =
+                                    DateFormat('yyyy-MM-dd').format(pickedDate);
+                                print(
+                                    formattedDate); //formatted date output using intl package =>  2021-03-16
+                                //you can implement different kind of Date Format here according to your requirement
+
+                                setState(() {
+                                  birthController.text =
+                                      formattedDate; //set output date to TextField value.
+                                });
+                              } else {
+                                print("Date is not selected");
+                              }
+                            },
                           ),
                           contentPadding: EdgeInsets.all(0),
                           labelStyle: GoogleFonts.openSans(
@@ -1233,14 +1407,15 @@ class _ProfileEditPageState extends State<ProfileEditPage> {
 
                     // ! Mobile
                     TextFormField(
+                      // readOnly: true,
                       keyboardType: TextInputType.number,
                       controller: mobileController,
                       decoration: InputDecoration(
                           suffix: InkWell(
                             onTap: () {
-                              otpWa();
+                              otpSms();
 
-                              showOTPWa(context);
+                              showOTPSms(context);
                             },
                             child: Icon(
                               Icons.check_circle_outline,
