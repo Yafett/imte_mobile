@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
         Locale('id', ''), // Spanish, no country code
       ],
       routes: {
-        '/': (context) => EnrollPage(),
+        '/': (context) => HomePage(),
         '/sign-in': (context) => SignInPage(),
         '/sign-up': (context) => SignUpPage(),
         '/dashboard': (context) => DashboardPage(token: ''),

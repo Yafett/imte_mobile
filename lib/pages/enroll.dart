@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:imte_mobile/models/History.dart';
@@ -1001,71 +1002,36 @@ class _EnrollPageState extends State<EnrollPage> {
                                 'Activity',
                                 style: blackTextStyle.copyWith(
                                   fontSize: 16,
-                                  fontWeight: semi,
+                                  fontWeight: semiBold,
                                 ),
                               ),
                             ),
                             Row(
                               children: [
-                                InkWell(
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.height *
-                                        0.10,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.06,
-                                    decoration: BoxDecoration(
-                                      color: (statusEnroll == 'active')
-                                          ? Color.fromARGB(255, 255, 166, 0)
-                                          : Colors.grey,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text('Refresh',
-                                            style: blackTextStyle.copyWith(
-                                              fontSize: 16,
-                                            )),
-                                      ],
-                                    ),
-                                  ),
+                                GestureDetector(
                                   onTap: () {
-                                    (statusEnroll == 'active')
-                                        ? dataProfile()
-                                        : null;
+                                    dataProfile();
                                   },
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 10),
+                                    child: Text('Refresh',
+                                        style: blackTextStyle.copyWith(
+                                            fontSize: 16)),
+                                  ),
                                 ),
-                                InkWell(
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.height *
-                                        0.10,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.06,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.only(
-                                        topRight: Radius.circular(12),
-                                        bottomRight: Radius.circular(12),
-                                      ),
-                                      color: (statusEnroll == 'active')
-                                          ? Color.fromARGB(255, 157, 20, 20)
-                                          : Colors.grey,
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text('Enroll',
-                                            style: whiteTextStyle.copyWith(
-                                              fontSize: 16,
-                                            )),
-                                      ],
-                                    ),
-                                  ),
+                                GestureDetector(
                                   onTap: () {
-                                    (statusEnroll == 'active')
-                                        ? showSimpleCustomDialog(context)
-                                        : null;
+                                    showSimpleCustomDialog(context);
                                   },
+                                  child: Container(
+                                    margin: EdgeInsets.only(right: 15),
+                                    child: Text('Enroll',
+                                        style: (statusEnroll == 'active')
+                                            ? greenTextStyle.copyWith(
+                                                fontSize: 16)
+                                            : greyTextStyle.copyWith(
+                                                fontSize: 16)),
+                                  ),
                                 ),
                               ],
                             ),

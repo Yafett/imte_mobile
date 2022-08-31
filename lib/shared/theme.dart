@@ -6,7 +6,7 @@ Color kWhiteColor = Colors.white;
 Color kBlackColor = Color(0xff2C2C2C);
 
 TextStyle whiteTextStyle = GoogleFonts.openSans(color: Colors.white);
-TextStyle blackTextStyle = GoogleFonts.openSans(color: Color(0xff2C2C2C));
+TextStyle blackTextStyle = GoogleFonts.openSans(color: Color(0xff2C2C2C));  
 TextStyle greyTextStyle = GoogleFonts.openSans(color: Colors.grey);
 TextStyle blueTextStyle = GoogleFonts.openSans(color: Color(0xff1F98A8));
 TextStyle greenTextStyle = GoogleFonts.openSans(color: Colors.green);
