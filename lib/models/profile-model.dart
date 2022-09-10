@@ -1,9 +1,13 @@
-class getProfile {
+class GetProfile {
   List<Profile>? profile;
+  String? error;
 
-  getProfile({this.profile});
+  GetProfile({this.profile});
 
-  getProfile.fromJson(Map<String, dynamic> json) {
+  GetProfile.withError(String errorMessage) {
+    error = errorMessage;
+  }
+  GetProfile.fromJson(Map<String, dynamic> json) {
     if (json['profile'] != null) {
       profile = <Profile>[];
       json['profile'].forEach((v) {
@@ -81,7 +85,7 @@ class Profile {
     gender = json['gender'];
     firstName = json['first_name'];
     lastName = json['last_name'];
-    suffix = json['suffix'] as String;
+    suffix = json['suffix'];
     place = json['place'];
     dateOfBirth = json['date_of_birth'];
     address = json['address'];
@@ -91,10 +95,10 @@ class Profile {
     status = json['status'];
     wali = json['wali'];
     noWali = json['no_wali'];
-    examiner = json['examiner'] as String;
+    examiner = json['examiner'];
     photoLocation = json['photo_location'];
     wa = json['wa'];
-    ttd = json['ttd'] as String;
+    ttd = json['ttd'];
   }
 
   Map<String, dynamic> toJson() {

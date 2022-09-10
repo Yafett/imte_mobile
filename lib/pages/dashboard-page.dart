@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:imte_mobile/pages/history.dart';
-import 'package:imte_mobile/pages/profile.dart';
+import 'package:imte_mobile/pages/history-page.dart';
 import 'package:imte_mobile/shared/theme.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import 'enroll.dart';
-import 'news.dart';
+import 'News/news-page.dart';
+import 'enroll-page.dart';
 
 class DashboardPage extends StatefulWidget {
-  final String token;
-
-  const DashboardPage({Key? key, required this.token}) : super(key: key);
+  const DashboardPage({Key? key}) : super(key: key);
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -24,18 +19,6 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-    getToken();
-  }
-
-  // ! get token from sharedPreferences
-  getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    prefs.setString('tokenz', widget.token);
-
-    String tokenz = prefs.getString('tokenz').toString();
-
-    print('token preferences : ' + tokenz);
   }
 
   // ! modal exit

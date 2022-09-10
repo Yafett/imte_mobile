@@ -1,11 +1,13 @@
+// ignore_for_file: unused_local_variable
+
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:imte_mobile/main.dart';
-import 'package:imte_mobile/pages/dashboard.dart';
-import 'package:imte_mobile/pages/sign-in.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:imte_mobile/bloc/register-bloc/register_bloc.dart';
+import 'package:imte_mobile/pages/history-page.dart';
+
 import 'package:imte_mobile/shared/theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,15 +19,6 @@ class SignUpPage extends StatefulWidget {
   State<SignUpPage> createState() => SignUpPageState();
 }
 
-// ! remove listview scroll glow
-class NoGlow extends ScrollBehavior {
-  @override
-  Widget buildViewportChrome(
-      BuildContext context, Widget child, AxisDirection axisDirection) {
-    return child;
-  }
-}
-
 class SignUpPageState extends State<SignUpPage> {
   TextEditingController firstnameController = new TextEditingController();
   TextEditingController lastnameController = new TextEditingController();
@@ -35,15 +28,14 @@ class SignUpPageState extends State<SignUpPage> {
       new TextEditingController();
   TextEditingController mobileController = new TextEditingController();
 
+  RegisterBloc _registerBloc = new RegisterBloc();
+
   var unitval;
   List unitList = [];
   bool isLoading = false;
   String? _valFriends;
-  bool _obscureText = true;
   bool _isLoading = false;
-  String _password = '';
 
-  // ! sing up func
   signUp(String unit, String firstName, String lastName, String email,
       String password, String passwordConfirmation, String mobile) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -79,7 +71,6 @@ class SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  // ! textField validator
   checkingField() {
     if (firstnameController.text == "" ||
         passwordController.text == "" ||
@@ -135,13 +126,16 @@ class SignUpPageState extends State<SignUpPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     dataUnit();
   }
 
   @override
   Widget build(BuildContext context) {
+    return _buildSignUpPage(context);
+  }
+
+  Scaffold _buildSignUpPage(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -157,22 +151,116 @@ class SignUpPageState extends State<SignUpPage> {
           ),
         ),
         actions: [
-          GestureDetector(
-            onTap: () {
-              print('sadada');
-              _isLoading ? null : _startLoading();
+          BlocConsumer<RegisterBloc, RegisterState>(
+            bloc: _registerBloc,
+            listener: (context, state) {
+              if (state is RegisterSuccess) {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/', (route) => false);
+              } else if (state is RegisterError) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text(state.message!)));
+              }
             },
-            child: Container(
-              margin: EdgeInsets.only(right: 15),
-              child: Chip(
-                backgroundColor: Color(0xff1F98A8),
-                label: Text(_isLoading ? 'Loading...' : 'Sign In',
-                    style: whiteTextStyle.copyWith(
-                      fontSize: 16,
-                      fontWeight: semiBold,
-                    )),
-              ),
-            ),
+            builder: (context, state) {
+              if (state is RegisterInitial) {
+                print(state);
+
+                return InkWell(
+                  onTap: () {
+                    _registerBloc.add(Register(
+                      lastnameController.text,
+                      unitval,
+                      firstnameController.text,
+                      emailController.text,
+                      mobileController.text,
+                      passwordController.text,
+                      passwordConfirmationController.text,
+                    ));
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(right: 15),
+                    child: Chip(
+                      backgroundColor: Color(0xff1F98A8),
+                      label: Text('Sign Up',
+                          style: whiteTextStyle.copyWith(
+                            fontSize: 16,
+                            fontWeight: semiBold,
+                          )),
+                    ),
+                  ),
+                );
+              } else if (state is RegisterLoading) {
+                print(state);
+
+                return InkWell(
+                  onTap: () {},
+                  child: Container(
+                    margin: EdgeInsets.only(right: 15),
+                    child: Chip(
+                      backgroundColor: Color(0xff1F98A8),
+                      label: Text('Loading...',
+                          style: whiteTextStyle.copyWith(
+                            fontSize: 16,
+                            fontWeight: semiBold,
+                          )),
+                    ),
+                  ),
+                );
+              } else if (state is RegisterError) {
+                print(state);
+
+                return InkWell(
+                  onTap: () {
+                    _registerBloc.add(Register(
+                      lastnameController.text,
+                      unitval,
+                      firstnameController.text,
+                      emailController.text,
+                      mobileController.text,
+                      passwordController.text,
+                      passwordConfirmationController.text,
+                    ));
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(right: 15),
+                    child: Chip(
+                      backgroundColor: Color(0xff1F98A8),
+                      label: Text('Sign Up',
+                          style: whiteTextStyle.copyWith(
+                            fontSize: 16,
+                            fontWeight: semiBold,
+                          )),
+                    ),
+                  ),
+                );
+              } else {
+                return InkWell(
+                  onTap: () {
+                    _registerBloc.add(Register(
+                      lastnameController.text,
+                      unitval,
+                      firstnameController.text,
+                      emailController.text,
+                      mobileController.text,
+                      passwordController.text,
+                      passwordConfirmationController.text,
+                    ));
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(right: 15),
+                    child: Chip(
+                      backgroundColor: Color(0xff1F98A8),
+                      label: Text('Sign Up',
+                          style: whiteTextStyle.copyWith(
+                            fontSize: 16,
+                            fontWeight: semiBold,
+                          )),
+                    ),
+                  ),
+                );
+              }
+            },
           ),
         ],
         title: Text('Sign Up',
@@ -181,134 +269,83 @@ class SignUpPageState extends State<SignUpPage> {
               fontWeight: semiBold,
             )),
       ),
-      body: SingleChildScrollView(
-          child: ScrollConfiguration(
-        behavior: NoGlow(),
-        child: Container(
-          padding: EdgeInsets.all(15),
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
-          color: kWhiteColor,
-          child: Column(
-            // ! header
+      body: ScrollConfiguration(
+        behavior: MyBehavior(),
+        child: SingleChildScrollView(
+          child: _buildSignUpForm(context),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSignUpForm(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(15),
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      color: kWhiteColor,
+      child: Column(
+        // ! header
+        children: [
+          Column(
             children: [
+              // ! unit textField
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ! unit textField
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Unit',
-                        style: blackTextStyle.copyWith(fontSize: 16),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(top: 5),
-                        padding:
-                            EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: radiusNormal,
-                        ),
-                        width: MediaQuery.of(context).size.width,
-                        child: DropdownButton(
-                          underline: SizedBox(),
-                          isExpanded: true,
-                          hint: Text('Select Your Unit',
-                              style: greyTextStyle.copyWith(fontSize: 16)),
-                          items: unitList.map((item) {
-                            return DropdownMenuItem(
-                              value: item['id'].toString(),
-                              child: Text(item['unit_name'].toString()),
-                            );
-                          }).toList(),
-                          onChanged: (newVal) {
-                            setState(() {
-                              unitval = newVal;
-                            });
-                          },
-                          value: unitval,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    'Unit',
+                    style: blackTextStyle.copyWith(fontSize: 16),
                   ),
-                  SizedBox(height: 20),
-
-                  // ! first name textField
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.45,
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('First Name',
-                                  style: blackTextStyle.copyWith(fontSize: 16)),
-                              SizedBox(height: 5),
-                              TextFormField(
-                                style: greyTextStyle.copyWith(fontSize: 16),
-                                controller: firstnameController,
-                                decoration: InputDecoration(
-                                  hintText: 'First Name',
-                                  border: OutlineInputBorder(
-                                    borderRadius: radiusNormal,
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: radiusNormal,
-                                  ),
-                                ),
-                              )
-                            ]),
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.45,
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Last Name',
-                                style: blackTextStyle.copyWith(fontSize: 16),
-                              ),
-                              SizedBox(height: 5),
-                              TextFormField(
-                                style: greyTextStyle.copyWith(fontSize: 16),
-                                controller: lastnameController,
-                                decoration: InputDecoration(
-                                  hintText: 'Last Name',
-                                  border: OutlineInputBorder(
-                                    borderRadius: radiusNormal,
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: radiusNormal,
-                                  ),
-                                ),
-                              )
-                            ]),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20),
-
-                  // ! email textField
                   Container(
+                    margin: EdgeInsets.only(top: 5),
+                    padding: EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: radiusNormal,
+                    ),
+                    width: MediaQuery.of(context).size.width,
+                    child: DropdownButton(
+                      underline: SizedBox(),
+                      isExpanded: true,
+                      hint: Text('Select Your Unit',
+                          style: greyTextStyle.copyWith(fontSize: 16)),
+                      items: unitList.map((item) {
+                        return DropdownMenuItem(
+                          value: item['id'].toString(),
+                          child: Text(item['unit_name'].toString()),
+                        );
+                      }).toList(),
+                      onChanged: (newVal) {
+                        setState(() {
+                          unitval = newVal;
+                        });
+                      },
+                      value: unitval,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+
+              // ! first name textField
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width * 0.45,
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Email',
-                            style: blackTextStyle.copyWith(fontSize: 16),
-                          ),
+                          Text('First Name',
+                              style: blackTextStyle.copyWith(fontSize: 16)),
                           SizedBox(height: 5),
                           TextFormField(
-                            keyboardType: TextInputType.emailAddress,
-                            controller: emailController,
+                            style: greyTextStyle.copyWith(fontSize: 16),
+                            controller: firstnameController,
                             decoration: InputDecoration(
-                              hintStyle: greyTextStyle.copyWith(fontSize: 16),
-                              hintText: 'Email Address',
+                              hintText: 'First Name',
                               border: OutlineInputBorder(
                                 borderRadius: radiusNormal,
                               ),
@@ -319,90 +356,22 @@ class SignUpPageState extends State<SignUpPage> {
                           )
                         ]),
                   ),
-                  SizedBox(height: 20),
-
-                  // ! Mobile textField
                   Container(
+                    width: MediaQuery.of(context).size.width * 0.45,
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Mobile',
+                            'Last Name',
                             style: blackTextStyle.copyWith(fontSize: 16),
                           ),
                           SizedBox(height: 5),
                           TextFormField(
-                            keyboardType: TextInputType.number,
-                            controller: mobileController,
+                            style: greyTextStyle.copyWith(fontSize: 16),
+                            controller: lastnameController,
                             decoration: InputDecoration(
-                              hintStyle: greyTextStyle.copyWith(fontSize: 16),
-                              hintText: 'Mobile',
-                              border: OutlineInputBorder(
-                                borderRadius: radiusNormal,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: radiusNormal,
-                              ),
-                            ),
-                          )
-                        ]),
-                  ),
-                  SizedBox(height: 20),
-
-                  // ! Password textField
-                  Container(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Password',
-                                style: blackTextStyle.copyWith(fontSize: 16),
-                              ),
-                              Text(
-                                ' | must contain 8 characters',
-                                style: redTextStyle.copyWith(fontSize: 16),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 6),
-                          TextFormField(
-                            controller: passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              hintStyle: greyTextStyle.copyWith(fontSize: 16),
-                              hintText: 'Password',
-                              border: OutlineInputBorder(
-                                borderRadius: radiusNormal,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: radiusNormal,
-                              ),
-                            ),
-                          )
-                        ]),
-                  ),
-                  SizedBox(height: 20),
-
-                  // ! Confirm Password textField
-                  Container(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Confirm Password',
-                            style: blackTextStyle.copyWith(fontSize: 16),
-                          ),
-                          SizedBox(height: 5),
-                          TextFormField(
-                            controller: passwordConfirmationController,
-                            decoration: InputDecoration(
-                              hintStyle: greyTextStyle.copyWith(fontSize: 16),
-                              hintText: 'Confirm Password',
+                              hintText: 'Last Name',
                               border: OutlineInputBorder(
                                 borderRadius: radiusNormal,
                               ),
@@ -414,11 +383,134 @@ class SignUpPageState extends State<SignUpPage> {
                         ]),
                   ),
                 ],
-              )
+              ),
+              SizedBox(height: 20),
+
+              // ! email textField
+              Container(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Email',
+                        style: blackTextStyle.copyWith(fontSize: 16),
+                      ),
+                      SizedBox(height: 5),
+                      TextFormField(
+                        keyboardType: TextInputType.emailAddress,
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          hintStyle: greyTextStyle.copyWith(fontSize: 16),
+                          hintText: 'Email Address',
+                          border: OutlineInputBorder(
+                            borderRadius: radiusNormal,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: radiusNormal,
+                          ),
+                        ),
+                      )
+                    ]),
+              ),
+              SizedBox(height: 20),
+
+              // ! Mobile textField
+              Container(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Mobile',
+                        style: blackTextStyle.copyWith(fontSize: 16),
+                      ),
+                      SizedBox(height: 5),
+                      TextFormField(
+                        keyboardType: TextInputType.number,
+                        controller: mobileController,
+                        decoration: InputDecoration(
+                          hintStyle: greyTextStyle.copyWith(fontSize: 16),
+                          hintText: 'Mobile',
+                          border: OutlineInputBorder(
+                            borderRadius: radiusNormal,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: radiusNormal,
+                          ),
+                        ),
+                      )
+                    ]),
+              ),
+              SizedBox(height: 20),
+
+              // ! Password textField
+              Container(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'Password',
+                            style: blackTextStyle.copyWith(fontSize: 16),
+                          ),
+                          Text(
+                            ' | must contain 8 characters',
+                            style: redTextStyle.copyWith(fontSize: 16),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 6),
+                      TextFormField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          hintStyle: greyTextStyle.copyWith(fontSize: 16),
+                          hintText: 'Password',
+                          border: OutlineInputBorder(
+                            borderRadius: radiusNormal,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: radiusNormal,
+                          ),
+                        ),
+                      )
+                    ]),
+              ),
+              SizedBox(height: 20),
+
+              // ! Confirm Password textField
+              Container(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Confirm Password',
+                        style: blackTextStyle.copyWith(fontSize: 16),
+                      ),
+                      SizedBox(height: 5),
+                      TextFormField(
+                        controller: passwordConfirmationController,
+                        decoration: InputDecoration(
+                          hintStyle: greyTextStyle.copyWith(fontSize: 16),
+                          hintText: 'Confirm Password',
+                          border: OutlineInputBorder(
+                            borderRadius: radiusNormal,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: radiusNormal,
+                          ),
+                        ),
+                      )
+                    ]),
+              ),
             ],
-          ),
-        ),
-      )),
+          )
+        ],
+      ),
     );
   }
 }

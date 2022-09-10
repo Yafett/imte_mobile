@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:imte_mobile/widget/gradient-text.dart';
 
 class enrollCard extends StatefulWidget {
   const enrollCard({

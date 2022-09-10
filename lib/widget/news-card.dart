@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:imte_mobile/pages/news-detail.dart';
 import 'package:imte_mobile/shared/theme.dart';
-import 'package:intl/intl.dart';
+
+import '../pages/News/news-detail-page.dart';
 
 class newsCard extends StatelessWidget {
   const newsCard({
-    required this.title,
-    required this.user,
-    required this.date,
+ 
     required this.image,
     required this.newsTitle,
     required this.newsDate,
@@ -17,9 +14,7 @@ class newsCard extends StatelessWidget {
     required this.newsContent,
   });
 
-  final String title;
-  final String user;
-  final String date;
+ 
   final String newsDate;
   final String newsTitle;
   final String newsUser;
@@ -35,9 +30,6 @@ class newsCard extends StatelessWidget {
             context,
             MaterialPageRoute(
                 builder: (context) => NewsDetailPage(
-                      date: newsDate,
-                      title: newsTitle,
-                      user: newsUser,
                       newsImage: newsImage,
                       newsTitle: newsTitle,
                       newsDate: newsDate,
@@ -69,7 +61,7 @@ class newsCard extends StatelessWidget {
                   new Container(
                     margin: EdgeInsets.only(left: 10),
                     padding: new EdgeInsets.only(right: 13.0),
-                    child: new Text(title,
+                    child: new Text(newsTitle,
                         overflow: TextOverflow.ellipsis,
                         maxLines: 2,
                         style: blackTextStyle.copyWith(
@@ -97,7 +89,7 @@ class newsCard extends StatelessWidget {
                                 Container(
                                   width: 80,
                                   child: Text(
-                                    user,
+                                    newsUser,
                                     style: greyTextStyle.copyWith(),
                                     textAlign: TextAlign.left,
                                     overflow: TextOverflow.ellipsis,
@@ -120,7 +112,7 @@ class newsCard extends StatelessWidget {
                                 Container(
                                   width: 80,
                                   child: Text(
-                                    date,
+                                    newsDate,
                                     style: greyTextStyle.copyWith(),
                                     textAlign: TextAlign.left,
                                     overflow: TextOverflow.ellipsis,

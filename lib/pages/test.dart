@@ -1,89 +1,51 @@
-import 'dart:async';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'dart:math';
 
-class TestPage extends StatefulWidget {
+class PullRefreshPage extends StatefulWidget {
+  const PullRefreshPage();
+
   @override
-  State<StatefulWidget> createState() {
-    return new TestPageState();
-  }
-
-  Future<List> getData() async {
-    String myUrl = 'https://jsonplaceholder.typicode.com/posts';
-    http.Response response = await http.get(Uri.parse(myUrl));
-    return json.decode(response.body);
-  }
+  State<PullRefreshPage> createState() => _PullRefreshPageState();
 }
 
-class TestPageState extends State<TestPage> {
-  var testPage = new TestPage();
-  List data = [
-    {
-      'userId': 1,
-      'id': 1,
-      'title':
-          "sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
-      'body':
-          "quia et suscipit suscipit recusandae consequuntur expedita et cum reprehenderit molestiae ut ut quas totam nostrum rerum est autem sunt rem eveniet architecto"
-    },
-  ];
-  int mytextData1 = 0;
-  String mytextData2 = '';
-  String mytextData3 = '';
-  void getMyData() async {
-    data = await (testPage.getData());
-    print(data);
-    setState(() {
-      mytextData1 = data[0]['id'];
-      mytextData2 = data[0]['title'];
-      mytextData3 = data[0]['body'];
-    });
-  }
+class _PullRefreshPageState extends State<PullRefreshPage> {
+  List<String> numbersList = NumberGenerator().numbers;
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: AppBar(
-          title: new Text("Muhammed API"),
-          backgroundColor: Colors.deepPurpleAccent,
+    return Scaffold(
+      body: RefreshIndicator(
+        onRefresh: _pullRefresh,
+        child: ListView.builder(
+          itemCount: numbersList.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text(numbersList[index]),
+            );
+          },
         ),
-        body: new Container(
-          child: new Column(
-            children: <Widget>[
-              new Center(
-                child: new RaisedButton(
-                  onPressed: getMyData,
-                  child: new Text('click me'),
-                ),
-              ),
-              // new Center(
-              //     child: new ListView.builder(
-              //         padding: EdgeInsets.all(12.0),
-              //         itemCount: data.length,
-              //         itemBuilder: (BuildContext context, int position) {
-              //           return new ListTile(
-              //             title: new Text(
-              //               '${data[position]['title']}',
-              //               style:
-              //                   TextStyle(fontSize: 15.0, color: Colors.pink),
-              //             ),
-              //             subtitle: new Text(
-              //               '${data[position]['body']}',
-              //               style: TextStyle(
-              //                   fontSize: 15.0,
-              //                   color: Colors.pink,
-              //                   fontStyle: FontStyle.italic),
-              //             ),
-              //             leading: new CircleAvatar(
-              //               backgroundColor: Colors.deepPurpleAccent,
-              //               foregroundColor: Colors.white,
-              //               child: new Text('P ${data[position]['id']}'),
-              //             ),
-              //           );
-              //         })),
-            ],
-          ),
-        ));
+      ),
+    );
   }
+
+  Future<void> _pullRefresh() async {
+    List<String> freshNumbers = await NumberGenerator().slowNumbers();
+    setState(() {
+      numbersList = freshNumbers;
+    });
+    // why use freshNumbers var? https://stackoverflow.com/a/52992836/2301224
+  }
+}
+
+class NumberGenerator {
+  Future<List<String>> slowNumbers() async {
+    return Future.delayed(
+      const Duration(milliseconds: 1000),
+      () => numbers,
+    );
+  }
+
+  List<String> get numbers => List.generate(5, (index) => number);
+
+  String get number => Random().nextInt(99999).toString();
 }

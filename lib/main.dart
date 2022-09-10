@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:imte_mobile/pages/certificate.dart';
-import 'package:imte_mobile/pages/dashboard.dart';
-import 'package:imte_mobile/pages/enroll.dart';
-import 'package:imte_mobile/pages/history.dart';
-import 'package:imte_mobile/pages/home.dart';
-import 'package:imte_mobile/pages/news.dart';
-import 'package:imte_mobile/pages/news-detail.dart';
-import 'package:imte_mobile/pages/profile-edit.dart';
-import 'package:imte_mobile/pages/profile.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:imte_mobile/bloc/edit-profile-bloc/editProfile_bloc.dart';
+import 'package:imte_mobile/bloc/enroll-bloc/enroll_bloc.dart';
+import 'package:imte_mobile/bloc/feed-bloc/feed_bloc.dart';
+import 'package:imte_mobile/bloc/get-profile_bloc/getProfile_bloc.dart';
+import 'package:imte_mobile/bloc/history-bloc/history_bloc.dart';
+import 'package:imte_mobile/pages/News/news-page.dart';
+import 'package:imte_mobile/pages/certificate-page.dart';
+import 'package:imte_mobile/pages/dashboard-page.dart';
+import 'package:imte_mobile/pages/enroll-page.dart';
+import 'package:imte_mobile/pages/history-page.dart';
+import 'package:imte_mobile/pages/home-page.dart'; 
+import 'package:imte_mobile/pages/profile-page.dart';
 import 'package:imte_mobile/pages/sign-in.dart';
 import 'package:imte_mobile/pages/sign-up.dart';
-import 'package:imte_mobile/pages/test.dart';
-import 'package:imte_mobile/widget/enroll-card.dart';
-import 'package:imte_mobile/widget/news-card.dart';
-import 'widget/sticky_navbar.dart';
-import 'pages/login.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+
+import 'bloc/news-bloc/news_bloc.dart';
 
 void main() {
   // add these lines
@@ -54,13 +55,43 @@ class _MyAppState extends State<MyApp> {
         '/': (context) => HomePage(),
         '/sign-in': (context) => SignInPage(),
         '/sign-up': (context) => SignUpPage(),
-        '/dashboard': (context) => DashboardPage(token: ''),
-        '/enroll': (context) => EnrollPage(),
-        '/profile': (context) => ProfilePage(
-              enableBack: 'true',
+        '/dashboard': (context) => DashboardPage(),
+        '/enroll': (context) => MultiBlocProvider(
+              providers: [
+                BlocProvider<EnrollBloc>(
+                  create: (BuildContext context) =>
+                      EnrollBloc()..add(GetEnrollList()),
+                ),
+                BlocProvider<GetProfileBloc>(
+                  create: (context) => GetProfileBloc()..add(GetProfileList()),
+                ),
+                BlocProvider<FeedBloc>(
+                  create: (context) => FeedBloc()..add(GetFeedList()),
+                ),
+              ],
+              child: EnrollPage(),
             ),
-        '/news': (context) => NewsPage(),
-        '/history': (context) => HistoryPage(),
+        '/profile': (context) => MultiBlocProvider(
+              providers: [
+                BlocProvider<GetProfileBloc>(
+                  create: (context) => GetProfileBloc()..add(GetProfileList()),
+                ),
+                BlocProvider<EditProfileBloc>(
+                  create: (context) => EditProfileBloc(),
+                ),
+              ],
+              child: ProfilePage(
+                enableBack: 'true',
+              ),
+            ),
+        '/news': (context) => BlocProvider<NewsBloc>(
+              create: (context) => NewsBloc()..add(GetNewsList()),
+              child: NewsPage(),
+            ),
+        '/history': (context) => BlocProvider(
+              create: (context) => HistoryBloc()..add(GetHistoryList()),
+              child: HistoryPage(),
+            ),
         '/certificate': (context) => CertificatePage(),
       },
     );

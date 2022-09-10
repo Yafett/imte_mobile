@@ -10,6 +10,8 @@ TextStyle blackTextStyle = GoogleFonts.openSans(color: Color(0xff2C2C2C));
 TextStyle greyTextStyle = GoogleFonts.openSans(color: Colors.grey);
 TextStyle blueTextStyle = GoogleFonts.openSans(color: Color(0xff1F98A8));
 TextStyle greenTextStyle = GoogleFonts.openSans(color: Colors.green);
+TextStyle orangeTextStyle = GoogleFonts.openSans(color: Colors.orangeAccent);
+TextStyle yellowTextStyle = GoogleFonts.openSans(color: Color.fromARGB(255, 251, 255, 25));
 TextStyle redTextStyle =
     GoogleFonts.openSans(color: Color.fromARGB(255, 157, 20, 20));
 

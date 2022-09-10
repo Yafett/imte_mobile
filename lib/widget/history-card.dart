@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:imte_mobile/widget/gradient-text.dart';
 
 class HistoryCard extends StatelessWidget {
   const HistoryCard({

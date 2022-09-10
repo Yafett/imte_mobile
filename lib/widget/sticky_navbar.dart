@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+
 import 'package:sticky_headers/sticky_headers.dart';
 
 class stickyHeader extends StatelessWidget {
@@ -8,7 +7,7 @@ class stickyHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(itemBuilder: (context,  index) {
+    return ListView.builder(itemBuilder: (context, index) {
       return StickyHeader(
         header: Container(
           height: 50.0,

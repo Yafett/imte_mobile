@@ -2,16 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:imte_mobile/main.dart';
-import 'package:imte_mobile/pages/dashboard.dart';
-import 'package:imte_mobile/pages/enroll.dart';
-import 'package:imte_mobile/pages/profile.dart';
+import 'package:imte_mobile/pages/dashboard-page.dart';
 import 'package:imte_mobile/shared/theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
-import 'package:crypto/crypto.dart';
 
 class SignInPage extends StatefulWidget {
   SignInPage({Key? key}) : super(key: key);
@@ -63,21 +57,15 @@ class SignInPageState extends State<SignInPage> {
 
       prefs.setString('emails', email);
 
-      print('your token : ' + token);
-
-      print('your email : ' + email);
+      print('your token : ${token}, your email : ${email}');
 
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(
-              builder: (context) => DashboardPage(
-                    token: token,
-                  )),
+          MaterialPageRoute(builder: (context) => DashboardPage()),
           (route) => false);
     } else {
       var snackBar = SnackBar(content: Text('Wrong Data Input'));
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      setState(() {});
     }
   }
 
@@ -228,16 +216,6 @@ class SignInPageState extends State<SignInPage> {
     );
   }
 
-  // ! empty field validator
-  checkingField() {
-    if (emailController.text == "" || passwordController.text == "") {
-      var snackBar = SnackBar(content: Text("There's still empty"));
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    } else {
-      signIn(emailController.text, passwordController.text);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -285,5 +263,15 @@ class SignInPageState extends State<SignInPage> {
         ),
       ),
     );
+  }
+
+  // ! empty field validator
+  checkingField() {
+    if (emailController.text == "" || passwordController.text == "") {
+      var snackBar = SnackBar(content: Text("There's still empty"));
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } else {
+      signIn(emailController.text, passwordController.text);
+    }
   }
 }
