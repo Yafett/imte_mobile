@@ -73,8 +73,7 @@ class _MyAppState extends State<MyApp> {
             ),
         '/profile': (context) => MultiBlocProvider(
               providers: [
-                BlocProvider<GetProfileBloc>(
-                  create: (context) => GetProfileBloc()..add(GetProfileList()),
+                BlocProvider<GetProfileBloc>(                  create: (context) => GetProfileBloc()..add(GetProfileList()),
                 ),
                 BlocProvider<EditProfileBloc>(
                   create: (context) => EditProfileBloc(),

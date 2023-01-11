@@ -14,13 +14,14 @@ class History {
   int? teacherId;
   String? activityStatus;
   String? songs;
-  int? rank;
+  bool? active;
   String? activityFormat;
   Major? major;
   Period? period;
   Grade? grade;
-  Teacher? teacher;
-  Result? result;
+  HistoryTeacher? teacher;
+  String? result;
+  Schedule? schedule;
 
   History(
       {this.id,
@@ -38,13 +39,14 @@ class History {
       this.teacherId,
       this.activityStatus,
       this.songs,
-      this.rank,
+      this.active,
       this.activityFormat,
       this.major,
       this.period,
       this.grade,
       this.teacher,
-      this.result});
+      this.result,
+      this.schedule});
 
   History.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -62,16 +64,18 @@ class History {
     teacherId = json['teacher_id'];
     activityStatus = json['activity_status'];
     songs = json['songs'];
-    rank = json['rank'];
+    active = json['active'];
     activityFormat = json['activity_format'];
     major = json['major'] != null ? new Major.fromJson(json['major']) : null;
     period =
         json['period'] != null ? new Period.fromJson(json['period']) : null;
     grade = json['grade'] != null ? new Grade.fromJson(json['grade']) : null;
     teacher =
-        json['teacher'] != null ? new Teacher.fromJson(json['teacher']) : null;
-    result =
-        json['result'] != null ? new Result.fromJson(json['result']) : null;
+        json['teacher'] != null ? new HistoryTeacher.fromJson(json['teacher']) : null;
+    result = json['result'];
+    schedule = json['schedule'] != null
+        ? new Schedule.fromJson(json['schedule'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -91,7 +95,7 @@ class History {
     data['teacher_id'] = this.teacherId;
     data['activity_status'] = this.activityStatus;
     data['songs'] = this.songs;
-    data['rank'] = this.rank;
+    data['active'] = this.active;
     data['activity_format'] = this.activityFormat;
     if (this.major != null) {
       data['major'] = this.major!.toJson();
@@ -105,8 +109,9 @@ class History {
     if (this.teacher != null) {
       data['teacher'] = this.teacher!.toJson();
     }
-    if (this.result != null) {
-      data['result'] = this.result!.toJson();
+    data['result'] = this.result;
+    if (this.schedule != null) {
+      data['schedule'] = this.schedule!.toJson();
     }
     return data;
   }
@@ -169,14 +174,14 @@ class Grade {
   }
 }
 
-class Teacher {
+class HistoryTeacher {
   int? id;
   String? firstName;
   String? lastName;
 
-  Teacher({this.id, this.firstName, this.lastName});
+  HistoryTeacher({this.id, this.firstName, this.lastName});
 
-  Teacher.fromJson(Map<String, dynamic> json) {
+  HistoryTeacher.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     firstName = json['first_name'];
     lastName = json['last_name'];
@@ -191,43 +196,55 @@ class Teacher {
   }
 }
 
-class Result {
+class Schedule {
   int? id;
-  int? tabUserEnrollId;
-  String? gpa;
+  int? enrollId;
+  String? date;
+  String? practical;
+  String? insKnowledge;
   String? createdAt;
   String? updatedAt;
-  int? status;
-  String? remark;
+  String? practicalRoom;
+  String? bahasa;
+  String? lokasi;
 
-  Result(
+  Schedule(
       {this.id,
-      this.tabUserEnrollId,
-      this.gpa,
+      this.enrollId,
+      this.date,
+      this.practical,
+      this.insKnowledge,
       this.createdAt,
       this.updatedAt,
-      this.status,
-      this.remark});
+      this.practicalRoom,
+      this.bahasa,
+      this.lokasi});
 
-  Result.fromJson(Map<String, dynamic> json) {
+  Schedule.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    tabUserEnrollId = json['tab_user_enroll_id'];
-    gpa = json['gpa'];
+    enrollId = json['enroll_id'];
+    date = json['date'];
+    practical = json['practical'];
+    insKnowledge = json['ins_knowledge'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    status = json['status'];
-    remark = json['remark'];
+    practicalRoom = json['practical_room'];
+    bahasa = json['bahasa'];
+    lokasi = json['lokasi'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = this.id;
-    data['tab_user_enroll_id'] = this.tabUserEnrollId;
-    data['gpa'] = this.gpa;
+    data['enroll_id'] = this.enrollId;
+    data['date'] = this.date;
+    data['practical'] = this.practical;
+    data['ins_knowledge'] = this.insKnowledge;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
-    data['status'] = this.status;
-    data['remark'] = this.remark;
+    data['practical_room'] = this.practicalRoom;
+    data['bahasa'] = this.bahasa;
+    data['lokasi'] = this.lokasi;
     return data;
   }
 }

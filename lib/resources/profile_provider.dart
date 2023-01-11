@@ -1,9 +1,8 @@
 import 'dart:convert';
 
+import 'package:imte_mobile/models/profile-model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-
-import '../models/profile-model.dart';
 
 class ProfileProvider {
   final String urlGet = "https://adm.imte.education/api/user/profile?id=";

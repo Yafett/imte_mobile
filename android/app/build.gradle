@@ -27,14 +27,15 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     signingConfigs {
-        config {
-            storePassword 'smistudent'
-            keyAlias 'imte'
-            keyPassword 'smistudent'
-            storeFile file('C:\\Users\\CITY1\\Documents\\yafet\\imte_mobile\\keystore_imte.jks')
-        }
+        // config {
+        //     storePassword 'smistudent'
+        //     keyAlias 'imte'
+        //     keyPassword 'smistudent'
+        //     storeFile file('C:\\Users\\CITY1\\Documents\\yafet\\imte_mobile\\keystore_imte.jks')
+        // }
     }
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion 31
+    // compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
     compileOptions {

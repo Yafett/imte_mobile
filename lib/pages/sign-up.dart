@@ -34,7 +34,6 @@ class SignUpPageState extends State<SignUpPage> {
   List unitList = [];
   bool isLoading = false;
   String? _valFriends;
-  bool _isLoading = false;
 
   signUp(String unit, String firstName, String lastName, String email,
       String password, String passwordConfirmation, String mobile) async {
@@ -57,8 +56,6 @@ class SignUpPageState extends State<SignUpPage> {
 
     var result = response.body;
     var jsonData = jsonDecode(response.body);
-
-    print(jsonData);
 
     if (response.statusCode == 200) {
       prefs.setString('emailSignUp', email);
@@ -95,19 +92,6 @@ class SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  void _startLoading() async {
-    setState(() {
-      _isLoading = true;
-    });
-
-    checkingField();
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      _isLoading = false;
-    });
-  }
-
   // ! get data Unit
   dataUnit() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -120,7 +104,6 @@ class SignUpPageState extends State<SignUpPage> {
       setState(() {
         unitList = jsonData;
       });
-      print(jsonData);
     }
   }
 
@@ -164,8 +147,6 @@ class SignUpPageState extends State<SignUpPage> {
             },
             builder: (context, state) {
               if (state is RegisterInitial) {
-                print(state);
-
                 return InkWell(
                   onTap: () {
                     _registerBloc.add(Register(
@@ -191,8 +172,6 @@ class SignUpPageState extends State<SignUpPage> {
                   ),
                 );
               } else if (state is RegisterLoading) {
-                print(state);
-
                 return InkWell(
                   onTap: () {},
                   child: Container(
@@ -208,8 +187,6 @@ class SignUpPageState extends State<SignUpPage> {
                   ),
                 );
               } else if (state is RegisterError) {
-                print(state);
-
                 return InkWell(
                   onTap: () {
                     _registerBloc.add(Register(
@@ -282,7 +259,7 @@ class SignUpPageState extends State<SignUpPage> {
     return Container(
       padding: EdgeInsets.all(15),
       width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
+      height: MediaQuery.of(context).size.height / 1.1,
       color: kWhiteColor,
       child: Column(
         // ! header

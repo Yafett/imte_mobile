@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, unnecessary_null_comparison
 
 import 'dart:convert';
 
@@ -241,7 +241,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   margin: EdgeInsets.only(right: 10),
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Colors.amber),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.amber),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -325,7 +326,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   margin: EdgeInsets.only(right: 10),
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Colors.amber),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.amber),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -404,7 +406,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 Container(
                   margin: EdgeInsets.only(right: 10),
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Colors.amber),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.amber),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -626,7 +629,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   //  Gender
                   Row(
-                    children: [
+                    children: [ 
                       Text('Gender '),
                       Text('*', style: TextStyle(color: Colors.red)),
                     ],
@@ -831,18 +834,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   lastDate: DateTime(2101));
 
               if (pickedDate != null) {
-                print(
-                    pickedDate); //pickedDate output format => 2021-03-10 00:00:00.000
                 String formattedDate =
                     DateFormat('yyyy-MM-dd').format(pickedDate);
-                print(
-                    formattedDate); //formatted date output using intl package =>  2021-03-16
-                //you can implement different kind of Date Format here according to your requirement
-
-                setState(() {
+                
                   birthController.text =
-                      formattedDate; //set output date to TextField value.
-                });
+                      formattedDate;  
+          
+                // print(birthController.text);
               } else {
                 print("Date is not selected");
               }

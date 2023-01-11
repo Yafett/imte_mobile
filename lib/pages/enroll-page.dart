@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,10 +15,11 @@ import 'package:imte_mobile/models/feed-model.dart';
 import 'package:imte_mobile/models/history-model.dart';
 import 'package:imte_mobile/models/instrument-model.dart';
 import 'package:imte_mobile/models/profile-model.dart';
+import 'package:imte_mobile/pages/add-enroll.dart';
 import 'package:imte_mobile/pages/history-page.dart';
 import 'package:imte_mobile/shared/theme.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart'; 
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
@@ -38,6 +40,8 @@ class _EnrollPageState extends State<EnrollPage> {
   FeedBloc _feedBloc = FeedBloc();
   NewsBloc _newsBloc = NewsBloc();
 
+  Dio dio = Dio();
+
   XFile? imageFile;
   String id = '';
   String dlast = '';
@@ -55,6 +59,7 @@ class _EnrollPageState extends State<EnrollPage> {
   String lastContent = '';
   String tests = '';
   String? teacherVal;
+  var studentName;
   bool loading = true;
   bool isLoading = true;
   bool isExist = false;
@@ -114,216 +119,21 @@ class _EnrollPageState extends State<EnrollPage> {
     'JC 6 - Classical'
   ];
 
-  showSimpleCustomDialog(BuildContext context) async {
-    Widget simpleDialog1 = AlertDialog(
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10.0))),
-      content: StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-        return Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Enroll Now',
-                      style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.w500, fontSize: 30),
-                    ),
-                    Divider(thickness: 2, height: 20),
-                    SizedBox(height: 6),
-
-                    // ! teacher
-                    Text('Teacher', style: TextStyle(fontSize: 16)),
-                    SizedBox(height: 5),
-                    Container(
-                      margin: EdgeInsets.only(top: 5),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
-                      width: MediaQuery.of(context).size.width,
-                      child: DropdownButton(
-                        underline: SizedBox(),
-                        isExpanded: true,
-                        hint: Text('Select Your Teacher'),
-                        items: teacherList.map((item) {
-                          return DropdownMenuItem(
-                            value: item['first_name'].toString(),
-                            child: Text(item['first_name'].toString()),
-                          );
-                        }).toList(),
-                        onChanged: (newVal) {
-                          setState(() {
-                            teacherval = newVal;
-                          });
-                        },
-                        value: teacherval,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-
-                    // ! instruments
-                    Text('Instrument', style: TextStyle(fontSize: 16)),
-                    SizedBox(height: 5),
-                    Container(
-                      margin: EdgeInsets.only(top: 5),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
-                      width: MediaQuery.of(context).size.width,
-                      child: DropdownButton(
-                        underline: SizedBox(),
-                        isExpanded: true,
-                        hint: Text('Select Your Instruments'),
-                        items: listInstrument.map((item) {
-                          return DropdownMenuItem(
-                            value: item.major.toString(),
-                            child: Text(item.major.toString()),
-                          );
-                        }).toList(),
-                        onChanged: (newVal) {
-                          setState(() {
-                            instrumentval = newVal;
-                          });
-                        },
-                        value: instrumentval,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-
-                    // ! grade
-                    Text('Grade', style: TextStyle(fontSize: 16)),
-                    SizedBox(height: 5),
-                    Container(
-                      margin: EdgeInsets.only(top: 5),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
-                      width: MediaQuery.of(context).size.width,
-                      child: DropdownButton(
-                        underline: SizedBox(),
-                        isExpanded: true,
-                        hint: Text('Select Your Grade'),
-                        items: (instrumentval != 'Piano')
-                            ? instrument.map((item) {
-                                return DropdownMenuItem(
-                                  value: item.toString(),
-                                  child: Text(item.toString()),
-                                );
-                              }).toList()
-                            : instrument2.map((item) {
-                                return DropdownMenuItem(
-                                  value: item.toString(),
-                                  child: Text(item.toString()),
-                                );
-                              }).toList(),
-                        //  gradeList.map((item) {
-                        //   return DropdownMenuItem(
-                        //     value: item['grade'].toString(),
-                        //     child: Text(item['grade'].toString()),
-                        //   );
-                        // }).toList(),
-                        onChanged: (newVal) {
-                          setState(() {
-                            gradeval = newVal;
-                          });
-                        },
-                        value: gradeval,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-
-                    // ! pickImage
-                    Text('Payment Receipt'),
-                    SizedBox(height: 10),
-                    Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                        ),
-                        width: MediaQuery.of(context).size.width,
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                              border: InputBorder.none,
-                              // ignore: unnecessary_null_comparison
-                              hintText: photoName == null
-                                  ? "Select your Image"
-                                  : photoName,
-                              suffixIcon: GestureDetector(
-                                onTap: () {
-                                  _getFromCamera();
-                                },
-                                child: Container(
-                                  child: Icon(
-                                    Icons.camera_alt_outlined,
-                                    color: Color.fromARGB(255, 28, 28, 28),
-                                    size: 26,
-                                  ),
-                                ),
-                              )),
-                        )),
-                    SizedBox(height: 20),
-
-                    // ! button
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        padding: EdgeInsets.all(15),
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Color(0xffAE2329),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text("Enroll Now",
-                                style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                )),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      }),
-    );
-
-    showDialog(
-        context: context, builder: (BuildContext context) => simpleDialog1);
+  String capitalize(String value) {
+    var result = value[0].toUpperCase();
+    bool cap = true;
+    for (int i = 1; i < value.length; i++) {
+      if (value[i - 1] == " " && cap == true) {
+        result = result + value[i].toUpperCase();
+      } else {
+        result = result + value[i];
+        cap = false;
+      }
+    }
+    return result;
   }
 
-  dataInstrument() async {
+  _fetchInstrument() async {
     http.Response response =
         await http.get(Uri.parse('https://adm.imte.education/api/major'));
 
@@ -334,7 +144,7 @@ class _EnrollPageState extends State<EnrollPage> {
     }
   }
 
-  dataGrade() async {
+  _fetchGrade() async {
     http.Response response =
         await http.get(Uri.parse('https://adm.imte.education/api/grade'));
 
@@ -345,17 +155,15 @@ class _EnrollPageState extends State<EnrollPage> {
     }
   }
 
-  _getFromCamera() async {
-    final ImagePicker _picker = ImagePicker();
+  _fetchTeacher() async {
+    final response = await dio.get('https://adm.imte.education/api/teacher');
 
-    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-
-    setState(() {
-      photoName = photo!.name;
-    });
+    for (var a = 0; a < response.data.length; a++) {
+      teacherList.add(response.data[a]);
+    }
   }
 
-  dataFeed() async {
+  _fetchFeed() async {
     String API_URL = 'https://adm.imte.education/api/setup';
 
     final response = await http.get(Uri.parse(API_URL));
@@ -513,8 +321,9 @@ class _EnrollPageState extends State<EnrollPage> {
   @override
   void initState() {
     super.initState();
-    dataInstrument();
-    dataGrade();
+    _fetchInstrument();
+    _fetchGrade();
+    _fetchTeacher();
     _getValData();
     _feedBloc.add(GetFeedList());
     _enrollBloc.add(GetEnrollList());
@@ -573,8 +382,8 @@ class _EnrollPageState extends State<EnrollPage> {
               ],
             ),
           ),
-          _buildActivityBar(context),
-          _buildEnrollList(context),
+          _buildActivityBar(),
+          _buildEnrollList(),
           Container(
             margin: EdgeInsets.only(top: 30, bottom: 10),
             child: Row(
@@ -646,7 +455,6 @@ class _EnrollPageState extends State<EnrollPage> {
       bloc: _feedBloc,
       builder: (context, state) {
         if (state is FeedLoaded) {
-          print(state);
           return ListView.builder(
             padding: EdgeInsets.all(0),
             scrollDirection: Axis.horizontal,
@@ -654,7 +462,6 @@ class _EnrollPageState extends State<EnrollPage> {
             itemBuilder: (BuildContext context, int index) {
               Feed feed = state.feed[index];
               if (feed.name == 'feed') {
-                print(feed.src);
                 return _buildFeedCard(index, feed);
               } else {
                 return Container();
@@ -662,14 +469,13 @@ class _EnrollPageState extends State<EnrollPage> {
             },
           );
         } else {
-          print(state);
           return Container();
         }
       },
     );
   }
 
-  Widget _buildActivityBar(BuildContext context) {
+  Widget _buildActivityBar() {
     return Container(
       margin: EdgeInsets.only(top: 10),
       width: MediaQuery.of(context).size.width,
@@ -699,7 +505,8 @@ class _EnrollPageState extends State<EnrollPage> {
           ),
           GestureDetector(
             onTap: () {
-              showSimpleCustomDialog(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AddEnrollPage()));
             },
             child: Container(
               margin: EdgeInsets.only(right: 15),
@@ -716,7 +523,7 @@ class _EnrollPageState extends State<EnrollPage> {
     );
   }
 
-  Widget _buildEnrollList(BuildContext context) {
+  Widget _buildEnrollList() {
     return Container(
         height: MediaQuery.of(context).size.height - 550,
         width: MediaQuery.of(context).size.width,
@@ -735,6 +542,7 @@ class _EnrollPageState extends State<EnrollPage> {
                           History enroll = state.enroll[index];
                           Period period = state.period[0];
                           if (enroll.period!.periodName == period.periodName) {
+                            // dataStudent(enroll.id.toString());
                             return _buildEnrollCard(enroll, index);
                           } else {
                             return Container();
@@ -855,6 +663,11 @@ class _EnrollPageState extends State<EnrollPage> {
 
   _showCardDetail(enroll, index) {
     DateTime dt = DateTime.parse(enroll.createdAt);
+    String practTime = DateFormat.jm()
+        .format(DateFormat("hh:mm:ss").parse(enroll.schedule.practical));
+    String examTime = DateFormat.jm()
+        .format(DateFormat("hh:mm:ss").parse(enroll.schedule.insKnowledge));
+    // dataStudent(enroll.id.toString);
 
     return showModalBottomSheet(
       shape: RoundedRectangleBorder(
@@ -903,11 +716,7 @@ class _EnrollPageState extends State<EnrollPage> {
                   style: blackTextStyle.copyWith(
                       fontSize: 18, fontWeight: semiBold)),
               SizedBox(height: 10),
-              textLine(
-                'Grade',
-                Text(enroll.grade.grade,
-                    style: blackTextStyle.copyWith(fontSize: 14)),
-              ),
+
               Row(
                 children: [
                   Container(
@@ -927,20 +736,16 @@ class _EnrollPageState extends State<EnrollPage> {
                   _checkStatusChip(enroll.enrollStatus)
                 ],
               ),
+
               Divider(thickness: 1),
               textLine(
                 'Name',
-                Text('${enroll.teacher.firstName} ${enroll.teacher.lastName}',
+                Text('${studentName.toString()}',
                     style: blackTextStyle.copyWith(fontSize: 14)),
               ),
               textLine(
                 'Teacher',
                 Text('${enroll.teacher.firstName} ${enroll.teacher.lastName}',
-                    style: blackTextStyle.copyWith(fontSize: 14)),
-              ),
-              textLine(
-                'Date',
-                Text(DateFormat.yMMMd().format(dt),
                     style: blackTextStyle.copyWith(fontSize: 14)),
               ),
               textLine(
@@ -953,15 +758,48 @@ class _EnrollPageState extends State<EnrollPage> {
                 Text(enroll.grade.grade,
                     style: blackTextStyle.copyWith(fontSize: 14)),
               ),
-              Divider(thickness: 1),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.15,
-                child: detailListView(
-                  index,
-                  enroll.activityStatus.split(''),
-                  enroll.activityFormat.split(','),
-                ),
+              textLine(
+                'Exam Date',
+                Text(DateFormat.yMMMd().format(dt),
+                    style: blackTextStyle.copyWith(fontSize: 14)),
               ),
+              textLine(
+                'Pract. Exam',
+                Text(practTime, style: blackTextStyle.copyWith(fontSize: 14)),
+              ),
+              textLine(
+                'Instr. Exam',
+                Text(examTime, style: blackTextStyle.copyWith(fontSize: 14)),
+              ),
+
+              textLine(
+                'Room',
+                Text(enroll.schedule.practicalRoom,
+                    style: blackTextStyle.copyWith(fontSize: 14)),
+              ),
+
+              SizedBox(height: 10),
+              Divider(thickness: 1),
+              SizedBox(height: 10),
+              Text('Exam Info :', style: blackTextStyle.copyWith(fontSize: 14)),
+              Container(
+                  child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('- Please come 30 minute before the exam start',
+                      style: blackTextStyle.copyWith(fontSize: 14)),
+                  Text('- Wear proper costume (no sandals/short pants)',
+                      style: blackTextStyle.copyWith(fontSize: 14)),
+                ],
+              )),
+              // Container(
+              //   height: MediaQuery.of(context).size.height * 0.15,
+              //   child: detailListView(
+              //     index,
+              //     enroll.activityStatus.split(''),
+              //     enroll.activityFormat.split(','),
+              //   ),
+              // ),
             ],
           ),
         );
@@ -1025,6 +863,7 @@ class _EnrollPageState extends State<EnrollPage> {
   }
 
   Widget _profileNametag(profile) {
+    studentName = profile.profile[0].firstName + profile.profile[0].lastName;
     return Container(
       width: MediaQuery.of(context).size.width * 0.6,
       margin: EdgeInsets.only(left: 12),

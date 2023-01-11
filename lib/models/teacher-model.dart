@@ -1,31 +1,4 @@
-class GetProfile {
-  List<Profile>? profile;
-  String? error;
-
-  GetProfile({this.profile});
-
-  GetProfile.withError(String errorMessage) {
-    error = errorMessage;
-  }
-  GetProfile.fromJson(Map<String, dynamic> json) {
-    if (json['profile'] != null) {
-      profile = <Profile>[];
-      json['profile'].forEach((v) {
-        profile!.add(new Profile.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.profile != null) {
-      data['profile'] = this.profile!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
-
-class Profile {
+class Instructor {
   int? id;
   int? usersId;
   int? tabUnitId;
@@ -45,12 +18,13 @@ class Profile {
   String? status;
   String? wali;
   String? noWali;
-  String? examiner;
+  int? examiner;
   String? photoLocation;
   String? wa;
   String? ttd;
+  String? unitName;
 
-  Profile(
+  Instructor(
       {this.id,
       this.usersId,
       this.tabUnitId,
@@ -73,9 +47,10 @@ class Profile {
       this.examiner,
       this.photoLocation,
       this.wa,
-      this.ttd});
+      this.ttd,
+      this.unitName});
 
-  Profile.fromJson(Map<String, dynamic> json) {
+  Instructor.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     usersId = json['users_id'];
     tabUnitId = json['tab_unit_id'];
@@ -99,6 +74,7 @@ class Profile {
     photoLocation = json['photo_location'];
     wa = json['wa'];
     ttd = json['ttd'];
+    unitName = json['unit_name'];
   }
 
   Map<String, dynamic> toJson() {
@@ -126,6 +102,7 @@ class Profile {
     data['photo_location'] = this.photoLocation;
     data['wa'] = this.wa;
     data['ttd'] = this.ttd;
+    data['unit_name'] = this.unitName;
     return data;
   }
 }

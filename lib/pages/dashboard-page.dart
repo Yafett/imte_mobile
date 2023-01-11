@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:imte_mobile/pages/history-page.dart';
@@ -41,6 +43,7 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       onPressed: () {
         SystemNavigator.pop();
+        exit(0);
       },
     );
 

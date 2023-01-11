@@ -1,11 +1,11 @@
-buildscript {
+    buildscript {
     ext.kotlin_version = '1.6.10'
     repositories {
         google()
         mavenCentral()
     }
 
-    dependencies {
+    dependencies { 
         classpath 'com.android.tools.build:gradle:7.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
@@ -14,10 +14,13 @@ buildscript {
 allprojects {
     repositories {
         google()
-        mavenCentral()
-        //   jcenter()
+        // mavenCentral()
+          jcenter()
         // maven {
-        //     url 'https://google.bintray.com/exoplayer/'
+            // url 'https://google.bintray.com/exoplayer/'
+        //     url 'http://download.flutter.io'
+        //     allowInsecureProtocol = true
+
         // }
     }
 }
