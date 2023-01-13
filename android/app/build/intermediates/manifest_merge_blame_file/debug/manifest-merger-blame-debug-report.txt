@@ -37,7 +37,7 @@
 26        android:label="imte_mobile"
 28        android:usesCleartextTraffic="true" >
 29        <activity
-30            android:name="com.example.imte_mobile.MainActivity"
+30            android:name="com.example.imte_mobile.MainAct ivity"
 31            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
 32            android:exported="true"
 33            android:hardwareAccelerated="true"

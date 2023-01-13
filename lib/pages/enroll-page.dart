@@ -19,7 +19,7 @@ import 'package:imte_mobile/pages/add-enroll.dart';
 import 'package:imte_mobile/pages/history-page.dart';
 import 'package:imte_mobile/shared/theme.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
@@ -493,31 +493,69 @@ class _EnrollPageState extends State<EnrollPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            padding: EdgeInsets.all(10),
-            child: Text(
-              'Activity',
-              style: blackTextStyle.copyWith(
-                fontSize: 16,
-                fontWeight: semiBold,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => AddEnrollPage()));
-            },
-            child: Container(
-              margin: EdgeInsets.only(right: 15),
-              child: Text('Enroll',
-                  style: (active == 'active')
-                      ? greenTextStyle.copyWith(
-                          fontSize: 16, fontWeight: semiBold)
-                      : greyTextStyle.copyWith(
-                          fontSize: 16, fontWeight: semiBold)),
-            ),
-          ),
+          (active == 'active')
+              ? GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AddEnrollPage()));
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: new TextSpan(
+                        style: new TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.black,
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: 'Enroll Here! ',
+                              style: greenTextStyle.copyWith(
+                                  fontSize: 14, fontWeight: semiBold)),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              : GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: new TextSpan(
+                        style: new TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.black,
+                        ),
+                        children: <TextSpan>[
+                          TextSpan(
+                              text: 'Enroll Disabled! ',
+                              style: greyTextStyle.copyWith(
+                                  fontSize: 14, fontWeight: semiBold)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+          // GestureDetector(
+          //   onTap: () {
+          //     Navigator.push(context,
+          //         MaterialPageRoute(builder: (context) => AddEnrollPage()));
+          //   },
+          //   child: Container(
+          //     margin: EdgeInsets.only(right: 15),
+          //     child: Text('Enroll',
+          // style: (active == 'active')
+          //     ? greenTextStyle.copyWith(
+          //         fontSize: 16, fontWeight: semiBold)
+          //     : greyTextStyle.copyWith(
+          //         fontSize: 16, fontWeight: semiBold)),
+          //   ),
+          // ),
         ],
       ),
     );
@@ -676,131 +714,136 @@ class _EnrollPageState extends State<EnrollPage> {
       ),
       context: context,
       builder: (BuildContext context) {
-        return Container(
-          padding: EdgeInsets.all(15),
-          height: MediaQuery.of(context).size.height,
-          decoration: BoxDecoration(
-            borderRadius: radiusNormal,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            "Details",
-                            style: blackTextStyle.copyWith(
-                                fontSize: 20, fontWeight: semiBold),
-                          )
-                        ],
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                        },
-                        child: Icon(
-                          Icons.close,
-                          color: kBlackColor,
-                          size: 30,
-                        ),
-                      ),
-                    ]),
+        return ScrollConfiguration(
+          behavior: MyBehavior(),
+          child: SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.all(15),
+              height: MediaQuery.of(context).size.height / 1.5,
+              decoration: BoxDecoration(
+                borderRadius: radiusNormal,
               ),
-              SizedBox(height: 10),
-              Text('P2 | 2022',
-                  style: blackTextStyle.copyWith(
-                      fontSize: 18, fontWeight: semiBold)),
-              SizedBox(height: 10),
-
-              Row(
-                children: [
-                  Container(
-                      width: MediaQuery.of(context).size.width * 0.25,
-                      child: Text(
-                        'Status',
-                        style: greyTextStyle.copyWith(
-                            fontSize: 16, fontWeight: semiBold),
-                      )),
-                  Container(
-                      width: MediaQuery.of(context).size.width * 0.05,
-                      child: Text(
-                        ':',
-                        style: greyTextStyle.copyWith(
-                            fontSize: 16, fontWeight: semiBold),
-                      )),
-                  _checkStatusChip(enroll.enrollStatus)
-                ],
-              ),
-
-              Divider(thickness: 1),
-              textLine(
-                'Name',
-                Text('${studentName.toString()}',
-                    style: blackTextStyle.copyWith(fontSize: 14)),
-              ),
-              textLine(
-                'Teacher',
-                Text('${enroll.teacher.firstName} ${enroll.teacher.lastName}',
-                    style: blackTextStyle.copyWith(fontSize: 14)),
-              ),
-              textLine(
-                'Major',
-                Text(enroll.major.major,
-                    style: blackTextStyle.copyWith(fontSize: 14)),
-              ),
-              textLine(
-                'Grade',
-                Text(enroll.grade.grade,
-                    style: blackTextStyle.copyWith(fontSize: 14)),
-              ),
-              textLine(
-                'Exam Date',
-                Text(DateFormat.yMMMd().format(dt),
-                    style: blackTextStyle.copyWith(fontSize: 14)),
-              ),
-              textLine(
-                'Pract. Exam',
-                Text(practTime, style: blackTextStyle.copyWith(fontSize: 14)),
-              ),
-              textLine(
-                'Instr. Exam',
-                Text(examTime, style: blackTextStyle.copyWith(fontSize: 14)),
-              ),
-
-              textLine(
-                'Room',
-                Text(enroll.schedule.practicalRoom,
-                    style: blackTextStyle.copyWith(fontSize: 14)),
-              ),
-
-              SizedBox(height: 10),
-              Divider(thickness: 1),
-              SizedBox(height: 10),
-              Text('Exam Info :', style: blackTextStyle.copyWith(fontSize: 14)),
-              Container(
-                  child: Column(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('- Please come 30 minute before the exam start',
+                  Container(
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                "Details",
+                                style: blackTextStyle.copyWith(
+                                    fontSize: 20, fontWeight: semiBold),
+                              )
+                            ],
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(
+                              Icons.close,
+                              color: kBlackColor,
+                              size: 30,
+                            ),
+                          ),
+                        ]),
+                  ),
+                  SizedBox(height: 10),
+                  Text('P2 | 2022',
+                      style: blackTextStyle.copyWith(
+                          fontSize: 18, fontWeight: semiBold)),
+                  SizedBox(height: 10),
+
+                  Row(
+                    children: [
+                      Container(
+                          width: MediaQuery.of(context).size.width * 0.25,
+                          child: Text(
+                            'Status',
+                            style: greyTextStyle.copyWith(
+                                fontSize: 16, fontWeight: semiBold),
+                          )),
+                      Container(
+                          width: MediaQuery.of(context).size.width * 0.05,
+                          child: Text(
+                            ':',
+                            style: greyTextStyle.copyWith(
+                                fontSize: 16, fontWeight: semiBold),
+                          )),
+                      _checkStatusChip(enroll.enrollStatus)
+                    ],
+                  ),
+
+                  Divider(thickness: 1),
+
+                  textLine(
+                    'Teacher',
+                    Text(
+                        '${enroll.teacher.firstName} ${enroll.teacher.lastName}',
+                        style: blackTextStyle.copyWith(fontSize: 14)),
+                  ),
+                  textLine(
+                    'Major',
+                    Text(enroll.major.major,
+                        style: blackTextStyle.copyWith(fontSize: 14)),
+                  ),
+                  textLine(
+                    'Grade',
+                    Text(enroll.grade.grade,
+                        style: blackTextStyle.copyWith(fontSize: 14)),
+                  ),
+                  textLine(
+                    'Exam Date',
+                    Text(DateFormat.yMMMd().format(dt),
+                        style: blackTextStyle.copyWith(fontSize: 14)),
+                  ),
+                  textLine(
+                    'Pract. Exam',
+                    Text(practTime,
+                        style: blackTextStyle.copyWith(fontSize: 14)),
+                  ),
+                  textLine(
+                    'Instr. Exam',
+                    Text(examTime,
+                        style: blackTextStyle.copyWith(fontSize: 14)),
+                  ),
+
+                  textLine(
+                    'Room',
+                    Text(enroll.schedule.practicalRoom,
+                        style: blackTextStyle.copyWith(fontSize: 14)),
+                  ),
+
+                  SizedBox(height: 10),
+                  Divider(thickness: 1),
+                  SizedBox(height: 10),
+                  Text('Exam Info :',
                       style: blackTextStyle.copyWith(fontSize: 14)),
-                  Text('- Wear proper costume (no sandals/short pants)',
-                      style: blackTextStyle.copyWith(fontSize: 14)),
+                  Container(
+                      child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('- Please come 30 minute before the exam start',
+                          style: blackTextStyle.copyWith(fontSize: 14)),
+                      Text('- Wear proper costume (no sandals/short pants)',
+                          style: blackTextStyle.copyWith(fontSize: 14)),
+                    ],
+                  )),
+                  // Container(
+                  //   height: MediaQuery.of(context).size.height * 0.15,
+                  //   child: detailListView(
+                  //     index,
+                  //     enroll.activityStatus.split(''),
+                  //     enroll.activityFormat.split(','),
+                  //   ),
+                  // ),
                 ],
-              )),
-              // Container(
-              //   height: MediaQuery.of(context).size.height * 0.15,
-              //   child: detailListView(
-              //     index,
-              //     enroll.activityStatus.split(''),
-              //     enroll.activityFormat.split(','),
-              //   ),
-              // ),
-            ],
+              ),
+            ),
           ),
         );
       },

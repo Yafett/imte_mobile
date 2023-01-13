@@ -1,11 +1,16 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:imte_mobile/pages/history-page.dart';
+import 'package:imte_mobile/pages/home-page.dart';
+import 'package:imte_mobile/pages/sign-in.dart';
 import 'package:imte_mobile/shared/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'News/news-page.dart';
 import 'enroll-page.dart';
+import 'package:http/http.dart' as http;
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -17,59 +22,53 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   int selectedPage = 0;
   String emailController = '';
+  final dio = Dio();
 
   @override
   void initState() {
     super.initState();
   }
 
-  // ! modal exit
-  showAlertDialog(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: Text(
-        "Nope",
-        style: redTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
-      ),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-    Widget continueButton = TextButton(
-      child: Text(
-        "Sure",
-        style: blackTextStyle.copyWith(
-            fontSize: 16, color: Colors.green, fontWeight: semiBold),
-      ),
-      onPressed: () {
-        SystemNavigator.pop();
-        exit(0);
-      },
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      title: Text(
-        "Alert",
-        style: blackTextStyle.copyWith(fontSize: 20, fontWeight: semiBold),
-      ),
-      content: Text(
-        "Are you sure want to leave this Page?",
-        style: greyTextStyle.copyWith(fontSize: 16),
-      ),
-      actions: [
-        cancelButton,
-        continueButton,
-      ],
-    );
-
-    // show the dialog
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
+  dialog() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(' Alert'),
+            content: Text('Are you sure want to Logout?'),
+            actions: <Widget>[
+              TextButton(
+                  onPressed: () {
+                    //action code for "Yes" button
+                    _logout();
+                    Navigator.pop(context);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HomePage(),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Yes',
+                    style: blackTextStyle.copyWith(
+                        fontSize: 16,
+                        color: Colors.green,
+                        fontWeight: semiBold),
+                  )),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); //close Dialog
+                },
+                child: Text(
+                  'Close',
+                  style:
+                      redTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
+                ),
+              ),
+            ],
+          );
+        });
   }
 
   // ! appbar navigation
@@ -100,7 +99,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 label: '',
                 icon: GestureDetector(
                     onTap: () {
-                      showAlertDialog(context);
+                      dialog();
                     },
                     child: Icon(Icons.exit_to_app_outlined, size: 30)),
               ),
@@ -115,5 +114,24 @@ class _DashboardPageState extends State<DashboardPage> {
                 selectedPage = index;
               });
             }));
+  }
+
+  _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getInt('id');
+    var token = prefs.getString('token');
+    print('adsadas' + id.toString());
+    dio.options.headers['Accept'] = 'application/json';
+    final response = await http.get(
+        Uri.parse('https://adm.imte.education/api/user/logoutv2?id=${id}'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer + ${token}'
+        });
+
+    print(response.body.toString());
+
+    prefs.remove('isLoggedIn');
+    prefs.setBool('isLoggedIn', false);
   }
 }

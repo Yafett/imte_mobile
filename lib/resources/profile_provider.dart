@@ -23,6 +23,8 @@ class ProfileProvider {
       );
       final data = jsonDecode(response.body);
 
+      print(data['profile'].toString());
+
       pref.setInt('id', data['profile'][0]['id']);
 
       return GetProfile.fromJson(data);

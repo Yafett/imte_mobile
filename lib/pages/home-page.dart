@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:imte_mobile/models/gallery-model.dart';
 import 'package:imte_mobile/shared/theme.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
@@ -106,6 +107,7 @@ class _HomePageState extends State<HomePage> {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text(state.message!)));
               } else if (state is LoginSuccess) {
+                _logged();
                 Navigator.pushNamedAndRemoveUntil(
                     context, '/dashboard', (route) => false);
               }
@@ -378,5 +380,14 @@ class _HomePageState extends State<HomePage> {
     _controller.play();
     _controller.setLooping(true);
     _controller.setVolume(0);
+  }
+
+  _logged() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool("isLoggedIn", true);
+
+    var status = prefs.getBool('isLoggedIn');
+
+    print('status : ' + status.toString());
   }
 }

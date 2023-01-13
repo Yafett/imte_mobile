@@ -19,6 +19,7 @@ class AuthProvider {
 
     final data = await json.decode(response.body);
     if (response.statusCode == 200) {
+      prefs.setInt('idUser', data['user']);
       prefs.setString("token", data['token']);
       prefs.setInt("user", data['user']);
       prefs.setString("email", email);

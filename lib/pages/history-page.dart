@@ -81,10 +81,18 @@ class _HistoryPageState extends State<HistoryPage> {
                   itemBuilder: (BuildContext context, int index) {
                     Period period = state.period[0];
                     History history = state.history[index];
-                    if (history.period!.periodName != period.periodName) {
+                    if (history.period!.periodName != period.periodName &&
+                        history.status.toString() == '3') {
                       return _buildHistoryCard(index, history, period);
                     }
-                    return Container();
+                    return Container(
+                      height: MediaQuery.of(context).size.height / 1.5,
+                      child: Center(
+                          child: Text(
+                        "You didn't have any history yet",
+                        style: greyTextStyle,
+                      )),
+                    );
                   },
                 ),
               );
