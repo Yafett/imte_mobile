@@ -294,7 +294,7 @@ class _LoginPageState extends State<LoginPage> {
                             color: Colors.black,
                           ),
                           children: <TextSpan>[
-                            new TextSpan(text: 'OPEN '),
+                            new TextSpan(text: 'OPEN'),
                             new TextSpan(
                                 text: 'for ',
                                 style:

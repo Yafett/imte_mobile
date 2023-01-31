@@ -22,6 +22,7 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
   final dio = Dio();
 
   final _periodController = TextEditingController();
+  final _unitController = TextEditingController();
   var _majorVal;
   var _unitVal;
   var _gradeVal;
@@ -30,6 +31,7 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
 
   var img;
   var teacherId;
+  var unitIdentify;
   var _teacherVal;
   var photoName;
   var unitList = [];
@@ -129,9 +131,48 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
   }
 
   Widget _unitField() {
+    // return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    //   // ! instruments
+    //   Text('Unit', style: TextStyle(fontSize: 16)),
+    //   SizedBox(height: 5),
+    //   Container(
+    //     margin: EdgeInsets.only(top: 5),
+    //     padding: EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+    //     decoration: BoxDecoration(
+    //       border: Border.all(color: Colors.grey),
+    //       borderRadius: BorderRadius.all(Radius.circular(12)),
+    //     ),
+    //     width: MediaQuery.of(context).size.width,
+    //     child: DropdownButton(
+    //       underline: SizedBox(),
+    //       isExpanded: true,
+    //       hint: Text('Select Your Unit'),
+    //       items: unitList.map((item) {
+    //         return DropdownMenuItem(
+    //           value: item['id'].toString(),
+    //           child: Text(item['unit_name'].toString()),
+    //         );
+    //       }).toList(),
+    //       onChanged: (newVal) {
+    //         print(newVal);
+
+    //         setState(() {
+    //           unitSelected = false;
+    //           _unitVal = newVal;
+    //           teacherList = [];
+    //           _fetchTeacher(newVal);
+    //         });
+    //       },
+    //       value: _unitVal,
+    //     ),
+    //   ),
+    //   SizedBox(
+    //     height: 15,
+    //   ),
+    // ]);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // ! instruments
-      Text('Unit', style: TextStyle(fontSize: 16)),
+      Text('Period', style: TextStyle(fontSize: 16)),
       SizedBox(height: 5),
       Container(
         margin: EdgeInsets.only(top: 5),
@@ -141,27 +182,13 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
           borderRadius: BorderRadius.all(Radius.circular(12)),
         ),
         width: MediaQuery.of(context).size.width,
-        child: DropdownButton(
-          underline: SizedBox(),
-          isExpanded: true,
-          hint: Text('Select Your Unit'),
-          items: unitList.map((item) {
-            return DropdownMenuItem(
-              value: item['id'].toString(),
-              child: Text(item['unit_name'].toString()),
-            );
-          }).toList(),
-          onChanged: (newVal) {
-            print(newVal);
-
-            setState(() {
-              unitSelected = false;
-              _unitVal = newVal;
-              teacherList = [];
-              _fetchTeacher(newVal);
-            });
-          },
-          value: _unitVal,
+        child: TextField(
+          readOnly: true,
+          controller: _unitController,
+          decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: 'Unit',
+              hintStyle: greyTextStyle),
         ),
       ),
       SizedBox(
@@ -411,14 +438,50 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
   }
 
   _fetchUnit() async {
+    final prefs = await SharedPreferences.getInstance();
     final response = await dio.get('https://adm.imte.education/api/unit');
 
+    String? unit = await prefs.getString('unit');
+
+    if (unit == '1') {
+      _unitController.text = 'Alam Sutera';
+    } else if (unit == '2') {
+      _unitController.text = 'Gang Pinggir';
+    } else if (unit == '3') {
+      _unitController.text = 'Madiun';
+    } else if (unit == '4') {
+      _unitController.text = 'Puri Anjasmoro';
+    } else if (unit == '5') {
+      _unitController.text = 'Solo';
+    } else if (unit == '6') {
+      _unitController.text = 'Kudus';
+    } else if (unit == '7') {
+      _unitController.text = 'Yogyakarta';
+    } else if (unit == '8') {
+      _unitController.text = 'Kutoarjo';
+    } else if (unit == '9') {
+      _unitController.text = 'Purwodadi';
+    } else if (unit == '10') {
+      _unitController.text = 'Surabaya';
+    }
+
     for (var a = 0; a < response.data.length; a++) {
-      if (mounted) {
-        setState(() {
-          unitList.add(response.data[a]);
-        });
+      for (var a = 0; a < response.data.length; a++) {
+        if (mounted) {
+          setState(() {
+            unitList.add(response.data[a]);
+          });
+        }
       }
+    }
+
+    teacherList = [];
+    _fetchTeacher(unit);
+
+    if (mounted) {
+      setState(() {
+        unitSelected = true;
+      });
     }
   }
 

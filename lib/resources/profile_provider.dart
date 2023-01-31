@@ -23,8 +23,9 @@ class ProfileProvider {
       );
       final data = jsonDecode(response.body);
 
-      print(data['profile'].toString());
-
+      print('user : ' + user.toString());
+ 
+      pref.setString('unit', data['profile'][0]['tab_unit_id'].toString());
       pref.setInt('id', data['profile'][0]['id']);
 
       return GetProfile.fromJson(data);

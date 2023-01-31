@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:imte_mobile/models/gallery-model.dart';
+import 'package:imte_mobile/pages/dashboard-page.dart';
 import 'package:imte_mobile/shared/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,9 +26,20 @@ class _HomePageState extends State<HomePage> {
   var videoSrc = '';
   var emailUp = '';
   var passUp = '';
+  var isLoading = false;
+
+  var forgetPass = false;
+  var emailSend = false;
+  var canReset = false;
+  var isOtp = true;
+  var otpCode;
 
   TextEditingController emailController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
+
+  TextEditingController forgetEmailController = new TextEditingController();
+  TextEditingController otpController = new TextEditingController();
+  TextEditingController forgetPasswordController = new TextEditingController();
 
   bool _obscureText = true;
 
@@ -80,15 +92,35 @@ class _HomePageState extends State<HomePage> {
               color: Color.fromARGB(143, 255, 255, 255),
             ),
             padding: EdgeInsets.all(15),
-            child: Column(
-              children: [
-                _emailField(),
-                _passwordField(),
-                _loginButton(),
-                _signUpNavigation(),
-                SizedBox(height: 10),
-              ],
-            ),
+            child: (forgetPass != true)
+                ? Column(
+                    children: [
+                      _emailField(),
+                      _passwordField(),
+                      _forgotPassword(),
+                      _loginButton(),
+                      _signUpNavigation(),
+                      SizedBox(height: 10),
+                    ],
+                  )
+                : Column(
+                    children: [
+                      _passEmailField(),
+                      (emailSend == true)
+                          ? Column(
+                              children: [
+                                _otpField(),
+                                _passNewField(),
+                              ],
+                            )
+                          : Container(),
+                      _wantLogin(),
+                      (isOtp == true)
+                          ? _sendOtpButton()
+                          : _resetPasswordButton(),
+                      SizedBox(height: 10),
+                    ],
+                  ),
           ),
         ],
       ),
@@ -108,8 +140,10 @@ class _HomePageState extends State<HomePage> {
                     .showSnackBar(SnackBar(content: Text(state.message!)));
               } else if (state is LoginSuccess) {
                 _logged();
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/dashboard', (route) => false);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => DashboardPage()),
+                    (route) => false);
               }
             },
             builder: (context, state) {
@@ -290,6 +324,300 @@ class _HomePageState extends State<HomePage> {
             return (value!.length < 0) ? "Can't be empty" : null;
           },
         ),
+      ],
+    );
+  }
+
+  Widget _loadingButton() {
+    return TextButton(
+        onPressed: () {},
+        style: TextButton.styleFrom(
+            backgroundColor: Color.fromARGB(255, 50, 50, 50),
+            shape: RoundedRectangleBorder(borderRadius: radiusNormal)),
+        child: CircularProgressIndicator(
+          color: Colors.white,
+        ));
+  }
+
+// ! forget password
+
+  Widget _passEmailField() {
+    return Column(
+      children: [
+        TextFormField(
+          keyboardType: TextInputType.emailAddress,
+          controller: forgetEmailController,
+          style: blackTextStyle,
+          decoration: InputDecoration(
+            prefixIcon: Icon(
+              Icons.person_outline,
+              color: kBlackColor,
+            ),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+              //  when the TextFormField in unfocused
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+              //  when the TextFormField in focused
+            ),
+            border: UnderlineInputBorder(),
+            focusColor: Colors.black,
+            hintText: 'Email',
+            hintStyle: blackTextStyle.copyWith(fontSize: 16),
+          ),
+          onSaved: (String? value) {
+            // This optional block of code can be used to run
+            // code when the user saves the form.
+          },
+          validator: (String? value) {
+            return (value!.length < 0) ? "Can't be empty" : null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _otpField() {
+    return Column(
+      children: [
+        SizedBox(height: 20),
+        TextFormField(
+          keyboardType: TextInputType.emailAddress,
+          controller: otpController,
+          style: blackTextStyle,
+          decoration: InputDecoration(
+            prefixIcon:
+                Icon(Icons.chat_bubble_outline_outlined, color: kBlackColor),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+              //  when the TextFormField in unfocused
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+              //  when the TextFormField in focused
+            ),
+            border: UnderlineInputBorder(),
+            focusColor: Colors.black,
+            hintText: 'OTP',
+            hintStyle: blackTextStyle.copyWith(fontSize: 16),
+          ),
+          onSaved: (String? value) {
+            // This optional block of code can be used to run
+            // code when the user saves the form.
+          },
+          validator: (String? value) {
+            return (value!.length < 0) ? "Can't be empty" : null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _passNewField() {
+    return Column(
+      children: [
+        SizedBox(height: 20),
+        TextFormField(
+          keyboardType: TextInputType.emailAddress,
+          controller: forgetPasswordController,
+          style: blackTextStyle,
+          decoration: InputDecoration(
+            prefixIcon: Icon(Icons.lock_outline, color: kBlackColor),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+              //  when the TextFormField in unfocused
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: Colors.black),
+              //  when the TextFormField in focused
+            ),
+            border: UnderlineInputBorder(),
+            focusColor: Colors.black,
+            hintText: 'New Password',
+            hintStyle: blackTextStyle.copyWith(fontSize: 16),
+          ),
+          onSaved: (String? value) {
+            // This optional block of code can be used to run
+            // code when the user saves the form.
+          },
+          validator: (String? value) {
+            return (value!.length < 0) ? "Can't be empty" : null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _wantLogin() {
+    return Column(
+      children: [
+        SizedBox(height: 10),
+        GestureDetector(
+          onTap: () {
+            if (mounted) {
+              setState(() {
+                forgetPass = false;
+                emailSend = false;
+                isOtp = true;
+              });
+            }
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text('Back to Login', style: blackTextStyle),
+            ],
+          ),
+        ),
+        SizedBox(height: 30),
+      ],
+    );
+  }
+
+  Widget _sendOtpButton() {
+    return InkWell(
+        child: Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height * 0.070,
+            child: (isLoading != true)
+                ? BlocConsumer<LoginBloc, LoginState>(
+                    bloc: _loginBloc,
+                    listener: (context, state) {
+                      if (state is LoginError) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(state.message!)));
+                      } else if (state is LoginSuccess) {
+                        _logged();
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DashboardPage()),
+                            (route) => false);
+                      }
+                    },
+                    builder: (context, state) {
+                      if (state is LoginInitial || state is LoginError) {
+                        return TextButton(
+                          onPressed: () {
+                            if (forgetEmailController.text.length != 0) {
+                              _sendOtp();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Can't be empty")));
+                            }
+                          },
+                          style: TextButton.styleFrom(
+                              backgroundColor: Color(0xffAE2329),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: radiusNormal)),
+                          child: Text("Send OTP",
+                              style: whiteTextStyle.copyWith(
+                                fontSize: 20,
+                                fontWeight: semiBold,
+                              )),
+                        );
+                      } else if (state is LoginLoading) {
+                        return _loadingButton();
+                      } else {
+                        return Container();
+                      }
+                    },
+                  )
+                : TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                        backgroundColor: Color.fromARGB(255, 50, 50, 50),
+                        shape:
+                            RoundedRectangleBorder(borderRadius: radiusNormal)),
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ))));
+  }
+
+  Widget _resetPasswordButton() {
+    return InkWell(
+      child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height * 0.070,
+          child: BlocConsumer<LoginBloc, LoginState>(
+            bloc: _loginBloc,
+            listener: (context, state) {
+              if (state is LoginError) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text(state.message!)));
+              } else if (state is LoginSuccess) {
+                _logged();
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => DashboardPage()),
+                    (route) => false);
+              }
+            },
+            builder: (context, state) {
+              if (state is LoginInitial || state is LoginError) {
+                return TextButton(
+                  onPressed: () {
+                    if (canReset == true) {
+                      if (forgetEmailController.text.length != 0 &&
+                          forgetPasswordController.text.length != 0 &&
+                          otpController.text.toString() == otpCode.toString()) {
+                        resetPassword();
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Your OTP was Wrong")));
+                      }
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                      backgroundColor: Color(0xffAE2329),
+                      shape:
+                          RoundedRectangleBorder(borderRadius: radiusNormal)),
+                  child: Text("Reset Password",
+                      style: whiteTextStyle.copyWith(
+                        fontSize: 20,
+                        fontWeight: semiBold,
+                      )),
+                );
+              } else if (state is LoginLoading) {
+                return TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                        backgroundColor: Color.fromARGB(255, 50, 50, 50),
+                        shape:
+                            RoundedRectangleBorder(borderRadius: radiusNormal)),
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ));
+              } else {
+                return Container();
+              }
+            },
+          )),
+    );
+  }
+
+  Widget _forgotPassword() {
+    return Column(
+      children: [
+        SizedBox(height: 10),
+        GestureDetector(
+          onTap: () {
+            if (mounted) {
+              setState(() {
+                forgetPass = true;
+              });
+            }
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text('forget password', style: blackTextStyle),
+            ],
+          ),
+        ),
         SizedBox(height: 30),
       ],
     );
@@ -345,6 +673,57 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  showAlertDialog() {
+    // set up the button
+    Widget okButton = TextButton(
+      child: Text("Send Link"),
+      onPressed: () {},
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      // title: Text("My title"),
+      contentPadding: EdgeInsets.all(15),
+      content: TextFormField(
+        obscureText: _obscureText,
+        controller: passwordController,
+        style: blackTextStyle,
+        decoration: InputDecoration(
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.black),
+            //  when the TextFormField in unfocused
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(color: Colors.black),
+            //  when the TextFormField in focused
+          ),
+          border: UnderlineInputBorder(),
+          focusColor: Colors.black,
+          hintText: 'Password',
+          hintStyle: blackTextStyle.copyWith(fontSize: 16),
+        ),
+        onSaved: (String? value) {
+          // This optional block of code can be used to run
+          // code when the user saves the form.
+        },
+        validator: (String? value) {
+          return (value!.length < 0) ? "Can't be empty" : null;
+        },
+      ),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   _toggle() {
     setState(() {
       _obscureText = !_obscureText;
@@ -389,5 +768,78 @@ class _HomePageState extends State<HomePage> {
     var status = prefs.getBool('isLoggedIn');
 
     print('status : ' + status.toString());
+  }
+
+  _sendOtp() async {
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+    final response = await http.post(
+        Uri.parse('https://adm.imte.education/api/user/sendPassResetOtp'),
+        headers: {
+          "Accept": "application/json"
+        },
+        body: {
+          "email": forgetEmailController.text,
+        });
+    final data = await json.decode(response.body);
+
+    if (data['message'] == 'Email is sent.') {
+      if (mounted) {
+        setState(() {
+          canReset = true;
+          emailSend = true;
+          isOtp = false;
+          otpCode = data['otp'];
+        });
+      }
+
+      print(otpCode.toString());
+
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Link Sent, Check ur Email")));
+    } else {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("User not Found!")));
+    }
+  }
+
+  resetPassword() async {
+    if (mounted) {
+      setState(() {
+        isLoading = true;
+      });
+    }
+    final response = await http.post(
+        Uri.parse('https://adm.imte.education/api/user/resetPass'),
+        headers: {
+          "Accept": "application/json"
+        },
+        body: {
+          "email": forgetEmailController.text,
+          'password': forgetPasswordController.text,
+        });
+
+    if (mounted) {
+      setState(() {
+        forgetPass = false;
+        isLoading = false;
+      });
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Your Password was Successfully changed")));
   }
 }

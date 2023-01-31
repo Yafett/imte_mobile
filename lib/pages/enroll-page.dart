@@ -20,6 +20,7 @@ import 'package:imte_mobile/pages/history-page.dart';
 import 'package:imte_mobile/shared/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:skeletons/skeletons.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 
@@ -373,6 +374,67 @@ class _EnrollPageState extends State<EnrollPage> {
                           _profilePicture(),
                           _profileNametag(profile),
                         ],
+                      );
+                    } else if (state is GetProfileLoading) {
+                      return Row(
+                        children: [
+                          SkeletonAvatar(
+                            style: SkeletonAvatarStyle(
+                              width: 80,
+                              height: 80,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SkeletonParagraph(
+                                style: SkeletonParagraphStyle(
+                                    lines: 1,
+                                    spacing: 6,
+                                    lineStyle: SkeletonLineStyle(
+                                      randomLength: true,
+                                      height: 20,
+                                      borderRadius: BorderRadius.circular(4),
+                                      minLength:
+                                          MediaQuery.of(context).size.width / 6,
+                                      maxLength:
+                                          MediaQuery.of(context).size.width / 3,
+                                    )),
+                              ),
+                              SkeletonParagraph(
+                                style: SkeletonParagraphStyle(
+                                    lines: 1,
+                                    spacing: 6,
+                                    lineStyle: SkeletonLineStyle(
+                                      randomLength: true,
+                                      height: 15,
+                                      borderRadius: BorderRadius.circular(4),
+                                      minLength:
+                                          MediaQuery.of(context).size.width / 6,
+                                      maxLength:
+                                          MediaQuery.of(context).size.width / 3,
+                                    )),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    } else if (state is GetProfileLoaded) {
+                      return GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          child: Container( 
+                            height: 70,
+                            width: 70,
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage('assets/image/smile.jpg'),
+                                  fit: BoxFit.fill,
+                                ),
+                                borderRadius: radiusNormal),
+                          ),
+                        ),
                       );
                     } else {
                       return Container();

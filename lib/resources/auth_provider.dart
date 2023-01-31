@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class AuthProvider {
   final String urlLogin = "https://adm.imte.education/api/user/loginv2";
   final String urlRegister = "https://adm.imte.education/api/user/registerv2";
-
+  
   login(email, password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -23,6 +23,8 @@ class AuthProvider {
       prefs.setString("token", data['token']);
       prefs.setInt("user", data['user']);
       prefs.setString("email", email);
+
+      print('token ' + data['token']);
       return data[''];
     } else {
       return data['message'];
