@@ -99,6 +99,7 @@ class _HomePageState extends State<HomePage> {
                       _passwordField(),
                       _forgotPassword(),
                       _loginButton(),
+                      SizedBox(height: 5),
                       _signUpNavigation(),
                       SizedBox(height: 10),
                     ],
@@ -383,7 +384,7 @@ class _HomePageState extends State<HomePage> {
       children: [
         SizedBox(height: 20),
         TextFormField(
-          keyboardType: TextInputType.emailAddress,
+          keyboardType: TextInputType.number,
           controller: otpController,
           style: blackTextStyle,
           decoration: InputDecoration(

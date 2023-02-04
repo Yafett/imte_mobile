@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:string_extensions/string_extensions.dart';
+import 'package:http/http.dart' as http;
 
 import '../shared/theme.dart';
 import 'News/news-detail-page.dart';
@@ -35,8 +38,21 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
   var _teacherVal;
   var photoName;
   var unitList = [];
+  var gradePiano = [
+    'CFK 1',
+    'CFK 2',
+    'JC 1',
+    'JC 2',
+    'JC 3',
+    'JC 4',
+    'JC 5 - Pop Jazz',
+    'JC 5 - Classical',
+    'JC 6 - Pop Jazz',
+    'JC 6 - Classical',
+  ];
   var majorList = [];
   var gradeList = [];
+  var gradeListOld = [];
   var teacherList = [];
   var paymentMethod = ['Gallery', 'Camera'];
 
@@ -172,7 +188,7 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
     // ]);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // ! instruments
-      Text('Period', style: TextStyle(fontSize: 16)),
+      Text('Unit', style: TextStyle(fontSize: 16)),
       SizedBox(height: 5),
       Container(
         margin: EdgeInsets.only(top: 5),
@@ -249,9 +265,11 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
             );
           }).toList(),
           onChanged: (newVal) {
+            print(newVal);
             setState(() {
               _majorVal = newVal;
             });
+            _setMajorList(_majorVal);
           },
           value: _majorVal,
         ),
@@ -301,7 +319,7 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
 
   Widget _teacherField() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      // ! instruments
+      // ! teacher
       Text('Teacher', style: TextStyle(fontSize: 16)),
       SizedBox(height: 5),
       Container(
@@ -342,9 +360,9 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
 
   Widget _paymentField() {
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      // ! instruments
+      // ! receipt
       Text('Payment Receipt', style: TextStyle(fontSize: 16)),
-      SizedBox(height: 5),
+      SizedBox(height: 10),
       (_paymentVal == null)
           ? Row(
               children: [
@@ -515,11 +533,10 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
       if (mounted) {
         setState(() {
           gradeList.add(response.data[a]);
+          gradeListOld.add(response.data[a]);
         });
       }
     }
-
-    print(gradeList.toString());
   }
 
   _fetchTeacher(id) async {
@@ -557,15 +574,17 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // String fileName = file.path.split('/').last;
     var token = prefs.getString('token');
+    String? unit = await prefs.getString('unit');
+    String? id = await prefs.getString('idUser');
 
-    // print('unit : ' + _unitVal.toString());
+    // print('unit : ' + _unitController.text.toString());
     // print('period : ' + _periodVal.toString());
     // print('major : ' + _majorVal.toString());
     // print('grade : ' + _gradeVal.toString());
     // print('teacher_id : ' + _teacherVal.toString());
     // print('payment : ' + _paymentVal.toString());
     final failSnackBar = SnackBar(
-      content: const Text('All field must be filled!'),
+      content: const Text('All field must be Filled!'),
       backgroundColor: (Colors.black),
       action: SnackBarAction(
         label: 'close',
@@ -584,29 +603,57 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
     if (_paymentVal.toString() == 'null') {
       ScaffoldMessenger.of(context).showSnackBar(failSnackBar);
     } else {
-      dio.options.headers['content-Type'] = 'application/json';
+      dio.options.headers['Content-Type'] = 'application/json';
       dio.options.headers["authorization"] = "token ${token}";
-      final response =
-          await dio.post('https://adm.imte.education/api/enroll/store', data: {
-        'id': '',
-        'unit': _unitVal.toString(),
-        'period': _periodVal.toString(),
-        'major': _majorVal.toString(),
-        'grade': _gradeVal.toString(),
-        'teacher_id': _teacherVal.toString(),
-        'payment': _paymentVal.toString(),
-      }, options: Options(validateStatus: (status) {
-        if (status! > 200) {
-          ScaffoldMessenger.of(context).showSnackBar(failSnackBar);
-        } else {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
-        }
+      dio.options.headers["Accept"] = "*/*";
+      final response = await dio.post(
+        'https://adm.imte.education/api/enroll/store',
+        data: FormData.fromMap({
+          'id': id.toString(),
+          'unit': unit.toString(),
+          'period': _periodVal.toString(),
+          'major': _majorVal.toString(),
+          'grade': _gradeVal.toString(),
+          'teacher_id': _teacherVal.toString(),
+          'payment': _paymentVal.toString(),
+        }),
+      );
+      ;
 
-        return status > 200;
-      }));
+      if (response.statusCode! > 200) {
+        ScaffoldMessenger.of(context).showSnackBar(failSnackBar);
+      } else {
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
+      }
 
       print('response : ' + response.data.toString());
+    }
+  }
+
+  _setMajorList(val) {
+    if (val.toString() == '1') {
+      if (mounted) {
+        setState(() {
+          gradeList = gradeListOld;
+        });
+      }
+      gradeList = gradeListOld;
+      gradeList.removeWhere((item) => item['grade'] == 'JC 5');
+      gradeList.removeWhere((item) => item['grade'] == 'JC 6');
+
+      print(gradeListOld.length.toString());
+    } else {
+      if (mounted) {
+        setState(() {
+          gradeList = gradeListOld;
+        });
+      }
+      gradeList = gradeListOld;
+      gradeList.removeWhere((item) => item['grade'] == 'JC 5 - Pop Jazz');
+      gradeList.removeWhere((item) => item['grade'] == 'JC 6 - Pop Jazz');
+      gradeList.removeWhere((item) => item['grade'] == 'JC 5 - Classical');
+      gradeList.removeWhere((item) => item['grade'] == 'JC 6 - Classical');
     }
   }
 }

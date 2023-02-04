@@ -629,7 +629,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
                   //  Gender
                   Row(
-                    children: [ 
+                    children: [
                       Text('Gender '),
                       Text('*', style: TextStyle(color: Colors.red)),
                     ],
@@ -836,10 +836,9 @@ class _ProfilePageState extends State<ProfilePage> {
               if (pickedDate != null) {
                 String formattedDate =
                     DateFormat('yyyy-MM-dd').format(pickedDate);
-                
-                  birthController.text =
-                      formattedDate;  
-          
+
+                birthController.text = formattedDate;
+
                 // print(birthController.text);
               } else {
                 print("Date is not selected");
@@ -971,7 +970,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Profile Image',
+        Text('Image Profile',
             style: blackTextStyle.copyWith(
               fontSize: 16,
               fontWeight: semiBold,

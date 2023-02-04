@@ -27,6 +27,7 @@ import 'package:http/http.dart' as http;
 import '../bloc/get-profile_bloc/getProfile_bloc.dart';
 import '../models/gallery-model.dart';
 import '../widget/news-card.dart';
+import 'home-page.dart';
 
 class EnrollPage extends StatefulWidget {
   const EnrollPage({Key? key}) : super(key: key);
@@ -364,8 +365,28 @@ class _EnrollPageState extends State<EnrollPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                BlocBuilder<GetProfileBloc, GetProfileState>(
+                BlocConsumer<GetProfileBloc, GetProfileState>(
                   bloc: _profileBloc,
+                  listener: (context, state) {
+                    if (state is GetProfileExpired) {
+                      _logout();
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage()),
+                          (route) => false);
+                      final expiredSnackbar = SnackBar(
+                        content: const Text(
+                            'Token Expired, Please Login Again'),
+                        backgroundColor: (Colors.black),
+                        action: SnackBarAction(
+                          label: 'Close',
+                          onPressed: () {},
+                        ),
+                      );
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(expiredSnackbar);
+                    }
+                  },
                   builder: (context, state) {
                     if (state is GetProfileLoaded) {
                       GetProfile profile = state.profileModel;
@@ -424,7 +445,7 @@ class _EnrollPageState extends State<EnrollPage> {
                       return GestureDetector(
                         onTap: () {},
                         child: Container(
-                          child: Container( 
+                          child: Container(
                             height: 70,
                             width: 70,
                             decoration: BoxDecoration(
@@ -987,5 +1008,24 @@ class _EnrollPageState extends State<EnrollPage> {
         ],
       ),
     );
+  }
+
+  _logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var id = prefs.getInt('id');
+    var token = prefs.getString('token');
+    print('adsadas' + id.toString());
+    dio.options.headers['Accept'] = 'application/json';
+    final response = await http.get(
+        Uri.parse('https://adm.imte.education/api/user/logoutv2?id=${id}'),
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer + ${token}'
+        });
+
+    print(response.body.toString());
+
+    prefs.remove('isLoggedIn');
+    prefs.setBool('isLoggedIn', false);
   }
 }

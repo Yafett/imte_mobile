@@ -8,7 +8,7 @@ class ProfileProvider {
   final String urlGet = "https://adm.imte.education/api/user/profile?id=";
   final String urlEdit = "https://adm.imte.education/api/user/updatev2/";
 
-  Future<GetProfile> fetchProfileList() async {
+  fetchProfileList() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var token = pref.getString("token");
     var user = pref.getInt('user');
@@ -23,12 +23,16 @@ class ProfileProvider {
       );
       final data = jsonDecode(response.body);
 
+      print('response : ' + data['message'].toString());
       print('user : ' + user.toString());
- 
-      pref.setString('unit', data['profile'][0]['tab_unit_id'].toString());
-      pref.setInt('id', data['profile'][0]['id']);
+      if (data['message'] == 'Unauthenticated.') {
+        return 'expired';
+      } else {
+        pref.setString('unit', data['profile'][0]['tab_unit_id'].toString());
+        pref.setInt('id', data['profile'][0]['id']);
 
-      return GetProfile.fromJson(data);
+        return GetProfile.fromJson(data);
+      }
     } catch (error, stacktrace) {
       // ignore: avoid_print
       print('Exception Occured: $error stackTrace: $stacktrace');

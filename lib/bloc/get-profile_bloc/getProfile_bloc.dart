@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:imte_mobile/models/profile-model.dart'; 
+import 'package:imte_mobile/models/profile-model.dart';
 import 'package:imte_mobile/resources/profile_provider.dart';
 
 part 'getProfile_event.dart';
@@ -14,10 +14,14 @@ class GetProfileBloc extends Bloc<ProfileEvent, GetProfileState> {
       (event, emit) async {
         try {
           emit(GetProfileLoading());
-          final pList =  await _profileProvider.fetchProfileList();
-          emit(GetProfileLoaded(pList));
-          if (pList.error != null) {
+          final pList = await _profileProvider.fetchProfileList();
+
+          if (pList == 'expired') {
+            emit(GetProfileExpired('expired'));
+          } else if (pList.error != null) {
             emit(GetProfileError(pList.error));
+          } else {
+            emit(GetProfileLoaded(pList));
           }
         } on NetworkError {
           emit(const GetProfileError(

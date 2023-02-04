@@ -2,7 +2,7 @@ class GetProfile {
   List<Profile>? profile;
   String? error;
 
-  GetProfile({this.profile});
+  GetProfile(String s, {this.profile});
 
   GetProfile.withError(String errorMessage) {
     error = errorMessage;
@@ -13,7 +13,7 @@ class GetProfile {
       json['profile'].forEach((v) {
         profile!.add(new Profile.fromJson(v));
       });
-    }
+    } 
   }
 
   Map<String, dynamic> toJson() {
