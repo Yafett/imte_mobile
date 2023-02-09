@@ -45,7 +45,7 @@ class Profile {
   String? status;
   String? wali;
   String? noWali;
-  String? examiner;
+  int? examiner;
   String? photoLocation;
   String? wa;
   String? ttd;

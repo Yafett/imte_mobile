@@ -11,13 +11,14 @@ class EnrollProvider {
 
   Future<List<History>> fetchHistory() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var id = prefs.getInt('id');
+    var id = prefs.getInt('tabUserId');
 
     try {
       final uri = Uri.parse(urlEnroll);
       final response =
           await http.post(uri, body: {'tab_user_id': id.toString()});
-      print(response.body);
+
+      print('howgarts ${response.body.toString()}');
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as List;
         final history = json.map((e) => History.fromJson(e)).toList();
@@ -32,13 +33,14 @@ class EnrollProvider {
 
   Future<List<History>> fetchEnroll() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var id = prefs.getInt('id');
+    // var id = prefs.getInt('id');
+    var id = prefs.getString('tabUserId');
 
     try {
       final uri = Uri.parse(urlEnroll);
       final response =
           await http.post(uri, body: {'tab_user_id': id.toString()});
-
+      print('enroll : ' + id.toString() + response.body.toString());
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as List;
         final enroll = json.map((e) => History.fromJson(e)).toList();

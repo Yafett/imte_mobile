@@ -14,7 +14,7 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
       if (event is GetHistoryList || event is GetMoreHistoryList) {
         emit(HistoryLoading());
         try {
-          final history = await _enrollProvider.fetchHistory();
+          final history = await _enrollProvider.fetchEnroll();
           final period = await _enrollProvider.fetchPeriod();
           if (history.length == 0) {
             emit(HistoryEmpty());
@@ -24,6 +24,8 @@ class HistoryBloc extends Bloc<HistoryEvent, HistoryState> {
             print(state);
           }
         } catch (e) {
+          print(state);
+
           emit(HistoryError(e.toString()));
         }
       }

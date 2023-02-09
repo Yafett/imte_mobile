@@ -29,7 +29,6 @@ class NewsProvider {
     try {
       final uri = Uri.parse(urlFeed);
       final response = await http.get(uri);
-      print(response.body);
       if (response.statusCode == 200) {
         final json = jsonDecode(response.body) as List;
         final feed = json.map((e) => Feed.fromJson(e)).toList();

@@ -27,6 +27,7 @@ import 'package:http/http.dart' as http;
 import '../bloc/get-profile_bloc/getProfile_bloc.dart';
 import '../models/gallery-model.dart';
 import '../widget/news-card.dart';
+import 'edit-enroll.dart';
 import 'home-page.dart';
 
 class EnrollPage extends StatefulWidget {
@@ -173,10 +174,12 @@ class _EnrollPageState extends State<EnrollPage> {
     final data = await json.decode(response.body);
 
     for (var i = 0; i < data.length; i++) {
-      if (data[i]['name'] == 'feed') {
+      if (data[i]['name'].toString().contains('Feed')) {
         listFeed.add(Gallery.fromJson(data[i]));
       }
     }
+
+    print('conan : ${listFeed.toString()}');
   }
 
   _checkStatusChip(enrollStatus) {
@@ -281,7 +284,7 @@ class _EnrollPageState extends State<EnrollPage> {
 
   Widget _buildFeedCard(index, feed) {
     var image = feed.src;
-    var mii = image.replaceAll('./', '');
+    var filteredImage = image.replaceAll('./', '');
 
     return Container(
       margin: EdgeInsets.only(right: 5),
@@ -295,7 +298,7 @@ class _EnrollPageState extends State<EnrollPage> {
             size: Size.fromRadius(
               MediaQuery.of(context).size.width * 0.145,
             ),
-            child: Image.network('https://imte.education/' + mii),
+            child: Image.network('https://imte.education/' + filteredImage),
           ),
         ),
       ),
@@ -323,14 +326,14 @@ class _EnrollPageState extends State<EnrollPage> {
   @override
   void initState() {
     super.initState();
+    _profileBloc.add(GetProfileList());
     _fetchInstrument();
     _fetchGrade();
     _fetchTeacher();
     _getValData();
     _feedBloc.add(GetFeedList());
-    _enrollBloc.add(GetEnrollList());
-    _profileBloc.add(GetProfileList());
     _newsBloc.add(GetNewsList());
+    _enrollBloc.add(GetEnrollList());
   }
 
   @override
@@ -375,8 +378,8 @@ class _EnrollPageState extends State<EnrollPage> {
                           MaterialPageRoute(builder: (context) => HomePage()),
                           (route) => false);
                       final expiredSnackbar = SnackBar(
-                        content: const Text(
-                            'Token Expired, Please Login Again'),
+                        content:
+                            const Text('Token Expired, Please Login Again'),
                         backgroundColor: (Colors.black),
                         action: SnackBarAction(
                           label: 'Close',
@@ -480,12 +483,12 @@ class _EnrollPageState extends State<EnrollPage> {
               ],
             ),
           ),
-          Container(
-            height: MediaQuery.of(context).size.height * 0.145,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.all(0),
-            child: _buildFeedList(),
-          ),
+          // Container(
+          //   height: MediaQuery.of(context).size.height * 0.145,
+          //   width: MediaQuery.of(context).size.width,
+          //   padding: EdgeInsets.all(0),
+          //   child: _buildFeedList(),
+          // ),
           Divider(thickness: 1),
           Container(
             height: MediaQuery.of(context).size.height * 0.3,
@@ -544,7 +547,7 @@ class _EnrollPageState extends State<EnrollPage> {
             itemCount: state.feed.length,
             itemBuilder: (BuildContext context, int index) {
               Feed feed = state.feed[index];
-              if (feed.name == 'feed') {
+              if (feed.name.toString().contains('Feed')) {
                 return _buildFeedCard(index, feed);
               } else {
                 return Container();
@@ -663,9 +666,11 @@ class _EnrollPageState extends State<EnrollPage> {
                           History enroll = state.enroll[index];
                           Period period = state.period[0];
                           if (enroll.period!.periodName == period.periodName) {
+                            print('shawn');
                             // dataStudent(enroll.id.toString());
                             return _buildEnrollCard(enroll, index);
                           } else {
+                            print('dave');
                             return Container();
                           }
                         }),
@@ -784,11 +789,6 @@ class _EnrollPageState extends State<EnrollPage> {
 
   _showCardDetail(enroll, index) {
     DateTime dt = DateTime.parse(enroll.createdAt);
-    String practTime = DateFormat.jm()
-        .format(DateFormat("hh:mm:ss").parse(enroll.schedule.practical));
-    String examTime = DateFormat.jm()
-        .format(DateFormat("hh:mm:ss").parse(enroll.schedule.insKnowledge));
-    // dataStudent(enroll.id.toString);
 
     return showModalBottomSheet(
       shape: RoundedRectangleBorder(
@@ -823,15 +823,43 @@ class _EnrollPageState extends State<EnrollPage> {
                               )
                             ],
                           ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(
-                              Icons.close,
-                              color: kBlackColor,
-                              size: 30,
-                            ),
+                          Row(
+                            children: [
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => EditEnrollPage(
+                                                unit:
+                                                    enroll.tabUnitId.toString(),
+                                                instrument:
+                                                    enroll.major.id.toString(),
+                                                grade:
+                                                    enroll.grade.id.toString(),
+                                                teacher: enroll.teacher.id
+                                                    .toString(),
+                                                payment: enroll.paymentUrl,
+                                              )));
+                                },
+                                child: Icon(
+                                  Icons.edit,
+                                  color: kBlackColor,
+                                  size: 22,
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Icon(
+                                  Icons.close,
+                                  color: kBlackColor,
+                                  size: 30,
+                                ),
+                              ),
+                            ],
                           ),
                         ]),
                   ),
@@ -865,8 +893,7 @@ class _EnrollPageState extends State<EnrollPage> {
 
                   textLine(
                     'Teacher',
-                    Text(
-                        '${enroll.teacher.firstName} ${enroll.teacher.lastName}',
+                    Text('${enroll.teacher.firstName}',
                         style: blackTextStyle.copyWith(fontSize: 14)),
                   ),
                   textLine(
@@ -884,22 +911,21 @@ class _EnrollPageState extends State<EnrollPage> {
                     Text(DateFormat.yMMMd().format(dt),
                         style: blackTextStyle.copyWith(fontSize: 14)),
                   ),
-                  textLine(
-                    'Pract. Exam',
-                    Text(practTime,
-                        style: blackTextStyle.copyWith(fontSize: 14)),
-                  ),
-                  textLine(
-                    'Instr. Exam',
-                    Text(examTime,
-                        style: blackTextStyle.copyWith(fontSize: 14)),
-                  ),
-
-                  textLine(
-                    'Room',
-                    Text(enroll.schedule.practicalRoom,
-                        style: blackTextStyle.copyWith(fontSize: 14)),
-                  ),
+                  // textLine(
+                  //   'Pract. Exam',
+                  //   Text(practTime,
+                  //       style: blackTextStyle.copyWith(fontSize: 14)),
+                  // ),
+                  // textLine(
+                  //   'Instr. Exam',
+                  //   Text(examTime,
+                  //       style: blackTextStyle.copyWith(fontSize: 14)),
+                  // ),
+                  // textLine(
+                  //   'Room',
+                  //   Text(enroll.schedule.practicalRoom,
+                  //       style: blackTextStyle.copyWith(fontSize: 14)),
+                  // ),
 
                   SizedBox(height: 10),
                   Divider(thickness: 1),

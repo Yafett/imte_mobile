@@ -29,6 +29,7 @@ class ProfileProvider {
         return 'expired';
       } else {
         pref.setString('unit', data['profile'][0]['tab_unit_id'].toString());
+        pref.setString('tabUserId', data['profile'][0]['id'].toString());
         pref.setInt('id', data['profile'][0]['id']);
 
         return GetProfile.fromJson(data);

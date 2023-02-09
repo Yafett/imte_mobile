@@ -97,7 +97,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 ),
               );
             } else if (state is HistoryError) {
-              return Center(child: Text('${state.message}'));
+              return Center(child: Text('${state.toString()}'));
             } else {
               return Center(
                 child: Text(

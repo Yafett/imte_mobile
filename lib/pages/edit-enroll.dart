@@ -14,14 +14,28 @@ import 'package:dio/dio.dart';
 
 XFile? imageFile;
 
-class AddEnrollPage extends StatefulWidget {
-  const AddEnrollPage({super.key});
+class EditEnrollPage extends StatefulWidget {
+  String? unit;
+  String? period;
+  String? instrument;
+  String? grade;
+  String? teacher;
+  String? payment;
+
+  EditEnrollPage(
+      {super.key,
+      this.unit,
+      this.period,
+      this.instrument,
+      this.grade,
+      this.teacher,
+      this.payment});
 
   @override
-  State<AddEnrollPage> createState() => _AddEnrollPageState();
+  State<EditEnrollPage> createState() => _EditEnrollPageState();
 }
 
-class _AddEnrollPageState extends State<AddEnrollPage> {
+class _EditEnrollPageState extends State<EditEnrollPage> {
   final dio = Dio();
 
   final _periodController = TextEditingController();
@@ -82,6 +96,10 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
     _fetchMajor();
     _fetchGrade();
     _fetchPeriod();
+    _majorVal = widget.instrument;
+    _gradeVal = widget.grade;
+    _teacherVal = widget.teacher;
+    _paymentVal = widget.payment;
   }
 
   @override
@@ -122,7 +140,7 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
               ),
             ),
           ],
-          title: Text('Add Enroll',
+          title: Text('Edit Enroll',
               style:
                   blackTextStyle.copyWith(fontSize: 20, fontWeight: semiBold)),
         ),
@@ -147,45 +165,6 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
   }
 
   Widget _unitField() {
-    // return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-    //   // ! instruments
-    //   Text('Unit', style: TextStyle(fontSize: 16)),
-    //   SizedBox(height: 5),
-    //   Container(
-    //     margin: EdgeInsets.only(top: 5),
-    //     padding: EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-    //     decoration: BoxDecoration(
-    //       border: Border.all(color: Colors.grey),
-    //       borderRadius: BorderRadius.all(Radius.circular(12)),
-    //     ),
-    //     width: MediaQuery.of(context).size.width,
-    //     child: DropdownButton(
-    //       underline: SizedBox(),
-    //       isExpanded: true,
-    //       hint: Text('Select Your Unit'),
-    //       items: unitList.map((item) {
-    //         return DropdownMenuItem(
-    //           value: item['id'].toString(),
-    //           child: Text(item['unit_name'].toString()),
-    //         );
-    //       }).toList(),
-    //       onChanged: (newVal) {
-    //         print(newVal);
-
-    //         setState(() {
-    //           unitSelected = false;
-    //           _unitVal = newVal;
-    //           teacherList = [];
-    //           _fetchTeacher(newVal);
-    //         });
-    //       },
-    //       value: _unitVal,
-    //     ),
-    //   ),
-    //   SizedBox(
-    //     height: 15,
-    //   ),
-    // ]);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       // ! instruments
       Text('Unit', style: TextStyle(fontSize: 16)),
@@ -459,32 +438,13 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
     final prefs = await SharedPreferences.getInstance();
     final response = await dio.get('https://adm.imte.education/api/unit');
 
-    String? unit = await prefs.getString('unit');
+    // String? unit = await prefs.getString('unit');
+    String? unit = widget.unit;
 
-    if (unit == '1') {
-      _unitController.text = 'Alam Sutera';
-    } else if (unit == '2') {
-      _unitController.text = 'Gang Pinggir';
-    } else if (unit == '3') {
-      _unitController.text = 'Madiun';
-    } else if (unit == '4') {
-      _unitController.text = 'Puri Anjasmoro';
-    } else if (unit == '5') {
-      _unitController.text = 'Solo';
-    } else if (unit == '6') {
-      _unitController.text = 'Kudus';
-    } else if (unit == '7') {
-      _unitController.text = 'Yogyakarta';
-    } else if (unit == '8') {
-      _unitController.text = 'Kutoarjo';
-    } else if (unit == '9') {
-      _unitController.text = 'Purwodadi';
-    } else if (unit == '10') {
-      _unitController.text = 'Surabaya';
-    }
+    print('dance : ' + response.data.length.toString());
 
     for (var a = 0; a < response.data.length; a++) {
-      for (var a = 0; a < response.data.length; a++) {
+      if (response.data[a]['id'].toString() == widget.unit) {
         if (mounted) {
           setState(() {
             unitList.add(response.data[a]);
@@ -492,6 +452,14 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
         }
       }
     }
+
+    if (mounted) {
+      setState(() {
+        _unitController.text = unitList[0]['unit_name'].toString();
+      });
+    }
+
+    print('codplay ${unitList[0]['unit_name'].toString()}');
 
     teacherList = [];
     _fetchTeacher(unit);
@@ -568,6 +536,22 @@ class _AddEnrollPageState extends State<AddEnrollPage> {
         });
       }
     }
+  }
+
+  _setEnrollData() {
+    //  'id': id.toString(),
+    //       'unit': unitList[0]['id'].toString(),
+    //       'period': _periodVal.toString(),
+    //       'major': _majorVal.toString(),
+    //       'grade': _gradeVal.toString(),
+    //       'teacher_id': _teacherVal.toString(),
+    //       'payment': _paymentVal.toString(),
+
+    _periodVal = widget.period;
+    _majorVal = widget.instrument;
+    _gradeVal = widget.grade;
+    _teacherVal = widget.teacher;
+    _paymentVal = widget.payment;
   }
 
   _sendEnrollData(file) async {
