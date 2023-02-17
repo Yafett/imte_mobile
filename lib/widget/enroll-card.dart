@@ -47,7 +47,6 @@ class _enrollCardState extends State<enrollCard> {
     return GestureDetector(
         onTap: () {
           // pickImage();
-          scanBarcode();
         },
         child: Container(
             width: MediaQuery.of(context).size.width,

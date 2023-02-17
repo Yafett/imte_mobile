@@ -4,6 +4,8 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -123,6 +125,62 @@ class _EnrollPageState extends State<EnrollPage> {
     'JC 6 - Classical'
   ];
 
+  String? scanResult;
+
+  Future scanBarcode(enrollCode) async {
+    String scanResult;
+
+    try {
+      scanResult = await FlutterBarcodeScanner.scanBarcode(
+        '#ff6666',
+        'Cancel',
+        true,
+        ScanMode.BARCODE,
+      );
+    } on PlatformException {
+      scanResult = 'Failed to scan';
+    }
+
+    if (!mounted) return;
+
+    setState(() => this.scanResult = scanResult);
+
+    var decoded = base64.decode(scanResult);
+
+    print(utf8.decode(decoded));
+
+    final response = await http.get(
+        Uri.parse(
+            'https://adm.imte.education/api/activity/changeStatus/${utf8.decode(decoded)}/${enrollCode.toString()}'),
+        headers: {'Accept': 'application/json'});
+
+    var data = json.decode(response.body);
+
+    if (response.statusCode == 200) {
+      Navigator.pop(context);
+      final succesSnackbar = SnackBar(
+        content: const Text('QR Scanned Successfully'),
+        backgroundColor: (Colors.black),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {},
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(succesSnackbar);
+    } else {
+      Navigator.pop(context);
+      final failedSnackbar = SnackBar(
+        content: const Text('Failed to Scan QR Code'),
+        backgroundColor: (Colors.black),
+        action: SnackBarAction(
+          label: 'Close',
+          onPressed: () {},
+        ),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(failedSnackbar);
+    }
+  }
+
   String capitalize(String value) {
     var result = value[0].toUpperCase();
     bool cap = true;
@@ -191,9 +249,10 @@ class _EnrollPageState extends State<EnrollPage> {
     } else if (enrollStatus == 2) {
       return _statusChip("Test Taken", Color(0xff007BFF), Color(0xffC9F1FE));
     } else if (enrollStatus == 3) {
-      return _statusChip("Result Out", Color.fromARGB(255, 140, 0, 196), Color.fromARGB(255, 241, 207, 255));
+      return _statusChip("Result Out", Color.fromARGB(255, 140, 0, 196),
+          Color.fromARGB(255, 241, 207, 255));
     }
-  } 
+  }
 
   Widget _statusChip(statusTitle, statusTitleColor, chipColor) {
     return Container(
@@ -866,6 +925,35 @@ class _EnrollPageState extends State<EnrollPage> {
                           ),
                           Row(
                             children: [
+                              (enroll.enrollStatus.toString() == '3')
+                                  ? GestureDetector(
+                                      onTap: () {
+                                        if (enroll.enrollStatus.toString() !=
+                                            '3') {
+                                          Navigator.pop(context);
+                                          final failedSnackbar = SnackBar(
+                                            content: const Text(
+                                                "You can't Scan QR for this Data"),
+                                            backgroundColor: (Colors.black),
+                                            action: SnackBarAction(
+                                              label: 'Close',
+                                              onPressed: () {},
+                                            ),
+                                          );
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(failedSnackbar);
+                                        } else {
+                                          scanBarcode(enroll.id.toString());
+                                        }
+                                      },
+                                      child: Icon(
+                                        Icons.qr_code_scanner,
+                                        color: kBlackColor,
+                                        size: 30,
+                                      ),
+                                    )
+                                  : Container(),
+                              SizedBox(width: 10),
                               GestureDetector(
                                 onTap: () {
                                   if (enroll.enrollStatus > 1) {
